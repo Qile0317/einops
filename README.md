@@ -26,3 +26,8 @@ library(einops)
 ## basic example code
 ```
 
+## Planned Backends
+
+- R torch tensors
+- R 2d matrices (and matrix like objects like dfs), multidim arrays
+- R keras?
