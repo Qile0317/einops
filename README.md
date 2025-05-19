@@ -26,8 +26,12 @@ library(einops)
 ## basic example code
 ```
 
-## Planned Backends
+## Planned Backends & Implementation
+
+> The python einops implementation uses wrappers for each datastructure over some central mixins, but the current plan for the R version is to simply use S3 dispatch with some helpers. Functions like `reduce` will by default override existing conventions so aliases may be needed
 
 - R torch tensors
-- R 2d matrices (and matrix like objects like dfs), multidim arrays
-- R keras?
+- R 2d matrices (and matrix like objects like dfs)
+    - SparseMatrices
+- R multidim arrays
+- R keras/TF datastructures?
