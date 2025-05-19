@@ -11,7 +11,12 @@ RoxygenNote: 7.3.2
 URL: https://github.com/Qile0317/einops
 BugReports: https://github.com/Qile0317/einops/issues
 Imports: 
-    lifecycle
+    lifecycle,
+    Rcpp
 Suggests: 
+    assertthat,
+    conflicted,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+LinkingTo: 
+    Rcpp

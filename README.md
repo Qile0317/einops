@@ -1,4 +1,3 @@
-
 # einops
 
 <!-- badges: start -->
@@ -7,7 +6,7 @@
 [![Codecov test coverage](https://codecov.io/gh/Qile0317/einops/graph/badge.svg)](https://app.codecov.io/gh/Qile0317/einops)
 <!-- badges: end -->
 
-The goal of einops is to ...
+This is a work in progress implementation of the einops library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, making it easier to work with complex data structures.
 
 ## Installation
 
@@ -35,3 +34,5 @@ library(einops)
     - SparseMatrices
 - R multidim arrays
 - R keras/TF datastructures?
+
+Issue: If using Rcpp backend and we are modifying by reference, need to be careful about the case where a user does NOT reassign the result of a function into the same binding, need to ensure the original object is not modified. An easy solution is to just make a copy and work on that - but this is suboptimal.
