@@ -30,7 +30,7 @@ NameToken <- function(value, start) {
     create_token("NAME", value, start)
 }
 
-#' @title TokenSequence
+#' @title EinopsTokenSequence constructor
 #' @description Helper to build a token sequence (list of tokens)
 #' @param ... tokens or EinopsTokenSequences to include
 #' @return list of tokens
@@ -38,19 +38,14 @@ NameToken <- function(value, start) {
 EinopsTokenSequence <- function(...) {
     inputs <- list(...)
     inputs <- inputs[!vapply(inputs, is.null, logical(1))]
-    
-    # Flatten any EinopsTokenSequences and extract their tokens
     tokens <- list()
     for (input in inputs) {
         if (inherits(input, "EinopsTokenSequence")) {
-            # Extract tokens from the sequence
             tokens <- c(tokens, unclass(input))
         } else {
-            # Assume it's a regular token
             tokens <- c(tokens, list(input))
         }
     }
-    
     structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 

@@ -80,15 +80,13 @@ tail.GroupAstNode <- function(x, n = 1) {
 #' @export
 #' @keywords internal
 to_tokens.GroupAstNode <- function(x, ...) {
-    lparen_token <- LParenToken(x$src$start - 1)
+    lparen_token <- LParenToken(x$src$start)
     last_child_astnode <- tail(x, 1)[[1]]
     last_child_tokens <- to_tokens(last_child_astnode)
     last_token <- tail(last_child_tokens, 1)[[1]]
     rparen_token <- RParenToken(last_token$start + nchar(last_token$value))
-    child_tokens <- lapply(x$children, to_tokens)
-    EinopsTokenSequence(
-        c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
-    )
+    child_tokens <- do.call(EinopsTokenSequence, lapply(x$children, to_tokens))
+    EinopsTokenSequence(lparen_token, child_tokens, rparen_token)
 }
 
 #' @title Create an EinopsAst root node

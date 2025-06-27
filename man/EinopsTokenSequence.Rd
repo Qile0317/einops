@@ -2,7 +2,7 @@
 % Please edit documentation in R/compiler-token.R
 \name{EinopsTokenSequence}
 \alias{EinopsTokenSequence}
-\title{TokenSequence}
+\title{EinopsTokenSequence constructor}
 \usage{
 EinopsTokenSequence(...)
 }
