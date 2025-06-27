@@ -3,22 +3,17 @@
 \docType{class}
 \name{EinopsAst-class}
 \alias{EinopsAst-class}
-\title{EinopsAst S4 Class for Representing Einops Expressions}
+\title{S4 class for Einops Abstract Syntax Tree}
 \description{
-This class represents parsed einops expressions as Abstract Syntax Trees (ASTs).
-It separates input and output patterns and handles nested structures with brackets
-and ellipsis tokens.
+S4 class for Einops Abstract Syntax Tree
 }
 \section{Slots}{
 
 \describe{
-\item{\code{input_pattern}}{list representing the input pattern structure}
+\item{\code{text}}{character string of original pattern}
 
-\item{\code{output_pattern}}{list representing the output pattern structure}
+\item{\code{axes}}{list of axis descriptors}
 
-\item{\code{ellipsis_axes}}{character vector of axis names that contain ellipsis}
-
-\item{\code{known_axes}}{character vector of all known axis names}
+\item{\code{ellipsis_pos}}{integer position of ellipsis or NA}
 }}
 
-\keyword{internal}

@@ -1,7 +1,72 @@
-#' Tokenize einops pattern into structured tokens
-#' 
+ArrowToken <- function(start, end) {
+  list(
+    type = "ARROW",
+    value = "->",
+    start = start,
+    end = end
+  )
+}
+
+EllipsisToken <- function(start, end) {
+  list(
+    type = "ELLIPSIS",
+    value = "...",
+    start = start,
+    end = end
+  )
+}
+
+LParenToken <- function(start, end) {
+  list(
+    type = "LPAREN",
+    value = "(",
+    start = start,
+    end = end
+  )
+}
+
+RParenToken <- function(start, end) {
+  list(
+    type = "RPAREN",
+    value = ")",
+    start = start,
+    end = end
+  )
+}
+
+IntToken <- function(value, start, end) {
+  list(
+    type = "INT",
+    value = value,
+    start = start,
+    end = end
+  )
+}
+
+NameToken <- function(value, start, end) {
+  list(
+    type = "NAME",
+    value = value,
+    start = start,
+    end = end
+  )
+}
+
+#' @title TokenSequence
+#' @description Helper to build a token sequence (list of tokens)
+#' @param ... tokens to include
+#' @return list of tokens
+#' @internal
+TokenSequence <- function(...) {
+  tokens <- list(...)
+  tokens[!vapply(tokens, is.null, logical(1))]
+}
+
+#' @title Tokenize einops pattern into structured tokens
+#' @description Tokenize einops pattern into structured tokens
 #' @param pattern character string with einops pattern
 #' @return list of token objects with type, value, start, end fields
+#' @internal
 tokenize <- function(pattern) {
   if (!is.character(pattern) || length(pattern) != 1) {
     stop("Pattern must be a single character string")
@@ -29,12 +94,7 @@ tokenize <- function(pattern) {
     
     # Arrow operator
     if (char == "-" && pos < n && pattern_chars[pos + 1] == ">") {
-      tokens <- append(tokens, list(list(
-        type = "ARROW",
-        value = "->",
-        start = start_pos,
-        end = pos + 1
-      )))
+      tokens <- append(tokens, list(ArrowToken(start_pos, pos + 1)))
       pos <- pos + 2
       next
     }
@@ -47,12 +107,7 @@ tokenize <- function(pattern) {
       if (ellipsis_count > 1) {
         stop("Only one ellipsis (...) is allowed in the pattern")
       }
-      tokens <- append(tokens, list(list(
-        type = "ELLIPSIS",
-        value = "...",
-        start = start_pos,
-        end = pos + 2
-      )))
+      tokens <- append(tokens, list(EllipsisToken(start_pos, pos + 2)))
       pos <- pos + 3
       next
     }
@@ -60,12 +115,7 @@ tokenize <- function(pattern) {
     # Left parenthesis
     if (char == "(") {
       paren_stack <- paren_stack + 1
-      tokens <- append(tokens, list(list(
-        type = "LPAREN",
-        value = "(",
-        start = start_pos,
-        end = pos
-      )))
+      tokens <- append(tokens, list(LParenToken(start_pos, pos)))
       pos <- pos + 1
       next
     }
@@ -76,12 +126,7 @@ tokenize <- function(pattern) {
         stop("Unmatched closing parenthesis at position ", pos)
       }
       paren_stack <- paren_stack - 1
-      tokens <- append(tokens, list(list(
-        type = "RPAREN",
-        value = ")",
-        start = start_pos,
-        end = pos
-      )))
+      tokens <- append(tokens, list(RParenToken(start_pos, pos)))
       pos <- pos + 1
       next
     }
@@ -93,12 +138,7 @@ tokenize <- function(pattern) {
         end_pos <- end_pos + 1
       }
       value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
-      tokens <- append(tokens, list(list(
-        type = "INT",
-        value = value,
-        start = start_pos,
-        end = end_pos - 1
-      )))
+      tokens <- append(tokens, list(IntToken(value, start_pos, end_pos - 1)))
       pos <- end_pos
       next
     }
@@ -110,12 +150,7 @@ tokenize <- function(pattern) {
         end_pos <- end_pos + 1
       }
       value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
-      tokens <- append(tokens, list(list(
-        type = "NAME",
-        value = value,
-        start = start_pos,
-        end = end_pos - 1
-      )))
+      tokens <- append(tokens, list(NameToken(value, start_pos, end_pos - 1)))
       pos <- end_pos
       next
     }
@@ -137,7 +172,12 @@ tokenize <- function(pattern) {
   tokens
 }
 
-#' Internal helper to get next token from stream
+#' @title .next_token
+#' @description Internal helper to get next token from stream
+#' @param tokens list of tokens
+#' @param pos current position
+#' @return list with token and new position
+#' @internal
 .next_token <- function(tokens, pos) {
   if (pos > length(tokens)) {
     return(list(token = NULL, pos = pos))
@@ -145,16 +185,19 @@ tokenize <- function(pattern) {
   list(token = tokens[[pos]], pos = pos + 1)
 }
 
-#' Parse einops pattern into terms structure
-#' 
+#' @title parse_einops
+#' @description Parse einops pattern into terms structure
 #' @param pattern character string with einops pattern
-#' @param op character string with reduction operator
+#' @param operation optional operation type ("rearrange", "reduce", "repeat")
 #' @return list containing terms and metadata
-parse_einops <- function(pattern, op) {
-  # Validate reduction operator
-  valid_ops <- c("sum", "mean", "max", "min")
-  if (!op %in% valid_ops) {
-    stop("Invalid reduction operator: ", op, ". Must be one of: ", paste(valid_ops, collapse = ", "))
+#' @internal
+parse_einops <- function(pattern, operation = NULL) {
+  # Validate operation if provided
+  if (!is.null(operation)) {
+    valid_ops <- c("rearrange", "reduce", "repeat")
+    if (!operation %in% valid_ops) {
+      stop("Invalid operation: ", operation, ". Must be one of: ", paste(valid_ops, collapse = ", "))
+    }
   }
   
   tokens <- tokenize(pattern)
@@ -231,7 +274,7 @@ parse_einops <- function(pattern, op) {
   
   list(
     terms = terms,
-    op = op,
+    operation = operation,
     pattern = pattern
   )
 }

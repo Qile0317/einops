@@ -7,9 +7,8 @@
 \S4method{show}{EinopsAst}(object)
 }
 \arguments{
-\item{x}{EinopsAst object}
+\item{object}{EinopsAst object}
 }
 \description{
 Print method for EinopsAst
 }
-\keyword{internal}

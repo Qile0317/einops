@@ -14,7 +14,7 @@ reduce(x, expr, func, ...)
 
 \item{expr}{character string with einops expression (e.g., "h w c -> h w")}
 
-\item{func}{reduction function to apply (e.g., sum, mean, max)}
+\item{func}{character string naming the reduction function (e.g., "sum", "mean", "max")}
 
 \item{...}{additional arguments passed to the reduction function}
 }
@@ -29,15 +29,15 @@ while potentially reshaping the tensor according to the einops pattern.
 \examples{
 # 2D reduction
 arr <- array(1:12, dim = c(3, 4))
-reduce(arr, "h w -> h", sum)  # Sum along width
-reduce(arr, "h w -> w", sum)  # Sum along height
-reduce(arr, "h w ->", sum)    # Sum to scalar
+reduce(arr, "h w -> h", "sum")
+reduce(arr, "h w -> w", "sum")
+reduce(arr, "h w ->", "sum")
 
 # 3D reduction with grouping
 arr3d <- array(1:24, dim = c(2, 3, 4))
-reduce(arr3d, "b h w -> h w", sum)      # Sum along batch
-reduce(arr3d, "(b h) w -> w", sum)      # Group batch-height, sum
+reduce(arr3d, "b h w -> h w", "sum")
+reduce(arr3d, "(b h) w -> w", "sum")
 
 # Using ellipsis
-reduce(arr3d, "... w -> ...", sum)      # Sum last dimension
+reduce(arr3d, "... w -> ...", "sum")
 }
