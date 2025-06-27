@@ -2,7 +2,8 @@
 % Please edit documentation in R/compiler-token.R
 \name{print.EinopsTokenSequence}
 \alias{print.EinopsTokenSequence}
-\title{Print method for EinopsTokenSequence}
+\title{Print method for EinopsTokenSequence
+Print EinopsTokenSequences w/reconstructed expression & constructor}
 \usage{
 \method{print}{EinopsTokenSequence}(x, ...)
 }
@@ -15,5 +16,6 @@
 invisible x
 }
 \description{
-Print EinopsTokenSequence objects showing reconstructed expression and construction
+Print method for EinopsTokenSequence
+Print EinopsTokenSequences w/reconstructed expression & constructor
 }

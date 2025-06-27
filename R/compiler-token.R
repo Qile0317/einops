@@ -62,7 +62,7 @@ print.EinopsToken <- function(x, ...) {
 }
 
 #' @title Print method for EinopsTokenSequence
-#' @description Print EinopsTokenSequence objects showing reconstructed expression and construction
+#' Print EinopsTokenSequences w/reconstructed expression & constructor
 #' @param x EinopsTokenSequence object
 #' @param ... additional arguments (unused)
 #' @return invisible x
@@ -74,7 +74,15 @@ print.EinopsTokenSequence <- function(x, ...) {
         return(invisible(x))
     }
     
-    # Calculate total length by finding rightmost token end
+    cat("Einops Lexed Token Sequence for '", to_expression(x), "':\n")
+    
+    constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
+    tokens_string <- paste(constructor_calls, collapse = ",\n    ")
+    cat("TokenSequence(\n   ", tokens_string, "\n)\n")
+    invisible(x)
+}
+
+to_expression <- function(x, ...) {
     total_length <- 0
     for (token in x) {
         if (inherits(token, "EinopsToken")) {
@@ -92,12 +100,6 @@ print.EinopsTokenSequence <- function(x, ...) {
             }
         }
     }
-    reconstructed <- paste(chars, collapse = "")
-    cat("Reconstructed expression:", reconstructed, "\n")
-    
-    # Generate constructor calls for each token by capturing print output
-    constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
-    tokens_string <- paste(constructor_calls, collapse = ",\n    ")
-    cat("TokenSequence(\n   ", tokens_string, "\n)\n")
-    invisible(x)
+
+    paste(chars, collapse = "")
 }

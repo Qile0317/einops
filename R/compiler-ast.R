@@ -1,6 +1,6 @@
 #' @keywords internal
-to_tokens <- function(ast, ...) {
-    UseMethod("to_tokens", ast)
+to_tokens <- function(x, ...) {
+    UseMethod("to_tokens", x)
 }
 
 #' @title Create a NamedAxisAstNode
@@ -15,9 +15,10 @@ NamedAxisAstNode <- function(name, src) {
     ), class = c("NamedAxisAstNode", "AstNode"))
 }
 
+#' @export
 #' @keywords internal
-to_tokens.NamedAxisAstNode <- function(ast, ...) {
-    list(NameToken(ast$name, ast$src$start))
+to_tokens.NamedAxisAstNode <- function(x, ...) {
+    list(NameToken(x$name, x$src$start))
 }
 
 #' @title Create a ConstantAstNode
@@ -32,9 +33,10 @@ ConstantAstNode <- function(count, src) {
     ), class = c("ConstantAstNode", "AstNode"))
 }
     
+#' @export
 #' @keywords internal
-to_tokens.ConstantAstNode <- function(ast, ...) {
-    list(IntToken(ast$count, ast$src$start))
+to_tokens.ConstantAstNode <- function(x, ...) {
+    list(IntToken(x$count, x$src$start))
 }
 
 #' @title Create an EllipsisAstNode
@@ -47,9 +49,10 @@ EllipsisAstNode <- function(src) {
     ), class = c("EllipsisAstNode", "AstNode"))
 }
 
+#' @export
 #' @keywords internal
-to_tokens.EllipsisAstNode <- function(ast, ...) {
-    list(EllipsisToken(ast$src$start))
+to_tokens.EllipsisAstNode <- function(x, ...) {
+    list(EllipsisToken(x$src$start))
 }
 
 #' @title Create a GroupAstNode
@@ -64,20 +67,21 @@ GroupAstNode <- function(children, src) {
     ), class = c("GroupAstNode", "AstNode"))
 }
 
+#' @export
 #' @keywords internal
-to_tokens.GroupAstNode <- function(ast, ...) {
-    lparen_token <- LParenToken(ast$src$start - 1)
-    last_child_astnode <- tail(ast$children, 1)[[1]]
-    # Get the appropriate field based on the node type
+to_tokens.GroupAstNode <- function(x, ...) {
+    lparen_token <- LParenToken(x$src$start - 1)
+    last_child_astnode <- tail(x$children, 1)[[1]]
+    # Get the appropriate field based on the node type (TODO just make this take printed output of others)
     text_content <- if (inherits(last_child_astnode, "NamedAxisAstNode")) {
         last_child_astnode$name
     } else if (inherits(last_child_astnode, "ConstantAstNode")) {
         last_child_astnode$count
     } else {
-        "" # For EllipsisAstNode or other types that don't have text content
+        ""
     }
     rparen_token <- RParenToken(last_child_astnode$src$start + nchar(text_content))
-    child_tokens <- lapply(ast$children, to_tokens)
+    child_tokens <- lapply(x$children, to_tokens)
     c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
 }
 
@@ -95,21 +99,22 @@ EinopsAst <- function(input_axes, output_axes, src) {
     ), class = c("EinopsAst", "AstNode"))
 }
 
+#' @export
 #' @keywords internal
-to_tokens.EinopsAst <- function(ast, ...) {
-    input_tokens <- unlist(lapply(ast$input_axes, to_tokens), recursive = FALSE)
-    output_tokens <- unlist(lapply(ast$output_axes, to_tokens), recursive = FALSE)
-    last_input_astnode <- tail(ast$input_axes, 1)[[1]]
-    # Get the appropriate field based on the node type
+to_tokens.EinopsAst <- function(x, ...) {
+    input_tokens <- unlist(lapply(x$input_axes, to_tokens), recursive = FALSE)
+    output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
+    last_input_astnode <- tail(x$input_axes, 1)[[1]]
+    # Get the appropriate field based on the node type - TODO should make this take printed output of others
     text_content <- if (inherits(last_input_astnode, "NamedAxisAstNode")) {
         last_input_astnode$name
     } else if (inherits(last_input_astnode, "ConstantAstNode")) {
         last_input_astnode$count
     } else {
-        "" # For EllipsisAstNode or other types that don't have text content
+        ""
     }
-    arrow_token <- ArrowToken(last_input_astnode$src$start + nchar(text_content) + 2)
-    args <- c(input_tokens, arrow_token, output_tokens)
+    arrow_token <- ArrowToken(last_input_astnode$src$start + nchar(text_content) + 1)
+    args <- c(input_tokens, list(arrow_token), output_tokens)
     do.call(TokenSequence, args)
 }
 
@@ -172,7 +177,8 @@ print.AstNode <- function(x, ...) {
 
 #' @export
 print.EinopsAst <- function(x, ...) {
-    # reconstructed <- paste(capture.output(print.EinopsTokenSequence(to_tokens(x))), collapse = "")
-    # cat(glue::glue("Reconstructed Einops expression: {reconstructed}\n"))
+    cat(glue::glue(
+        "Einops Abstract Syntax Tree for '{to_expression(to_tokens(x))}':\n\n"
+    ))
     print.AstNode(x, ...)
 }
