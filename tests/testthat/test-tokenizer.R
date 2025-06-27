@@ -1,14 +1,14 @@
 test_that("tokenize produces exact ordered token objects with positions", {
     expectedTokens <- TokenSequence(
         NameToken("b", 1, 1),
-        NameToken("h", 2, 2),
-        NameToken("w", 3, 3),
-        ArrowToken(4, 5),
-        NameToken("b", 6, 6),
-        LParenToken(7, 7),
-        NameToken("h", 8, 8),
-        NameToken("w", 9, 9),
-        RParenToken(10, 10)
+        NameToken("h", 3, 3),
+        NameToken("w", 5, 5),
+        ArrowToken(7, 8),
+        NameToken("b", 10, 10),
+        LParenToken(12, 12),
+        NameToken("h", 13, 13),
+        NameToken("w", 15, 15),
+        RParenToken(16, 16) 
     )
     tokens <- tokenize("b h w -> b (h w)")
     expect_equal(tokens, expectedTokens)
@@ -98,20 +98,20 @@ test_that("tokenizer handles complex patterns", {
     pattern1 <- "b c (h1 2) (w1 2) -> b c h1 w1"
     expectedTokens1 <- TokenSequence(
         NameToken("b", 1, 1),
-        NameToken("c", 2, 2),
-        LParenToken(3, 3),
-        NameToken("h1", 4, 5),
-        IntToken("2", 6, 6),
-        RParenToken(7, 7),
-        LParenToken(8, 8),
-        NameToken("w1", 9, 10),
-        IntToken("2", 11, 11),
-        RParenToken(12, 12),
-        ArrowToken(13, 14),
-        NameToken("b", 15, 15),
-        NameToken("c", 16, 16),
-        NameToken("h1", 17, 18),
-        NameToken("w1", 19, 20)
+        NameToken("c", 3, 3),
+        LParenToken(5, 5),
+        NameToken("h1", 6, 7),
+        IntToken("2", 9, 9),
+        RParenToken(10, 10),
+        LParenToken(12, 12),
+        NameToken("w1", 13, 14),
+        IntToken("2", 16, 16),
+        RParenToken(17, 17),
+        ArrowToken(19, 20),
+        NameToken("b", 22, 22),
+        NameToken("c", 24, 24),
+        NameToken("h1", 26, 27),
+        NameToken("w1", 29, 30) 
     )
     tokens1 <- tokenize(pattern1)
     expect_equal(tokens1, expectedTokens1)
@@ -119,25 +119,24 @@ test_that("tokenizer handles complex patterns", {
     pattern2 <- "b c (h1 h2) (w1 w2) -> b c h1 w1"
     expectedTokens2 <- TokenSequence(
         NameToken("b", 1, 1),
-        NameToken("c", 2, 2),
-        LParenToken(3, 3),
-        NameToken("h1", 4, 5),
-        NameToken("h2", 6, 7),
-        RParenToken(8, 8),
-        LParenToken(9, 9),
-        NameToken("w1", 10, 11),
-        NameToken("w2", 12, 13),
-        RParenToken(14, 14),
-        ArrowToken(15, 16),
-        NameToken("b", 17, 17),
-        NameToken("c", 18, 18),
-        NameToken("h1", 19, 20),
-        NameToken("w1", 21, 22)
+        NameToken("c", 3, 3),
+        LParenToken(5, 5),
+        NameToken("h1", 6, 7),
+        NameToken("h2", 9, 10),
+        RParenToken(11, 11),
+        LParenToken(13, 13),
+        NameToken("w1", 14, 15),
+        NameToken("w2", 17, 18),
+        RParenToken(19, 19),
+        ArrowToken(21, 22),
+        NameToken("b", 24, 24),
+        NameToken("c", 26, 26),
+        NameToken("h1", 28, 29),
+        NameToken("w1", 31, 32) 
     )
     tokens2 <- tokenize(pattern2)
     expect_equal(tokens2, expectedTokens2)
 
-    # Test case 3: "b c h w -> 1 c 1 1"
     pattern3 <- "b c h w -> 1 c 1 1"
     expectedTokens3 <- TokenSequence(
         NameToken("b", 1, 1),
@@ -148,12 +147,11 @@ test_that("tokenizer handles complex patterns", {
         IntToken("1", 12, 12),
         NameToken("c", 14, 14),
         IntToken("1", 16, 16),
-        IntToken("1", 18, 18)
+        IntToken("1", 18, 18) 
     )
     tokens3 <- tokenize(pattern3)
     expect_equal(tokens3, expectedTokens3)
 
-    # Test case 4: "b c h w -> b c () ()"
     pattern4 <- "b c h w -> b c () ()"
     expectedTokens4 <- TokenSequence(
         NameToken("b", 1, 1),
@@ -166,7 +164,7 @@ test_that("tokenizer handles complex patterns", {
         LParenToken(16, 16),
         RParenToken(17, 17),
         LParenToken(19, 19),
-        RParenToken(20, 20)
+        RParenToken(20, 20) 
     )
     tokens4 <- tokenize(pattern4)
     expect_equal(tokens4, expectedTokens4)
