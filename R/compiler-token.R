@@ -73,8 +73,8 @@ print.EinopsTokenSequence <- function(x, ...) {
         cat("Empty EinopsTokenSequence()\n")
         return(invisible(x))
     }
-    
-    cat("Einops Lexed Token Sequence for '", to_expression(x), "':\n")
+
+    cat(glue::glue("Einops Lexed Token Sequence for '{to_expression(x)}':\n\n"))
     
     constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
     tokens_string <- paste(constructor_calls, collapse = ",\n    ")
