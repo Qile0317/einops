@@ -35,29 +35,29 @@ NameToken <- function(value, start) {
 #' @param ... tokens to include
 #' @return list of tokens
 #' @keywords internal
-TokenSequence <- function(...) {
+EinopsTokenSequence <- function(...) {
     tokens <- list(...)
     tokens <- tokens[!vapply(tokens, is.null, logical(1))]
     structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
-asTokenSequence <- function(x) {
+asEinopsTokenSequence <- function(x) {
     if (inherits(x, "EinopsTokenSequence")) {
         return(x)
     }
     if (is.list(x)) {
         return(structure(x, class = c("EinopsTokenSequence", "list")))
     }
-    warning("asTokenSequence called on non-list object, returning input")
+    warning("asEinopsTokenSequence called on non-list object, returning input")
     x
 }
 
 #' @export
-tail.TokenSequence <- function(x, n = 1) { # nolint: object_name_linter.
+tail.EinopsTokenSequence <- function(x, n = 1) { # nolint: object_name_linter.
     if (n < 1) {
         stop("n must be at least 1")
     }
-    asTokenSequence(tail(unclass(x), n))
+    asEinopsTokenSequence(tail(x, n))
 }
 
 #' @title Print method for EinopsToken
@@ -97,7 +97,7 @@ print.EinopsTokenSequence <- function(x, ...) {
     
     constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
     tokens_string <- paste(constructor_calls, collapse = ",\n    ")
-    cat("TokenSequence(\n   ", tokens_string, "\n)\n")
+    cat("EinopsTokenSequence(\n   ", tokens_string, "\n)\n")
     invisible(x)
 }
 

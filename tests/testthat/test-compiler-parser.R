@@ -1,6 +1,6 @@
 test_that("a b c -> b c", {
 
-    tokens <- TokenSequence(
+    tokens <- EinopsTokenSequence(
         NameToken("a", 1),
         NameToken("b", 3),
         NameToken("c", 5),
@@ -44,7 +44,7 @@ test_that("a b c -> b c", {
 
 test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
 
-    tokens <- TokenSequence(
+    tokens <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         LParenToken(5),

@@ -18,7 +18,7 @@ NamedAxisAstNode <- function(name, src) {
 #' @export
 #' @keywords internal
 to_tokens.NamedAxisAstNode <- function(x, ...) {
-    TokenSequence(NameToken(x$name, x$src$start))
+    EinopsTokenSequence(NameToken(x$name, x$src$start))
 }
 
 #' @title Create a ConstantAstNode
@@ -36,7 +36,7 @@ ConstantAstNode <- function(count, src) {
 #' @export
 #' @keywords internal
 to_tokens.ConstantAstNode <- function(x, ...) {
-    TokenSequence(IntToken(x$count, x$src$start))
+    EinopsTokenSequence(IntToken(x$count, x$src$start))
 }
 
 #' @title Create an EllipsisAstNode
@@ -52,7 +52,7 @@ EllipsisAstNode <- function(src) {
 #' @export
 #' @keywords internal
 to_tokens.EllipsisAstNode <- function(x, ...) {
-    TokenSequence(EllipsisToken(x$src$start))
+    EinopsTokenSequence(EllipsisToken(x$src$start))
 }
 
 #' @title Create a GroupAstNode
@@ -67,6 +67,8 @@ GroupAstNode <- function(children, src) {
     ), class = c("GroupAstNode", "AstNode"))
 }
 
+#' Get the last n children of a GroupAstNode as a list of AstNodes.
+#' @keywords internal
 #' @export
 tail.GroupAstNode <- function(x, n = 1) {
     if (n < 1) {
@@ -79,12 +81,12 @@ tail.GroupAstNode <- function(x, n = 1) {
 #' @keywords internal
 to_tokens.GroupAstNode <- function(x, ...) {
     lparen_token <- LParenToken(x$src$start - 1)
-    last_child_astnode <- tail(x$children, 1)[[1]]
+    last_child_astnode <- tail(x, 1)[[1]]
     last_child_tokens <- to_tokens(last_child_astnode)
     last_token <- tail(last_child_tokens, 1)[[1]]
     rparen_token <- RParenToken(last_token$start + nchar(last_token$value))
     child_tokens <- lapply(x$children, to_tokens)
-    asTokenSequence(
+    asEinopsTokenSequence(
         c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
     )
 }
@@ -111,13 +113,16 @@ to_tokens.EinopsAst <- function(x, ...) {
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
 
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
+    print("=========================")
     print(last_input_astnode)
     last_input_tokens <- to_tokens(last_input_astnode)
+    print("=========================")
     print(last_input_tokens)
     last_token <- tail(last_input_tokens, 1)[[1]]
+    print("=========================")
     print(last_token)
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
-    asTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
+    asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
 
 #' @title Print method for AstNode

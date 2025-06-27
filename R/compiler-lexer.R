@@ -89,7 +89,7 @@ lex <- function(pattern) {
         pos <- pos + 1
     }
 
-    asTokenSequence(tokens)
+    asEinopsTokenSequence(tokens)
 }
 
 #' @title .next_token

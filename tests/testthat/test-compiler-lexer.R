@@ -1,5 +1,5 @@
 test_that("lex produces exact ordered token objects with positions", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("h", 3),
         NameToken("w", 5),
@@ -16,7 +16,7 @@ test_that("lex produces exact ordered token objects with positions", {
 })
 
 test_that("lex handles whitespace insensitivity", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("h", 3),
         NameToken("w", 5)
@@ -41,7 +41,7 @@ test_that("lex handles whitespace insensitivity", {
 })
 
 test_that("lex recognizes ellipsis correctly", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         EllipsisToken(1),
         NameToken("h", 5),
         NameToken("w", 7)
@@ -52,7 +52,7 @@ test_that("lex recognizes ellipsis correctly", {
 })
 
 test_that("lex handles numeric literals in parentheses", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         LParenToken(1),
         IntToken("3", 2),
         RParenToken(3)
@@ -63,7 +63,7 @@ test_that("lex handles numeric literals in parentheses", {
 })
 
 test_that("lex handles complex numeric expressions", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         LParenToken(1),
         NameToken("h", 2),
         IntToken("2", 4),
@@ -75,7 +75,7 @@ test_that("lex handles complex numeric expressions", {
 })
 
 test_that("lex provides accurate 1-based column positions", {
-    expectedTokens <- TokenSequence(
+    expectedTokens <- EinopsTokenSequence(
         NameToken("ab", 1),
         NameToken("cd", 4)
     )
@@ -86,7 +86,7 @@ test_that("lex provides accurate 1-based column positions", {
 
 test_that("lexer handles complex patterns", {
     pattern1 <- "b c (h1 2) (w1 2) -> b c h1 w1"
-    expectedTokens1 <- TokenSequence(
+    expectedTokens1 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         LParenToken(5),
@@ -108,7 +108,7 @@ test_that("lexer handles complex patterns", {
     expect_equal(to_expression(tokens1), pattern1)
 
     pattern2 <- "b c (h1 h2) (w1 w2) -> b c h1 w1"
-    expectedTokens2 <- TokenSequence(
+    expectedTokens2 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         LParenToken(5),
@@ -130,7 +130,7 @@ test_that("lexer handles complex patterns", {
     expect_equal(to_expression(tokens2), pattern2)
 
     pattern3 <- "b c h w -> 1 c 1 1"
-    expectedTokens3 <- TokenSequence(
+    expectedTokens3 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         NameToken("h", 5),
@@ -146,7 +146,7 @@ test_that("lexer handles complex patterns", {
     expect_equal(to_expression(tokens3), pattern3)
 
     pattern4 <- "b c h w -> b c () ()"
-    expectedTokens4 <- TokenSequence(
+    expectedTokens4 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         NameToken("h", 5),
