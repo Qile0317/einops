@@ -85,19 +85,15 @@ print.EinopsTokenSequence <- function(x, ...) {
 to_expression <- function(x, ...) {
     total_length <- 0
     for (token in x) {
-        if (inherits(token, "EinopsToken")) {
-            token_end <- token$start + nchar(token$value) - 1
-            total_length <- max(total_length, token_end)
-        }
+        token_end <- token$start + nchar(token$value) - 1
+        total_length <- max(total_length, token_end)
     }
     
     chars <- rep(" ", total_length)
     for (token in x) {
-        if (inherits(token, "EinopsToken")) {
-            token_chars <- strsplit(token$value, "")[[1]]
-            for (i in seq_along(token_chars)) {
-                chars[token$start + i - 1] <- token_chars[i]
-            }
+        token_chars <- strsplit(token$value, "")[[1]]
+        for (i in seq_along(token_chars)) {
+            chars[token$start + i - 1] <- token_chars[i]
         }
     }
 
