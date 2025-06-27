@@ -14,16 +14,16 @@ create_token <- function(type, value, start, end) {
 #' @return invisible x
 #' @export
 print.EinopsToken <- function(x, ...) {
-    # Map token types to their constructor functions
+    # Map token types to their constructor functions using glue
     constructor_call <- switch(x$type,
-        "ARROW" = sprintf("ArrowToken(%d, %d)", x$start, x$end),
-        "ELLIPSIS" = sprintf("EllipsisToken(%d, %d)", x$start, x$end),
-        "LPAREN" = sprintf("LParenToken(%d, %d)", x$start, x$end),
-        "RPAREN" = sprintf("RParenToken(%d, %d)", x$start, x$end),
-        "INT" = sprintf("IntToken(\"%s\", %d, %d)", x$value, x$start, x$end),
-        "NAME" = sprintf("NameToken(\"%s\", %d, %d)", x$value, x$start, x$end),
+        "ARROW" = glue::glue("ArrowToken({x$start}, {x$end})"),
+        "ELLIPSIS" = glue::glue("EllipsisToken({x$start}, {x$end})"),
+        "LPAREN" = glue::glue("LParenToken({x$start}, {x$end})"),
+        "RPAREN" = glue::glue("RParenToken({x$start}, {x$end})"),
+        "INT" = glue::glue("IntToken(\"{x$value}\", {x$start}, {x$end})"),
+        "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start}, {x$end})"),
         # Fallback for unknown types
-        sprintf("create_token(\"%s\", \"%s\", %d, %d)", x$type, x$value, x$start, x$end)
+        glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start}, {x$end})")
     )
     cat(constructor_call, "\n")
     invisible(x)
