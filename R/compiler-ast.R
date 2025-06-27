@@ -72,15 +72,9 @@ GroupAstNode <- function(children, src) {
 to_tokens.GroupAstNode <- function(x, ...) {
     lparen_token <- LParenToken(x$src$start - 1)
     last_child_astnode <- tail(x$children, 1)[[1]]
-    # Get the appropriate field based on the node type (TODO just make this take printed output of others)
-    text_content <- if (inherits(last_child_astnode, "NamedAxisAstNode")) {
-        last_child_astnode$name
-    } else if (inherits(last_child_astnode, "ConstantAstNode")) {
-        last_child_astnode$count
-    } else {
-        ""
-    }
-    rparen_token <- RParenToken(last_child_astnode$src$start + nchar(text_content))
+    last_child_tokens <- to_tokens(last_child_astnode)
+    last_token <- tail(last_child_tokens, 1)[[1]]
+    rparen_token <- RParenToken(last_token$start + nchar(last_token$value))
     child_tokens <- lapply(x$children, to_tokens)
     c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
 }
@@ -105,15 +99,9 @@ to_tokens.EinopsAst <- function(x, ...) {
     input_tokens <- unlist(lapply(x$input_axes, to_tokens), recursive = FALSE)
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
-    # Get the appropriate field based on the node type - TODO should make this take printed output of others
-    text_content <- if (inherits(last_input_astnode, "NamedAxisAstNode")) {
-        last_input_astnode$name
-    } else if (inherits(last_input_astnode, "ConstantAstNode")) {
-        last_input_astnode$count
-    } else {
-        ""
-    }
-    arrow_token <- ArrowToken(last_input_astnode$src$start + nchar(text_content) + 1)
+    last_input_tokens <- to_tokens(last_input_astnode)
+    last_token <- tail(last_input_tokens, 1)[[1]]
+    arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     args <- c(input_tokens, list(arrow_token), output_tokens)
     do.call(TokenSequence, args)
 }
