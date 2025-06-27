@@ -1,36 +1,35 @@
 # create a rust-like enum for each token type
 
-create_token <- function(type, value, start, end) {
+create_token <- function(type, value, start) {
     structure(list(
         type = type,
         value = value,
-        start = start,
-        end = end
+        start = start
     ), class = "EinopsToken")
 }
 
-ArrowToken <- function(start, end) {
-    create_token("ARROW", "->", start, end)
+ArrowToken <- function(start) {
+    create_token("ARROW", "->", start)
 }
 
-EllipsisToken <- function(start, end) {
-    create_token("ELLIPSIS", "...", start, end)
+EllipsisToken <- function(start) {
+    create_token("ELLIPSIS", "...", start)
 }
 
-LParenToken <- function(start, end) {
-    create_token("LPAREN", "(", start, end)
+LParenToken <- function(start) {
+    create_token("LPAREN", "(", start)
 }
 
-RParenToken <- function(start, end) {
-    create_token("RPAREN", ")", start, end)
+RParenToken <- function(start) {
+    create_token("RPAREN", ")", start)
 }
 
-IntToken <- function(value, start, end) {
-    create_token("INT", value, start, end)
+IntToken <- function(value, start) {
+    create_token("INT", value, start)
 }
 
-NameToken <- function(value, start, end) {
-    create_token("NAME", value, start, end)
+NameToken <- function(value, start) {
+    create_token("NAME", value, start)
 }
 
 #' @title TokenSequence
@@ -52,13 +51,13 @@ TokenSequence <- function(...) {
 #' @export
 print.EinopsToken <- function(x, ...) {
     constructor_call <- switch(x$type,
-        "ARROW" = glue::glue("ArrowToken({x$start}, {x$end})"),
-        "ELLIPSIS" = glue::glue("EllipsisToken({x$start}, {x$end})"),
-        "LPAREN" = glue::glue("LParenToken({x$start}, {x$end})"),
-        "RPAREN" = glue::glue("RParenToken({x$start}, {x$end})"),
-        "INT" = glue::glue("IntToken(\"{x$value}\", {x$start}, {x$end})"),
-        "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start}, {x$end})"),
-        glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start}, {x$end})")
+        "ARROW" = glue::glue("ArrowToken({x$start})"),
+        "ELLIPSIS" = glue::glue("EllipsisToken({x$start})"),
+        "LPAREN" = glue::glue("LParenToken({x$start})"),
+        "RPAREN" = glue::glue("RParenToken({x$start})"),
+        "INT" = glue::glue("IntToken(\"{x$value}\", {x$start})"),
+        "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start})"),
+        glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start})")
     )
     cat(constructor_call, "\n")
     invisible(x)
@@ -77,8 +76,15 @@ print.EinopsTokenSequence <- function(x, ...) {
         return(invisible(x))
     }
     
-    last_token <- x[[length(x)]]
-    total_length <- last_token$end
+    # Calculate total length by finding rightmost token end
+    total_length <- 0
+    for (token in x) {
+        if (inherits(token, "EinopsToken")) {
+            token_end <- token$start + nchar(token$value) - 1
+            total_length <- max(total_length, token_end)
+        }
+    }
+    
     chars <- rep(" ", total_length)
     for (token in x) {
         if (inherits(token, "EinopsToken")) {
@@ -130,7 +136,7 @@ lex <- function(pattern) {
 
         # Arrow operator
         if (char == "-" && pos < n && pattern_chars[pos + 1] == ">") {
-            tokens <- append(tokens, list(ArrowToken(start_pos, pos + 1)))
+            tokens <- append(tokens, list(ArrowToken(start_pos)))
             pos <- pos + 2
             next
         }
@@ -140,7 +146,7 @@ lex <- function(pattern) {
             pattern_chars[pos + 1] == "." && 
             pattern_chars[pos + 2] == ".") {
             ellipsis_count <- ellipsis_count + 1
-            tokens <- append(tokens, list(EllipsisToken(start_pos, pos + 2)))
+            tokens <- append(tokens, list(EllipsisToken(start_pos)))
             pos <- pos + 3
             next
         }
@@ -148,7 +154,7 @@ lex <- function(pattern) {
         # Left parenthesis
         if (char == "(") {
             paren_stack <- paren_stack + 1
-            tokens <- append(tokens, list(LParenToken(start_pos, pos)))
+            tokens <- append(tokens, list(LParenToken(start_pos)))
             pos <- pos + 1
             next
         }
@@ -156,7 +162,7 @@ lex <- function(pattern) {
         # Right parenthesis
         if (char == ")") {
             paren_stack <- paren_stack - 1
-            tokens <- append(tokens, list(RParenToken(start_pos, pos)))
+            tokens <- append(tokens, list(RParenToken(start_pos)))
             pos <- pos + 1
             next
         }
@@ -168,7 +174,7 @@ lex <- function(pattern) {
                 end_pos <- end_pos + 1
             }
             value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
-            tokens <- append(tokens, list(IntToken(value, start_pos, end_pos - 1)))
+            tokens <- append(tokens, list(IntToken(value, start_pos)))
             pos <- end_pos
             next
         }
@@ -180,7 +186,7 @@ lex <- function(pattern) {
                 end_pos <- end_pos + 1
             }
             value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
-            tokens <- append(tokens, list(NameToken(value, start_pos, end_pos - 1)))
+            tokens <- append(tokens, list(NameToken(value, start_pos)))
             pos <- end_pos
             next
         }

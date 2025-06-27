@@ -4,7 +4,7 @@
 #' @title Create a NamedAxisAstNode
 #' @param name Character string, the name of the axis
 #' @param count Integer or NULL, optional count/size for the axis
-#' @param src List with start and end positions
+#' @param src List with start position and length
 #' @return NamedAxisAstNode object
 #' @keywords internal
 NamedAxisAstNode <- function(name, count, src) {
@@ -16,7 +16,7 @@ NamedAxisAstNode <- function(name, count, src) {
 }
 
 #' @title Create an EllipsisAstNode
-#' @param src List with start and end positions
+#' @param src List with start position and length
 #' @return EllipsisAstNode object
 #' @keywords internal
 EllipsisAstNode <- function(src) {
@@ -27,7 +27,7 @@ EllipsisAstNode <- function(src) {
 
 #' @title Create a GroupAstNode
 #' @param children List of axis nodes contained in this group
-#' @param src List with start and end positions
+#' @param src List with start position and length
 #' @return GroupAstNode object
 #' @keywords internal
 GroupAstNode <- function(children, src) {
@@ -40,7 +40,7 @@ GroupAstNode <- function(children, src) {
 #' @title Create an EinopsAst root node
 #' @param input_axes List of axis nodes for the input pattern
 #' @param output_axes List of axis nodes for the output pattern
-#' @param src List with start and end positions covering the full pattern
+#' @param src List with start position and length covering the full pattern
 #' @return EinopsAst object
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
@@ -52,15 +52,66 @@ EinopsAst <- function(input_axes, output_axes, src) {
 }
 
 #' @title Merge source position information
-#' @param src_a First source position (list with start, end)
-#' @param src_b Second source position (list with start, end)
-#' @return Combined source position with earliest start and latest end
+#' @param src_a First source position (list with start, length)
+#' @param src_b Second source position (list with start, length)
+#' @return Combined source position with earliest start and combined length
 #' @keywords internal
 merge_src <- function(src_a, src_b) {
+    start_a <- src_a$start
+    end_a <- src_a$start + src_a$length - 1
+    start_b <- src_b$start
+    end_b <- src_b$start + src_b$length - 1
+    
+    new_start <- min(start_a, start_b)
+    new_end <- max(end_a, end_b)
+    
     list(
-        start = min(src_a$start, src_b$start),
-        end = max(src_a$end, src_b$end)
+        start = new_start,
+        length = new_end - new_start + 1
     )
+}
+
+#' @title Reconstruct expression text from AST node
+#' @param node AST node (NamedAxisAstNode, EllipsisAstNode, or GroupAstNode)
+#' @return Character string representation
+#' @keywords internal
+reconstruct_node <- function(node) {
+    if (inherits(node, "NamedAxisAstNode")) {
+        if (is.null(node$count)) {
+            return(node$name)
+        } else {
+            return(paste0(node$name, node$count))
+        }
+    } else if (inherits(node, "EllipsisAstNode")) {
+        return("...")
+    } else if (inherits(node, "GroupAstNode")) {
+        children_text <- sapply(node$children, reconstruct_node)
+        return(paste0("(", paste(children_text, collapse = " "), ")"))
+    } else {
+        return("?")
+    }
+}
+
+#' @title Generate constructor code for AST node
+#' @param node AST node
+#' @return Character string with constructor call
+#' @keywords internal
+generate_constructor <- function(node) {
+    if (inherits(node, "NamedAxisAstNode")) {
+        count_str <- if (is.null(node$count)) "NULL" else paste0("\"", node$count, "\"")
+        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
+        return(paste0("NamedAxisAstNode(\"", node$name, "\", ", count_str, ", ", src_str, ")"))
+    } else if (inherits(node, "EllipsisAstNode")) {
+        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
+        return(paste0("EllipsisAstNode(", src_str, ")"))
+    } else if (inherits(node, "GroupAstNode")) {
+        children_constructors <- sapply(node$children, generate_constructor)
+        children_str <- paste0("list(\n        ", paste(children_constructors, collapse = ",\n        "), "\n    )")
+        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
+        return(paste0("GroupAstNode(", children_str, ", ", src_str, ")"))
+    } else {
+        return("UnknownNode()")
+    }
 }
 
 #' @title Print method for EinopsAst
@@ -68,10 +119,27 @@ merge_src <- function(src_a, src_b) {
 #' @param ... Additional arguments (unused)
 #' @export
 print.EinopsAst <- function(x, ...) {
-    cat("EinopsAst:\n")
-    cat("  Input axes: ", length(x$input_axes), " nodes\n")
-    cat("  Output axes: ", length(x$output_axes), " nodes\n")
-    cat("  Source span: ", x$src$start, "-", x$src$end, "\n")
+    # Reconstruct the expression
+    input_text <- sapply(x$input_axes, reconstruct_node)
+    output_text <- sapply(x$output_axes, reconstruct_node)
+    reconstructed <- paste0(paste(input_text, collapse = " "), " -> ", paste(output_text, collapse = " "))
+    
+    cat("Reconstructed expression:", reconstructed, "\n")
+    
+    # Generate constructor code
+    input_constructors <- sapply(x$input_axes, generate_constructor)
+    output_constructors <- sapply(x$output_axes, generate_constructor)
+    
+    input_list_str <- paste0("list(\n    ", paste(input_constructors, collapse = ",\n    "), "\n)")
+    output_list_str <- paste0("list(\n    ", paste(output_constructors, collapse = ",\n    "), "\n)")
+    src_str <- paste0("list(start = ", x$src$start, ", length = ", x$src$length, ")")
+    
+    cat("EinopsAst(\n")
+    cat("    input_axes = ", input_list_str, ",\n")
+    cat("    output_axes = ", output_list_str, ",\n")
+    cat("    src = ", src_str, "\n")
+    cat(")\n")
+    
     invisible(x)
 }
 
@@ -96,8 +164,13 @@ find_top_level_arrow <- function(tokens) {
     }
     
     if (length(arrow_positions) == 0) {
-        stop("Missing arrow (->) in einops pattern at position ", 
-             if (length(tokens) > 0) tokens[[length(tokens)]]$end else 0)
+        last_pos <- if (length(tokens) > 0) {
+            last_token <- tokens[[length(tokens)]]
+            last_token$start + nchar(last_token$value) - 1
+        } else {
+            0
+        }
+        stop("Missing arrow (->) in einops pattern at position ", last_pos)
     }
     
     if (length(arrow_positions) > 1) {
@@ -130,12 +203,12 @@ parse_axes_iter <- function(tokens) {
         if (token$type == "NAME") {
             # Check if next token is an INT (count)
             count <- NULL
+            src <- list(start = token$start, length = nchar(token$value))
             if (i < length(tokens) && tokens[[i + 1]]$type == "INT") {
                 count <- tokens[[i + 1]]$value
-                src <- merge_src(token, tokens[[i + 1]])
+                count_token <- tokens[[i + 1]]
+                src <- merge_src(src, list(start = count_token$start, length = nchar(count_token$value)))
                 i <- i + 1  # consume the INT token
-            } else {
-                src <- list(start = token$start, end = token$end)
             }
             
             node <- NamedAxisAstNode(token$value, count, src)
@@ -147,7 +220,7 @@ parse_axes_iter <- function(tokens) {
             }
             has_ellipsis <- TRUE
             
-            node <- EllipsisAstNode(list(start = token$start, end = token$end))
+            node <- EllipsisAstNode(list(start = token$start, length = nchar(token$value)))
             stack[[current_frame]] <- append(stack[[current_frame]], list(node))
             
         } else if (token$type == "LPAREN") {
@@ -167,27 +240,26 @@ parse_axes_iter <- function(tokens) {
                 stop("Empty group '()' at position ", token$start)
             }
             
-            # Find the source span for this group
-            if (i > 1 && tokens[[i - 1]]$type != "LPAREN") {
-                # Find the matching LPAREN
-                lparen_pos <- i - 1
-                depth <- 1
-                while (lparen_pos > 0 && depth > 0) {
-                    lparen_pos <- lparen_pos - 1
-                    if (tokens[[lparen_pos]]$type == "RPAREN") {
-                        depth <- depth + 1
-                    } else if (tokens[[lparen_pos]]$type == "LPAREN") {
-                        depth <- depth - 1
-                    }
+            # Find the source span for this group by locating the matching LPAREN
+            lparen_pos <- i - 1
+            depth <- 1
+            while (lparen_pos > 0 && depth > 0) {
+                lparen_pos <- lparen_pos - 1
+                if (tokens[[lparen_pos]]$type == "RPAREN") {
+                    depth <- depth + 1
+                } else if (tokens[[lparen_pos]]$type == "LPAREN") {
+                    depth <- depth - 1
                 }
-                
-                if (lparen_pos > 0) {
-                    src <- merge_src(tokens[[lparen_pos]], token)
-                } else {
-                    src <- list(start = token$start, end = token$end)
-                }
+            }
+            
+            if (lparen_pos > 0) {
+                lparen_token <- tokens[[lparen_pos]]
+                src <- merge_src(
+                    list(start = lparen_token$start, length = nchar(lparen_token$value)),
+                    list(start = token$start, length = nchar(token$value))
+                )
             } else {
-                src <- list(start = token$start, end = token$end)
+                src <- list(start = token$start, length = nchar(token$value))
             }
             
             # Create group node and add to current frame
@@ -252,9 +324,12 @@ parse_einops_ast <- function(tokens) {
     output_axes <- parse_axes_iter(output_tokens)
     
     # Create the root AST node
+    first_token <- tokens[[1]]
+    last_token <- tokens[[length(tokens)]]
+    
     full_src <- merge_src(
-        list(start = tokens[[1]]$start, end = tokens[[1]]$end),
-        list(start = tokens[[length(tokens)]]$start, end = tokens[[length(tokens)]]$end)
+        list(start = first_token$start, length = nchar(first_token$value)),
+        list(start = last_token$start, length = nchar(last_token$value))
     )
     
     EinopsAst(input_axes, output_axes, full_src)
