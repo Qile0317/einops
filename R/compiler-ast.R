@@ -68,6 +68,14 @@ GroupAstNode <- function(children, src) {
 }
 
 #' @export
+tail.GroupAstNode <- function(x, n = 1) {
+    if (n < 1) {
+        stop("n must be at least 1")
+    }
+    tail(x$children, n)
+}
+
+#' @export
 #' @keywords internal
 to_tokens.GroupAstNode <- function(x, ...) {
     lparen_token <- LParenToken(x$src$start - 1)
@@ -103,9 +111,11 @@ to_tokens.EinopsAst <- function(x, ...) {
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
 
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
+    print(last_input_astnode)
     last_input_tokens <- to_tokens(last_input_astnode)
+    print(last_input_tokens)
     last_token <- tail(last_input_tokens, 1)[[1]]
-    # print(last_token)
+    print(last_token)
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
