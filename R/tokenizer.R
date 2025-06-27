@@ -7,6 +7,41 @@ create_token <- function(type, value, start, end) {
     ), class = "EinopsToken")
 }
 
+#' @title Print method for EinopsToken
+#' @description Print EinopsToken objects in a clean format
+#' @param x EinopsToken object
+#' @param ... additional arguments (unused)
+#' @return invisible x
+#' @export
+print.EinopsToken <- function(x, ...) {
+    cat(sprintf("%s('%s') [%d:%d]", x$type, x$value, x$start, x$end), "\n")
+    invisible(x)
+}
+
+#' @title Print method for EinopsTokenSequence
+#' @description Print EinopsTokenSequence objects in a clean format
+#' @param x EinopsTokenSequence object
+#' @param ... additional arguments (unused)
+#' @return invisible x
+#' @export
+print.EinopsTokenSequence <- function(x, ...) {
+    if (length(x) == 0) {
+        cat("Empty token sequence\n")
+        return(invisible(x))
+    }
+    
+    cat("Token sequence:\n")
+    for (i in seq_along(x)) {
+        if (inherits(x[[i]], "EinopsToken")) {
+            cat(sprintf("  [%d] %s('%s') [%d:%d]\n", 
+                       i, x[[i]]$type, x[[i]]$value, x[[i]]$start, x[[i]]$end))
+        } else {
+            cat(sprintf("  [%d] %s\n", i, as.character(x[[i]])))
+        }
+    }
+    invisible(x)
+}
+
 ArrowToken <- function(start, end) {
     create_token("ARROW", "->", start, end)
 }
@@ -38,7 +73,8 @@ NameToken <- function(value, start, end) {
 #' @keywords internal
 TokenSequence <- function(...) {
     tokens <- list(...)
-    tokens[!vapply(tokens, is.null, logical(1))]
+    tokens <- tokens[!vapply(tokens, is.null, logical(1))]
+    structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
 #' @title Tokenize einops pattern into structured tokens
@@ -148,7 +184,8 @@ tokenize <- function(pattern) {
         stop("Unclosed parenthesis")
     }
 
-    tokens
+    # Return tokens with a custom class for better printing
+    structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
 #' @title .next_token
