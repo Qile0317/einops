@@ -18,7 +18,7 @@ NamedAxisAstNode <- function(name, src) {
 #' @export
 #' @keywords internal
 to_tokens.NamedAxisAstNode <- function(x, ...) {
-    list(NameToken(x$name, x$src$start))
+    TokenSequence(NameToken(x$name, x$src$start))
 }
 
 #' @title Create a ConstantAstNode
@@ -36,7 +36,7 @@ ConstantAstNode <- function(count, src) {
 #' @export
 #' @keywords internal
 to_tokens.ConstantAstNode <- function(x, ...) {
-    list(IntToken(x$count, x$src$start))
+    TokenSequence(IntToken(x$count, x$src$start))
 }
 
 #' @title Create an EllipsisAstNode
@@ -52,7 +52,7 @@ EllipsisAstNode <- function(src) {
 #' @export
 #' @keywords internal
 to_tokens.EllipsisAstNode <- function(x, ...) {
-    list(EllipsisToken(x$src$start))
+    TokenSequence(EllipsisToken(x$src$start))
 }
 
 #' @title Create a GroupAstNode
@@ -76,7 +76,9 @@ to_tokens.GroupAstNode <- function(x, ...) {
     last_token <- tail(last_child_tokens, 1)[[1]]
     rparen_token <- RParenToken(last_token$start + nchar(last_token$value))
     child_tokens <- lapply(x$children, to_tokens)
-    c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
+    asTokenSequence(
+        c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
+    )
 }
 
 #' @title Create an EinopsAst root node
@@ -96,14 +98,15 @@ EinopsAst <- function(input_axes, output_axes, src) {
 #' @export
 #' @keywords internal
 to_tokens.EinopsAst <- function(x, ...) {
+
     input_tokens <- unlist(lapply(x$input_axes, to_tokens), recursive = FALSE)
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
+
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
     last_input_tokens <- to_tokens(last_input_astnode)
     last_token <- tail(last_input_tokens, 1)[[1]]
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
-    args <- c(input_tokens, list(arrow_token), output_tokens)
-    do.call(TokenSequence, args)
+    asTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
 
 #' @title Print method for AstNode

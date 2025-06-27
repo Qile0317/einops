@@ -41,3 +41,27 @@ test_that("a b c -> b c", {
     expect_identical(to_tokens(ast), tokens)
 
 })
+
+# test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
+
+#     tokens <- TokenSequence(
+#         NameToken("b", 1),
+#         NameToken("c", 3),
+#         LParenToken(5),
+#         NameToken("h1", 6),
+#         IntToken("2", 9),
+#         RParenToken(10),
+#         LParenToken(12),
+#         NameToken("w1", 13),
+#         IntToken("2", 16),
+#         RParenToken(17),
+#         ArrowToken(19),
+#         NameToken("b", 22),
+#         NameToken("c", 24),
+#         NameToken("h1", 26),
+#         NameToken("w1", 29)
+#     )
+
+#     ast
+
+# })

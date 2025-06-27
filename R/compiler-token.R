@@ -41,6 +41,17 @@ TokenSequence <- function(...) {
     structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
+asTokenSequence <- function(x) {
+    if (inherits(x, "EinopsTokenSequence")) {
+        return(x)
+    }
+    if (is.list(x)) {
+        return(structure(x, class = c("EinopsTokenSequence", "list")))
+    }
+    warning("asTokenSequence called on non-list object, returning input")
+    x
+}
+
 #' @title Print method for EinopsToken
 #' @description Print EinopsToken objects in a clean format showing construction
 #' @param x EinopsToken object
