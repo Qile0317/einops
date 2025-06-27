@@ -46,18 +46,19 @@ asEinopsTokenSequence <- function(x) {
         return(x)
     }
     if (is.list(x)) {
-        return(structure(x, class = c("EinopsTokenSequence", "list")))
+        return(structure(unclass(x), class = c("EinopsTokenSequence", "list")))
     }
-    warning("asEinopsTokenSequence called on non-list object, returning input")
-    x
+    stop("asEinopsTokenSequence called on non-list object")
 }
 
 #' @export
 tail.EinopsTokenSequence <- function(x, n = 1) { # nolint: object_name_linter.
+    assert_that(is.count(n))
     if (n < 1) {
         stop("n must be at least 1")
     }
-    asEinopsTokenSequence(tail(x, n))
+    result <- utils::tail(unclass(x), n)
+    asEinopsTokenSequence(result)
 }
 
 #' @title Print method for EinopsToken
