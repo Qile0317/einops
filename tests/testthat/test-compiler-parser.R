@@ -42,26 +42,85 @@ test_that("a b c -> b c", {
 
 })
 
-# test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
+test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
 
-#     tokens <- TokenSequence(
-#         NameToken("b", 1),
-#         NameToken("c", 3),
-#         LParenToken(5),
-#         NameToken("h1", 6),
-#         IntToken("2", 9),
-#         RParenToken(10),
-#         LParenToken(12),
-#         NameToken("w1", 13),
-#         IntToken("2", 16),
-#         RParenToken(17),
-#         ArrowToken(19),
-#         NameToken("b", 22),
-#         NameToken("c", 24),
-#         NameToken("h1", 26),
-#         NameToken("w1", 29)
-#     )
+    tokens <- TokenSequence(
+        NameToken("b", 1),
+        NameToken("c", 3),
+        LParenToken(5),
+        NameToken("h1", 6),
+        IntToken("2", 9),
+        RParenToken(10),
+        LParenToken(12),
+        NameToken("w1", 13),
+        IntToken("2", 16),
+        RParenToken(17),
+        ArrowToken(19),
+        NameToken("b", 22),
+        NameToken("c", 24),
+        NameToken("h1", 26),
+        NameToken("w1", 29)
+    )
 
-#     ast
+    ast <- EinopsAst(
+        input_axes = list(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 3)
+            ),
+            GroupAstNode(
+                children = list(
+                    NamedAxisAstNode(
+                        name = "h1",
+                        src = list(start = 6)
+                    ),
+                    ConstantAstNode(
+                        count = "2",
+                        src = list(start = 9)
+                    )
+                ),
+                src = list(start = 5)
+            ),
+            GroupAstNode(
+                children = list(
+                    NamedAxisAstNode(
+                        name = "w1",
+                        src = list(start = 13)
+                    ),
+                    ConstantAstNode(
+                        count = "2",
+                        src = list(start = 16)
+                    )
+                ),
+                src = list(start = 12)
+            )
+        ),
+        output_axes = list(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 22)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 24)
+            ),
+            NamedAxisAstNode(
+                name = "h1",
+                src = list(start = 26)
+            ),
+            NamedAxisAstNode(
+                name = "w1",
+                src = list(start = 29)
+            )
+        ),
+        src = list(start = 1)
+    )
 
-# })
+    expect_identical(parse_einops_ast(tokens), ast)
+    # expect_identical(to_tokens(ast), tokens)
+
+})
