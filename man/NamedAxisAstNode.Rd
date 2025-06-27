@@ -2,7 +2,7 @@
 % Please edit documentation in R/compiler-ast.R
 \name{NamedAxisAstNode}
 \alias{NamedAxisAstNode}
-\title{AST Node Constructors and Einops Parser}
+\title{Create a NamedAxisAstNode}
 \usage{
 NamedAxisAstNode(name, src)
 }
@@ -15,6 +15,6 @@ NamedAxisAstNode(name, src)
 NamedAxisAstNode object
 }
 \description{
-Functions to create AST nodes and parse einops patterns
+Create a NamedAxisAstNode
 }
 \keyword{internal}

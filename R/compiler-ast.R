@@ -1,3 +1,8 @@
+#' @keywords internal
+to_tokens <- function(ast, ...) {
+    UseMethod("to_tokens", ast)
+}
+
 #' @title Create a NamedAxisAstNode
 #' @param name Character string, the name of the axis
 #' @param src List with start position
@@ -8,6 +13,11 @@ NamedAxisAstNode <- function(name, src) {
         name = name,
         src = src
     ), class = c("NamedAxisAstNode", "AstNode"))
+}
+
+#' @export
+to_tokens.NamedAxisAstNode <- function(ast, ...) {
+    list(NameToken(ast$name, ast$src$start))
 }
 
 #' @title Create a ConstantAstNode
@@ -21,6 +31,11 @@ ConstantAstNode <- function(count, src) {
         src = src
     ), class = c("ConstantAstNode", "AstNode"))
 }
+    
+#' @export
+to_tokens.ConstantAstNode <- function(ast, ...) {
+    list(IntToken(ast$count, ast$src$start))
+}
 
 #' @title Create an EllipsisAstNode
 #' @param src List with start position
@@ -30,6 +45,11 @@ EllipsisAstNode <- function(src) {
     structure(list(
         src = src
     ), class = c("EllipsisAstNode", "AstNode"))
+}
+
+#' @export
+to_tokens.EllipsisAstNode <- function(ast, ...) {
+    list(EllipsisToken(ast$src$start))
 }
 
 #' @title Create a GroupAstNode
@@ -42,6 +62,23 @@ GroupAstNode <- function(children, src) {
         children = children,
         src = src
     ), class = c("GroupAstNode", "AstNode"))
+}
+
+#' @export
+to_tokens.GroupAstNode <- function(ast, ...) {
+    lparen_token <- LParenToken(ast$src$start - 1)
+    last_child_astnode <- tail(ast$children, 1)[[1]]
+    # Get the appropriate field based on the node type
+    text_content <- if (inherits(last_child_astnode, "NamedAxisAstNode")) {
+        last_child_astnode$name
+    } else if (inherits(last_child_astnode, "ConstantAstNode")) {
+        last_child_astnode$count
+    } else {
+        "" # For EllipsisAstNode or other types that don't have text content
+    }
+    rparen_token <- RParenToken(last_child_astnode$src$start + nchar(text_content))
+    child_tokens <- lapply(ast$children, to_tokens)
+    c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
 }
 
 #' @title Create an EinopsAst root node
@@ -58,12 +95,22 @@ EinopsAst <- function(input_axes, output_axes, src) {
     ), class = c("EinopsAst", "AstNode"))
 }
 
-to_tokens <- function(astNode, ...) {
-    UseMethod("to_tokens", astNode)
-}
-
-to_tokens.AstNode <- function(astNode, ...) {
-    
+#' @export
+to_tokens.EinopsAst <- function(ast, ...) {
+    input_tokens <- unlist(lapply(ast$input_axes, to_tokens), recursive = FALSE)
+    output_tokens <- unlist(lapply(ast$output_axes, to_tokens), recursive = FALSE)
+    last_input_astnode <- tail(ast$input_axes, 1)[[1]]
+    # Get the appropriate field based on the node type
+    text_content <- if (inherits(last_input_astnode, "NamedAxisAstNode")) {
+        last_input_astnode$name
+    } else if (inherits(last_input_astnode, "ConstantAstNode")) {
+        last_input_astnode$count
+    } else {
+        "" # For EllipsisAstNode or other types that don't have text content
+    }
+    arrow_token <- ArrowToken(last_input_astnode$src$start + nchar(text_content) + 2)
+    args <- c(input_tokens, arrow_token, output_tokens)
+    do.call(TokenSequence, args)
 }
 
 #' @title Print method for AstNode
