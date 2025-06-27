@@ -1,64 +1,49 @@
-#' @title AST Node Constructors and Einops Parser
-#' @description Functions to create AST nodes and parse einops patterns
-
-#' @title Create a NamedAxisAstNode
-#' @param name Character string, the name of the axis
-#' @param src List with start position and length
-#' @return NamedAxisAstNode object
-#' @keywords internal
-NamedAxisAstNode <- function(name, src) {
-    structure(list(
-        name = name,
-        src = src
-    ), class = c("NamedAxisAstNode", "AstNode"))
-}
-
-#' @title Create a ConstantAstNode
-#' @param count Character string representing the constant value
-#' @param src List with start position and length
-#' @return ConstantAstNode object
-#' @keywords internal
-ConstantAstNode <- function(count, src) {
-    structure(list(
-        count = count,
-        src = src
-    ), class = c("ConstantAstNode", "AstNode"))
-}
-
-#' @title Create an EllipsisAstNode
-#' @param src List with start position and length
-#' @return EllipsisAstNode object
-#' @keywords internal
-EllipsisAstNode <- function(src) {
-    structure(list(
-        src = src
-    ), class = c("EllipsisAstNode", "AstNode"))
-}
-
-#' @title Create a GroupAstNode
-#' @param children List of axis nodes contained in this group
-#' @param src List with start position and length
-#' @return GroupAstNode object
-#' @keywords internal
-GroupAstNode <- function(children, src) {
-    structure(list(
-        children = children,
-        src = src
-    ), class = c("GroupAstNode", "AstNode"))
-}
-
-#' @title Create an EinopsAst root node
-#' @param input_axes List of axis nodes for the input pattern
-#' @param output_axes List of axis nodes for the output pattern
-#' @param src List with start position and length covering the full pattern
+#' @title Parse einops pattern into AST
+#' @param tokens EinopsTokenSequence object from the lexer
 #' @return EinopsAst object
 #' @keywords internal
-EinopsAst <- function(input_axes, output_axes, src) {
-    structure(list(
-        input_axes = input_axes,
-        output_axes = output_axes,
-        src = src
-    ), class = c("EinopsAst", "AstNode"))
+parse_einops_ast <- function(tokens) {
+    if (length(tokens) == 0) {
+        stop("Empty token sequence")
+    }
+    
+    # Find the top-level arrow
+    arrow_pos <- find_top_level_arrow_index(tokens)
+    
+    # Split into input and output slices
+    if (arrow_pos == 1) {
+        input_tokens <- list()
+    } else {
+        input_tokens <- tokens[1:(arrow_pos - 1)]
+    }
+    
+    if (arrow_pos == length(tokens)) {
+        output_tokens <- list()
+    } else {
+        output_tokens <- tokens[(arrow_pos + 1):length(tokens)]
+    }
+    
+    # Parse each side
+    if (length(input_tokens) == 0) {
+        stop("Empty input pattern before arrow")
+    }
+    if (length(output_tokens) == 0) {
+        stop("Empty output pattern after arrow")
+    }
+    
+    input_axes <- parse_axes_iter(input_tokens)
+    output_axes <- parse_axes_iter(output_tokens)
+    
+    # Create the root AST node
+    first_token <- tokens[[1]]
+    last_token <- tokens[[length(tokens)]]
+    
+    full_src <- merge_src(
+        list(start = first_token$start, length = nchar(first_token$value)),
+        list(start = last_token$start, length = nchar(last_token$value))
+    )
+    
+    EinopsAst(input_axes, output_axes, full_src)
 }
 
 #' @title Merge source position information
@@ -79,98 +64,6 @@ merge_src <- function(src_a, src_b) {
         start = new_start,
         length = new_end - new_start + 1
     )
-}
-
-#' @title Reconstruct expression text from AST node
-#' @param node AST node (NamedAxisAstNode, ConstantAstNode, EllipsisAstNode, or GroupAstNode)
-#' @return Character string representation
-#' @keywords internal
-reconstruct_node <- function(node) {
-    if (inherits(node, "NamedAxisAstNode")) {
-        return(node$name)
-    } else if (inherits(node, "ConstantAstNode")) {
-        return(node$count)
-    } else if (inherits(node, "EllipsisAstNode")) {
-        return("...")
-    } else if (inherits(node, "GroupAstNode")) {
-        children_text <- sapply(node$children, reconstruct_node)
-        return(paste0("(", paste(children_text, collapse = " "), ")"))
-    } else {
-        return("?")
-    }
-}
-
-#' @title Generate constructor code for AST node
-#' @param node AST node
-#' @param indent_level Integer, current indentation level (for internal use)
-#' @return Character string with constructor call
-#' @keywords internal
-generate_constructor <- function(node, indent_level = 0) {
-    child_indent <- paste(rep("    ", indent_level + 1), collapse = "")
-    
-    if (inherits(node, "NamedAxisAstNode")) {
-        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
-        return(paste0("NamedAxisAstNode(\"", node$name, "\", ", src_str, ")"))
-    } else if (inherits(node, "ConstantAstNode")) {
-        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
-        return(paste0("ConstantAstNode(\"", node$count, "\", ", src_str, ")"))
-    } else if (inherits(node, "EllipsisAstNode")) {
-        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
-        return(paste0("EllipsisAstNode(", src_str, ")"))
-    } else if (inherits(node, "GroupAstNode")) {
-        children_constructors <- sapply(node$children, function(child) generate_constructor(child, indent_level + 2))
-        if (length(children_constructors) == 1) {
-            children_str <- paste0("list(", children_constructors[1], ")")
-        } else {
-            children_str <- paste0("list(\n", child_indent, "    ",
-                                 paste(children_constructors, collapse = paste0(",\n", child_indent, "    ")), 
-                                 "\n", child_indent, ")")
-        }
-        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
-        return(paste0("GroupAstNode(", children_str, ", ", src_str, ")"))
-    } else {
-        return("UnknownNode()")
-    }
-}
-
-#' @title Print method for EinopsAst
-#' @param x EinopsAst object
-#' @param ... Additional arguments (unused)
-#' @export
-print.EinopsAst <- function(x, ...) {
-    # Reconstruct the expression
-    input_text <- sapply(x$input_axes, reconstruct_node)
-    output_text <- sapply(x$output_axes, reconstruct_node)
-    reconstructed <- paste0(paste(input_text, collapse = " "), " -> ", paste(output_text, collapse = " "))
-    
-    cat("Reconstructed expression:", reconstructed, "\n")
-    
-    # Generate constructor code with proper indentation
-    input_constructors <- sapply(x$input_axes, function(node) generate_constructor(node, indent_level = 1))
-    output_constructors <- sapply(x$output_axes, function(node) generate_constructor(node, indent_level = 1))
-    
-    # Format the lists with proper indentation
-    if (length(input_constructors) == 1) {
-        input_list_str <- paste0("list(", input_constructors[1], ")")
-    } else {
-        input_list_str <- paste0("list(\n        ", paste(input_constructors, collapse = ",\n        "), "\n    )")
-    }
-    
-    if (length(output_constructors) == 1) {
-        output_list_str <- paste0("list(", output_constructors[1], ")")
-    } else {
-        output_list_str <- paste0("list(\n        ", paste(output_constructors, collapse = ",\n        "), "\n    )")
-    }
-    
-    src_str <- paste0("list(start = ", x$src$start, ", length = ", x$src$length, ")")
-    
-    cat("EinopsAst(\n")
-    cat("    input_axes = ", input_list_str, ",\n")
-    cat("    output_axes = ", output_list_str, ",\n")
-    cat("    src = ", src_str, "\n")
-    cat(")\n")
-    
-    invisible(x)
 }
 
 #' @title Find the arrow in a token sequence
@@ -277,52 +170,4 @@ parse_axes_iter <- function(tokens) {
     }
     
     result
-}
-
-#' @title Parse einops pattern into AST
-#' @param tokens EinopsTokenSequence object from the lexer
-#' @return EinopsAst object
-#' @export
-parse_einops_ast <- function(tokens) {
-    if (length(tokens) == 0) {
-        stop("Empty token sequence")
-    }
-    
-    # Find the top-level arrow
-    arrow_pos <- find_top_level_arrow_index(tokens)
-    
-    # Split into input and output slices
-    if (arrow_pos == 1) {
-        input_tokens <- list()
-    } else {
-        input_tokens <- tokens[1:(arrow_pos - 1)]
-    }
-    
-    if (arrow_pos == length(tokens)) {
-        output_tokens <- list()
-    } else {
-        output_tokens <- tokens[(arrow_pos + 1):length(tokens)]
-    }
-    
-    # Parse each side
-    if (length(input_tokens) == 0) {
-        stop("Empty input pattern before arrow")
-    }
-    if (length(output_tokens) == 0) {
-        stop("Empty output pattern after arrow")
-    }
-    
-    input_axes <- parse_axes_iter(input_tokens)
-    output_axes <- parse_axes_iter(output_tokens)
-    
-    # Create the root AST node
-    first_token <- tokens[[1]]
-    last_token <- tokens[[length(tokens)]]
-    
-    full_src <- merge_src(
-        list(start = first_token$start, length = nchar(first_token$value)),
-        list(start = last_token$start, length = nchar(last_token$value))
-    )
-    
-    EinopsAst(input_axes, output_axes, full_src)
 }

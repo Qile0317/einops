@@ -15,3 +15,4 @@ EinopsAst object
 \description{
 Parse einops pattern into AST
 }
+\keyword{internal}
