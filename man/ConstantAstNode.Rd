@@ -9,7 +9,7 @@ ConstantAstNode(count, src)
 \arguments{
 \item{count}{Character string representing the constant value}
 
-\item{src}{List with start position and length}
+\item{src}{List with start position}
 }
 \value{
 ConstantAstNode object

@@ -1,48 +1,37 @@
 test_that("AST node constructors work correctly", {
   # Test NamedAxisAstNode
-  node <- NamedAxisAstNode("width", list(start = 1, length = 5))
+  node <- NamedAxisAstNode("width", list(start = 1))
   expect_s3_class(node, c("NamedAxisAstNode", "AstNode"))
   expect_equal(node$name, "width")
-  expect_equal(node$src, list(start = 1, length = 5))
+  expect_equal(node$src, list(start = 1))
   
   # Test ConstantAstNode
-  constant <- ConstantAstNode("224", list(start = 7, length = 3))
+  constant <- ConstantAstNode("224", list(start = 7))
   expect_s3_class(constant, c("ConstantAstNode", "AstNode"))
   expect_equal(constant$count, "224")
-  expect_equal(constant$src, list(start = 7, length = 3))
+  expect_equal(constant$src, list(start = 7))
   
   # Test EllipsisAstNode
-  ellipsis <- EllipsisAstNode(list(start = 10, length = 3))
+  ellipsis <- EllipsisAstNode(list(start = 10))
   expect_s3_class(ellipsis, c("EllipsisAstNode", "AstNode"))
-  expect_equal(ellipsis$src, list(start = 10, length = 3))
+  expect_equal(ellipsis$src, list(start = 10))
   
   # Test GroupAstNode
-  child1 <- NamedAxisAstNode("h", list(start = 1, length = 1))
-  child2 <- NamedAxisAstNode("w", list(start = 3, length = 1))
-  group <- GroupAstNode(list(child1, child2), list(start = 0, length = 5))
+  child1 <- NamedAxisAstNode("h", list(start = 1))
+  child2 <- NamedAxisAstNode("w", list(start = 3))
+  group <- GroupAstNode(list(child1, child2), list(start = 0))
   expect_s3_class(group, c("GroupAstNode", "AstNode"))
   expect_length(group$children, 2)
-  expect_equal(group$src, list(start = 0, length = 5))
+  expect_equal(group$src, list(start = 0))
   
   # Test EinopsAst
   input_axes <- list(child1)
   output_axes <- list(child2)
-  ast <- EinopsAst(input_axes, output_axes, list(start = 1, length = 10))
+  ast <- EinopsAst(input_axes, output_axes, list(start = 1))
   expect_s3_class(ast, c("EinopsAst", "AstNode"))
   expect_length(ast$input_axes, 1)
   expect_length(ast$output_axes, 1)
-  expect_equal(ast$src, list(start = 1, length = 10))
-})
-
-test_that("merge_src utility works correctly", {
-  src_a <- list(start = 5, length = 5)
-  src_b <- list(start = 15, length = 5)
-  merged <- merge_src(src_a, src_b)
-  expect_equal(merged, list(start = 5, length = 15))
-  
-  # Test with swapped order
-  merged_rev <- merge_src(src_b, src_a)
-  expect_equal(merged_rev, list(start = 5, length = 15))
+  expect_equal(ast$src, list(start = 1))
 })
 
 test_that("find_arrow locates arrow correctly", {

@@ -9,7 +9,7 @@ NamedAxisAstNode(name, src)
 \arguments{
 \item{name}{Character string, the name of the axis}
 
-\item{src}{List with start position and length}
+\item{src}{List with start position}
 }
 \value{
 NamedAxisAstNode object

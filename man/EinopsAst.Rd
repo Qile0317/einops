@@ -11,7 +11,7 @@ EinopsAst(input_axes, output_axes, src)
 
 \item{output_axes}{List of axis nodes for the output pattern}
 
-\item{src}{List with start position and length covering the full pattern}
+\item{src}{List with start position covering the full pattern}
 }
 \value{
 EinopsAst object

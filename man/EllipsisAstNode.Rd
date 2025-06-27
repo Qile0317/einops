@@ -7,7 +7,7 @@
 EllipsisAstNode(src)
 }
 \arguments{
-\item{src}{List with start position and length}
+\item{src}{List with start position}
 }
 \value{
 EllipsisAstNode object

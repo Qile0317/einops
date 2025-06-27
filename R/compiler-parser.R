@@ -36,34 +36,10 @@ parse_einops_ast <- function(tokens) {
     
     # Create the root AST node
     first_token <- tokens[[1]]
-    last_token <- tokens[[length(tokens)]]
     
-    full_src <- merge_src(
-        list(start = first_token$start, length = nchar(first_token$value)),
-        list(start = last_token$start, length = nchar(last_token$value))
-    )
+    full_src <- list(start = first_token$start)
     
     EinopsAst(input_axes, output_axes, full_src)
-}
-
-#' @title Merge source position information
-#' @param src_a First source position (list with start, length)
-#' @param src_b Second source position (list with start, length)
-#' @return Combined source position with earliest start and combined length
-#' @keywords internal
-merge_src <- function(src_a, src_b) {
-    start_a <- src_a$start
-    end_a <- src_a$start + src_a$length - 1
-    start_b <- src_b$start
-    end_b <- src_b$start + src_b$length - 1
-    
-    new_start <- min(start_a, start_b)
-    new_end <- max(end_a, end_b)
-    
-    list(
-        start = new_start,
-        length = new_end - new_start + 1
-    )
 }
 
 #' @title Find the arrow in a token sequence
@@ -94,12 +70,12 @@ parse_axes_iter <- function(tokens) {
         token <- tokens[[i]]
         
         if (token$type == "NAME") {
-            src <- list(start = token$start, length = nchar(token$value))
+            src <- list(start = token$start)
             node <- NamedAxisAstNode(token$value, src)
             result <- append(result, list(node))
             
         } else if (token$type == "INT") {
-            src <- list(start = token$start, length = nchar(token$value))
+            src <- list(start = token$start)
             node <- ConstantAstNode(token$value, src)
             result <- append(result, list(node))
             
@@ -109,7 +85,7 @@ parse_axes_iter <- function(tokens) {
             }
             has_ellipsis <- TRUE
             
-            src <- list(start = token$start, length = nchar(token$value))
+            src <- list(start = token$start)
             node <- EllipsisAstNode(src)
             result <- append(result, list(node))
             
@@ -146,12 +122,8 @@ parse_axes_iter <- function(tokens) {
             
             group_children <- parse_axes_iter(group_tokens)
             
-            # Calculate group source span
-            rparen_token <- tokens[[group_end]]
-            src <- merge_src(
-                list(start = token$start, length = nchar(token$value)),
-                list(start = rparen_token$start, length = nchar(rparen_token$value))
-            )
+            # Use opening paren position as group source
+            src <- list(start = token$start)
             
             group_node <- GroupAstNode(group_children, src)
             result <- append(result, list(group_node))

@@ -3,7 +3,7 @@
 
 #' @title Create a NamedAxisAstNode
 #' @param name Character string, the name of the axis
-#' @param src List with start position and length
+#' @param src List with start position
 #' @return NamedAxisAstNode object
 #' @keywords internal
 NamedAxisAstNode <- function(name, src) {
@@ -15,7 +15,7 @@ NamedAxisAstNode <- function(name, src) {
 
 #' @title Create a ConstantAstNode
 #' @param count Character string representing the constant value
-#' @param src List with start position and length
+#' @param src List with start position
 #' @return ConstantAstNode object
 #' @keywords internal
 ConstantAstNode <- function(count, src) {
@@ -26,7 +26,7 @@ ConstantAstNode <- function(count, src) {
 }
 
 #' @title Create an EllipsisAstNode
-#' @param src List with start position and length
+#' @param src List with start position
 #' @return EllipsisAstNode object
 #' @keywords internal
 EllipsisAstNode <- function(src) {
@@ -37,7 +37,7 @@ EllipsisAstNode <- function(src) {
 
 #' @title Create a GroupAstNode
 #' @param children List of axis nodes contained in this group
-#' @param src List with start position and length
+#' @param src List with start position
 #' @return GroupAstNode object
 #' @keywords internal
 GroupAstNode <- function(children, src) {
@@ -50,7 +50,7 @@ GroupAstNode <- function(children, src) {
 #' @title Create an EinopsAst root node
 #' @param input_axes List of axis nodes for the input pattern
 #' @param output_axes List of axis nodes for the output pattern
-#' @param src List with start position and length covering the full pattern
+#' @param src List with start position covering the full pattern
 #' @return EinopsAst object
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
@@ -85,7 +85,7 @@ print.EinopsAst <- function(x, ...) {
     # Internal function to generate constructor code
     generate_constructor <- function(node, indent_level = 0) {
         src_str <- if (!is.null(node$src)) {
-            paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
+            paste0("list(start = ", node$src$start, ")")
         } else ""
         
         if (inherits(node, "NamedAxisAstNode")) {
@@ -135,7 +135,7 @@ print.EinopsAst <- function(x, ...) {
     # Generate formatted lists
     input_list_str <- format_list(x$input_axes, indent_level = 1)
     output_list_str <- format_list(x$output_axes, indent_level = 1)
-    src_str <- paste0("list(start = ", x$src$start, ", length = ", x$src$length, ")")
+    src_str <- paste0("list(start = ", x$src$start, ")")
     
     cat("EinopsAst(\n")
     cat("    input_axes = ", input_list_str, ",\n")
