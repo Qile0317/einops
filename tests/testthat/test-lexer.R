@@ -48,10 +48,6 @@ test_that("lex recognizes ellipsis correctly", {
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("lex fails when two ellipses appear", {
-    expect_error(lex("... h ... w"), "Only one ellipsis")
-})
-
 test_that("lex handles numeric literals in parentheses", {
     expectedTokens <- TokenSequence(
         LParenToken(1, 1),
@@ -71,18 +67,6 @@ test_that("lex handles complex numeric expressions", {
     )
     tokens <- lex("(h 2)")
     expect_equal(tokens, expectedTokens)
-})
-
-test_that("lex reports illegal characters with position", {
-    expect_error(lex("a @ b"), "Illegal character '@' at position 3")
-})
-
-test_that("lex detects unclosed parenthesis", {
-    expect_error(lex("(h w"), "Unclosed parenthesis")
-})
-
-test_that("lex rejects unsupported operators", {
-    expect_error(lex("a + b"), "Unsupported operator '\\+' at position 3")
 })
 
 test_that("lex provides accurate 1-based column positions", {

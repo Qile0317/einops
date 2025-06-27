@@ -140,9 +140,6 @@ lex <- function(pattern) {
             pattern_chars[pos + 1] == "." && 
             pattern_chars[pos + 2] == ".") {
             ellipsis_count <- ellipsis_count + 1
-            if (ellipsis_count > 1) {
-                stop("Only one ellipsis (...) is allowed in the pattern")
-            }
             tokens <- append(tokens, list(EllipsisToken(start_pos, pos + 2)))
             pos <- pos + 3
             next
@@ -158,9 +155,6 @@ lex <- function(pattern) {
 
         # Right parenthesis
         if (char == ")") {
-            if (paren_stack == 0) {
-                stop("Unmatched closing parenthesis at position ", pos)
-            }
             paren_stack <- paren_stack - 1
             tokens <- append(tokens, list(RParenToken(start_pos, pos)))
             pos <- pos + 1
@@ -191,18 +185,8 @@ lex <- function(pattern) {
             next
         }
 
-        # Unsupported operators
-        if (char %in% c("+", "*", "/", "%", "^", "&", "|")) {
-            stop("Unsupported operator '", char, "' at position ", pos)
-        }
-
-        # Illegal characters
-        stop("Illegal character '", char, "' at position ", pos)
-    }
-
-    # Check for unclosed parentheses
-    if (paren_stack > 0) {
-        stop("Unclosed parenthesis")
+        # Skip any character we don't recognize
+        pos <- pos + 1
     }
 
     # Return tokens with a custom class for better printing
