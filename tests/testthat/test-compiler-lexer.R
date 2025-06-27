@@ -12,6 +12,7 @@ test_that("lex produces exact ordered token objects with positions", {
     )
     tokens <- lex("b h w -> b (h w)")
     expect_equal(tokens, expectedTokens)
+    expect_equal(to_expression(tokens), "b h w -> b (h w)")
 })
 
 test_that("lex handles whitespace insensitivity", {
@@ -36,6 +37,7 @@ test_that("lex handles whitespace insensitivity", {
     expect_equal(extract_tokens(tokens1), extract_expected(expectedTokens))
     expect_equal(extract_tokens(tokens2), extract_expected(expectedTokens))
     expect_equal(extract_tokens(tokens3), extract_expected(expectedTokens))
+    expect_equal(to_expression(tokens1), "b h w")
 })
 
 test_that("lex recognizes ellipsis correctly", {
@@ -46,6 +48,7 @@ test_that("lex recognizes ellipsis correctly", {
     )
     tokens <- lex("... h w")
     expect_equal(tokens, expectedTokens)
+    expect_equal(to_expression(tokens), "... h w")
 })
 
 test_that("lex handles numeric literals in parentheses", {
@@ -56,6 +59,7 @@ test_that("lex handles numeric literals in parentheses", {
     )
     tokens <- lex("(3)")
     expect_equal(tokens, expectedTokens)
+    expect_equal(to_expression(tokens), "(3)")
 })
 
 test_that("lex handles complex numeric expressions", {
@@ -67,6 +71,7 @@ test_that("lex handles complex numeric expressions", {
     )
     tokens <- lex("(h 2)")
     expect_equal(tokens, expectedTokens)
+    expect_equal(to_expression(tokens), "(h 2)")
 })
 
 test_that("lex provides accurate 1-based column positions", {
@@ -76,6 +81,7 @@ test_that("lex provides accurate 1-based column positions", {
     )
     tokens <- lex("ab cd")
     expect_equal(tokens, expectedTokens)
+    expect_equal(to_expression(tokens), "ab cd")
 })
 
 test_that("lexer handles complex patterns", {
@@ -99,6 +105,7 @@ test_that("lexer handles complex patterns", {
     )
     tokens1 <- lex(pattern1)
     expect_equal(tokens1, expectedTokens1)
+    expect_equal(to_expression(tokens1), pattern1)
 
     pattern2 <- "b c (h1 h2) (w1 w2) -> b c h1 w1"
     expectedTokens2 <- TokenSequence(
@@ -120,6 +127,7 @@ test_that("lexer handles complex patterns", {
     )
     tokens2 <- lex(pattern2)
     expect_equal(tokens2, expectedTokens2)
+    expect_equal(to_expression(tokens2), pattern2)
 
     pattern3 <- "b c h w -> 1 c 1 1"
     expectedTokens3 <- TokenSequence(
@@ -135,6 +143,7 @@ test_that("lexer handles complex patterns", {
     )
     tokens3 <- lex(pattern3)
     expect_equal(tokens3, expectedTokens3)
+    expect_equal(to_expression(tokens3), pattern3)
 
     pattern4 <- "b c h w -> b c () ()"
     expectedTokens4 <- TokenSequence(
@@ -152,4 +161,5 @@ test_that("lexer handles complex patterns", {
     )
     tokens4 <- lex(pattern4)
     expect_equal(tokens4, expectedTokens4)
+    expect_equal(to_expression(tokens4), pattern4)
 })
