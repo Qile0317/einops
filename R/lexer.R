@@ -1,3 +1,5 @@
+# create a rust-like enum for each token type
+
 create_token <- function(type, value, start, end) {
     structure(list(
         type = type,
@@ -31,7 +33,6 @@ NameToken <- function(value, start, end) {
     create_token("NAME", value, start, end)
 }
 
-
 #' @title TokenSequence
 #' @description Helper to build a token sequence (list of tokens)
 #' @param ... tokens to include
@@ -50,7 +51,6 @@ TokenSequence <- function(...) {
 #' @return invisible x
 #' @export
 print.EinopsToken <- function(x, ...) {
-    # Map token types to their constructor functions using glue
     constructor_call <- switch(x$type,
         "ARROW" = glue::glue("ArrowToken({x$start}, {x$end})"),
         "ELLIPSIS" = glue::glue("EllipsisToken({x$start}, {x$end})"),
@@ -58,7 +58,6 @@ print.EinopsToken <- function(x, ...) {
         "RPAREN" = glue::glue("RParenToken({x$start}, {x$end})"),
         "INT" = glue::glue("IntToken(\"{x$value}\", {x$start}, {x$end})"),
         "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start}, {x$end})"),
-        # Fallback for unknown types
         glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start}, {x$end})")
     )
     cat(constructor_call, "\n")
