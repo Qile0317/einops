@@ -34,6 +34,7 @@ library(einops)
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`
 - [ ] `einops:::repeat.array()`
+- [ ] Publish 0.1.0 on CRAN
 - [ ] `einops:::parse_shape.torch_tensor()`
 - [ ] `einops:::rearrange.torch_tensor()`
 - [ ] `einops:::torchRearrange()`
@@ -46,3 +47,10 @@ library(einops)
 - [ ] `einops::einsum.array()`
 - [ ] `einops::einsum.torch_tensor()`
 - [ ] Expand Roadmp by incorporating more backends 
+
+### Nice to Haves
+
+- [ ] Dockerfile
+- [ ] Google Analytics for the docsite
+- [ ] R-universe upload
+- [ ] Much better README
