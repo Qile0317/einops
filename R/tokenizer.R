@@ -58,21 +58,13 @@ print.EinopsTokenSequence <- function(x, ...) {
     
     cat("Reconstructed expression: ", reconstructed, "\n")
     
-    # Generate constructor calls for each token
+    # Generate constructor calls for each token by capturing print output
     constructor_calls <- character(length(x))
     for (i in seq_along(x)) {
         token <- x[[i]]
         if (inherits(token, "EinopsToken")) {
-            constructor_calls[i] <- switch(token$type,
-                "ARROW" = sprintf("ArrowToken(%d, %d)", token$start, token$end),
-                "ELLIPSIS" = sprintf("EllipsisToken(%d, %d)", token$start, token$end),
-                "LPAREN" = sprintf("LParenToken(%d, %d)", token$start, token$end),
-                "RPAREN" = sprintf("RParenToken(%d, %d)", token$start, token$end),
-                "INT" = sprintf("IntToken(\"%s\", %d, %d)", token$value, token$start, token$end),
-                "NAME" = sprintf("NameToken(\"%s\", %d, %d)", token$value, token$start, token$end),
-                # Fallback for unknown types
-                sprintf("create_token(\"%s\", \"%s\", %d, %d)", token$type, token$value, token$start, token$end)
-            )
+            captured_output <- capture.output(print(token))
+            constructor_calls[i] <- captured_output
         } else {
             constructor_calls[i] <- as.character(token)
         }
@@ -85,9 +77,9 @@ print.EinopsTokenSequence <- function(x, ...) {
         cat("TokenSequence(\n")
         for (i in seq_along(constructor_calls)) {
             if (i < length(constructor_calls)) {
-                cat("  ", constructor_calls[i], ",\n")
+                cat("  ", constructor_calls[i], ",\n", sep = "")
             } else {
-                cat("  ", constructor_calls[i], "\n")
+                cat("  ", constructor_calls[i], "\n", sep = "")
             }
         }
         cat(")\n")
