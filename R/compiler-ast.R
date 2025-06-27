@@ -172,7 +172,7 @@ print.AstNode <- function(x, ...) {
 
 #' @export
 print.EinopsAst <- function(x, ...) {
-    reconstructed <- paste(capture.output(print.EinopsTokenSequence(to_tokens(x))), collapse = "")
-    cat(glue::glue("Reconstructed Einops expression: {reconstructed}\n"))
+    # reconstructed <- paste(capture.output(print.EinopsTokenSequence(to_tokens(x))), collapse = "")
+    # cat(glue::glue("Reconstructed Einops expression: {reconstructed}\n"))
     print.AstNode(x, ...)
 }

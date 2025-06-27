@@ -1,40 +1,48 @@
-# test_that("ast_to_tokens converts AST back to tokens correctly", {
-#   # Test simple pattern: "h w -> (h w)"
-  
-#   # Create the expected AST
-#   h_axis <- NamedAxisAstNode("h", list(start = 1))
-#   w_axis <- NamedAxisAstNode("w", list(start = 3))
-  
-#   # Output group containing h and w
-#   h_axis_out <- NamedAxisAstNode("h", list(start = 7))
-#   w_axis_out <- NamedAxisAstNode("w", list(start = 9))
-#   group_out <- GroupAstNode(list(h_axis_out, w_axis_out), list(start = 6))
-  
-#   ast <- EinopsAst(list(h_axis, w_axis), list(group_out), list(start = 1))
-  
-#   # Convert back to tokens
-#   result_tokens <- ast_to_tokens(ast)
-  
-#   # Create expected token sequence
-#   expected_tokens <- TokenSequence(
-#     NameToken("h", 1),
-#     NameToken("w", 3),
-#     ArrowToken(5),
-#     LParenToken(8),
-#     NameToken("h", 9),
-#     NameToken("w", 11),
-#     RParenToken(12)
-#   )
-  
-#   # Check we get the right number of tokens
-#   expect_length(result_tokens, length(expected_tokens))
-  
-#   # Check each token matches
-#   for (i in seq_along(expected_tokens)) {
-#     expect_equal(result_tokens[[i]]$type, expected_tokens[[i]]$type)
-#     expect_equal(result_tokens[[i]]$value, expected_tokens[[i]]$value)
-#   }
-# })
+test_that("to_tokens converts AST back to tokens correctly", {
+
+    expected_tokens <- TokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        NameToken("c", 5),
+        ArrowToken(7),
+        NameToken("b", 10),
+        NameToken("c", 12)
+    )
+
+    expected_ast <- EinopsAst(
+        input_axes = list(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 3)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 5)
+            )
+        ),
+        output_axes = list(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 10)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 12)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expect_identical(
+        to_tokens(expected_ast),
+        expected_tokens
+    )
+
+})
 
 # test_that("ast_to_tokens handles ellipsis and constants", {
 #   # Test pattern: "... h 224 -> h 224"
