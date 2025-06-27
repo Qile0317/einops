@@ -61,87 +61,59 @@ EinopsAst <- function(input_axes, output_axes, src) {
     ), class = c("EinopsAst", "AstNode"))
 }
 
-#' @title Print method for EinopsAst
-#' @param x EinopsAst object
+#' @title Print method for AstNode
+#' @param x AstNode object
 #' @param ... Additional arguments (unused)
 #' @export
-print.EinopsAst <- function(x, ...) {
-    # Internal function to reconstruct node text
-    reconstruct_node <- function(node) {
-        if (inherits(node, "NamedAxisAstNode")) {
-            return(node$name)
-        } else if (inherits(node, "ConstantAstNode")) {
-            return(node$count)
-        } else if (inherits(node, "EllipsisAstNode")) {
-            return("...")
-        } else if (inherits(node, "GroupAstNode")) {
-            children_text <- sapply(node$children, reconstruct_node)
-            return(paste0("(", paste(children_text, collapse = " "), ")"))
-        } else {
-            return("?")
-        }
-    }
-    
-    # Internal function to generate constructor code
-    generate_constructor <- function(node, indent_level = 0) {
-        src_str <- if (!is.null(node$src)) {
-            paste0("list(start = ", node$src$start, ")")
-        } else ""
+print.AstNode <- function(x, ...) {
+    format_value <- function(value, indent = 0) {
+        indent_str <- paste(rep("  ", indent), collapse = "")
         
-        if (inherits(node, "NamedAxisAstNode")) {
-            return(paste0("NamedAxisAstNode(\"", node$name, "\", ", src_str, ")"))
-        } else if (inherits(node, "ConstantAstNode")) {
-            return(paste0("ConstantAstNode(\"", node$count, "\", ", src_str, ")"))
-        } else if (inherits(node, "EllipsisAstNode")) {
-            return(paste0("EllipsisAstNode(", src_str, ")"))
-        } else if (inherits(node, "GroupAstNode")) {
-            child_indent <- paste(rep("    ", indent_level + 1), collapse = "")
-            children_constructors <- sapply(node$children, function(child) 
-                generate_constructor(child, indent_level + 2))
-            
-            if (length(children_constructors) == 1) {
-                children_str <- paste0("list(", children_constructors[1], ")")
+        if (is.character(value)) {
+            return(paste0('"', value, '"'))
+        } else if (is.numeric(value)) {
+            return(as.character(value))
+        } else if (is.list(value)) {
+            if (inherits(value, "AstNode")) {
+                # Recursively format nested AST nodes
+                class_name <- class(value)[1]
+                if (length(value) == 0) {
+                    return(paste0(class_name, "()"))
+                }
+                
+                params <- sapply(names(value), function(name) {
+                    paste0("\n", indent_str, "  ", name, " = ", format_value(value[[name]], indent + 1))
+                })
+                return(paste0(class_name, "(", paste(params, collapse = ","), "\n", indent_str, ")"))
+            } else if (length(value) == 0) {
+                return("list()")
+            } else if (all(sapply(value, function(x) inherits(x, "AstNode")))) {
+                # List of AST nodes
+                formatted_items <- sapply(value, function(item) {
+                    paste0("\n", indent_str, "  ", format_value(item, indent + 1))
+                })
+                return(paste0("list(", paste(formatted_items, collapse = ","), "\n", indent_str, ")"))
             } else {
-                children_str <- paste0("list(\n", child_indent, "    ",
-                                     paste(children_constructors, collapse = paste0(",\n", child_indent, "    ")), 
-                                     "\n", child_indent, ")")
+                # Regular list
+                formatted_items <- sapply(names(value), function(name) {
+                    paste0(name, " = ", format_value(value[[name]], indent))
+                })
+                return(paste0("list(", paste(formatted_items, collapse = ", "), ")"))
             }
-            return(paste0("GroupAstNode(", children_str, ", ", src_str, ")"))
         } else {
-            return("UnknownNode()")
+            return(as.character(value))
         }
     }
     
-    # Internal function to format list of nodes
-    format_list <- function(nodes, indent_level = 0) {
-        constructors <- sapply(nodes, function(n) generate_constructor(n, indent_level))
-        if (length(constructors) == 1) {
-            return(paste0("list(", constructors[1], ")"))
-        } else {
-            indent_str <- paste(rep("    ", indent_level + 1), collapse = "")
-            return(paste0("list(\n", indent_str, "    ", 
-                         paste(constructors, collapse = paste0(",\n", indent_str, "    ")), 
-                         "\n", indent_str, ")"))
-        }
+    class_name <- class(x)[1]
+    if (length(x) == 0) {
+        cat(class_name, "()\n", sep = "")
+    } else {
+        params <- sapply(names(x), function(name) {
+            paste0("\n  ", name, " = ", format_value(x[[name]], 1))
+        })
+        cat(class_name, "(", paste(params, collapse = ","), "\n)\n", sep = "")
     }
-    
-    # Reconstruct the expression
-    input_text <- sapply(x$input_axes, reconstruct_node)
-    output_text <- sapply(x$output_axes, reconstruct_node)
-    reconstructed <- paste0(paste(input_text, collapse = " "), " -> ", paste(output_text, collapse = " "))
-    
-    cat("Reconstructed expression:", reconstructed, "\n")
-    
-    # Generate formatted lists
-    input_list_str <- format_list(x$input_axes, indent_level = 1)
-    output_list_str <- format_list(x$output_axes, indent_level = 1)
-    src_str <- paste0("list(start = ", x$src$start, ")")
-    
-    cat("EinopsAst(\n")
-    cat("    input_axes = ", input_list_str, ",\n")
-    cat("    output_axes = ", output_list_str, ",\n")
-    cat("    src = ", src_str, "\n")
-    cat(")\n")
     
     invisible(x)
 }
