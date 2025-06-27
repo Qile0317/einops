@@ -15,7 +15,7 @@ NamedAxisAstNode <- function(name, src) {
     ), class = c("NamedAxisAstNode", "AstNode"))
 }
 
-#' @export
+#' @keywords internal
 to_tokens.NamedAxisAstNode <- function(ast, ...) {
     list(NameToken(ast$name, ast$src$start))
 }
@@ -32,7 +32,7 @@ ConstantAstNode <- function(count, src) {
     ), class = c("ConstantAstNode", "AstNode"))
 }
     
-#' @export
+#' @keywords internal
 to_tokens.ConstantAstNode <- function(ast, ...) {
     list(IntToken(ast$count, ast$src$start))
 }
@@ -47,7 +47,7 @@ EllipsisAstNode <- function(src) {
     ), class = c("EllipsisAstNode", "AstNode"))
 }
 
-#' @export
+#' @keywords internal
 to_tokens.EllipsisAstNode <- function(ast, ...) {
     list(EllipsisToken(ast$src$start))
 }
@@ -64,7 +64,7 @@ GroupAstNode <- function(children, src) {
     ), class = c("GroupAstNode", "AstNode"))
 }
 
-#' @export
+#' @keywords internal
 to_tokens.GroupAstNode <- function(ast, ...) {
     lparen_token <- LParenToken(ast$src$start - 1)
     last_child_astnode <- tail(ast$children, 1)[[1]]
@@ -95,7 +95,7 @@ EinopsAst <- function(input_axes, output_axes, src) {
     ), class = c("EinopsAst", "AstNode"))
 }
 
-#' @export
+#' @keywords internal
 to_tokens.EinopsAst <- function(ast, ...) {
     input_tokens <- unlist(lapply(ast$input_axes, to_tokens), recursive = FALSE)
     output_tokens <- unlist(lapply(ast$output_axes, to_tokens), recursive = FALSE)
@@ -168,4 +168,11 @@ print.AstNode <- function(x, ...) {
     }
     
     invisible(x)
+}
+
+#' @export
+print.EinopsAst <- function(x, ...) {
+    reconstructed <- paste(capture.output(print.EinopsTokenSequence(to_tokens(x))), collapse = "")
+    cat(glue::glue("Reconstructed Einops expression: {reconstructed}\n"))
+    print.AstNode(x, ...)
 }
