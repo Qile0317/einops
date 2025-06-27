@@ -6,33 +6,41 @@
 [![Codecov test coverage](https://codecov.io/gh/Qile0317/einops/graph/badge.svg)](https://app.codecov.io/gh/Qile0317/einops)
 <!-- badges: end -->
 
-This is a work in progress implementation of the einops library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, making it easier to work with complex data structures.
+This is a work in progress implementation of the einops library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, in addition to several syntactic conveniences for use in torch.
 
 ## Installation
 
-You can install the development version of einops like so:
-
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```R
+devtools::install_github("Qile0317/einops")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Usage
 
 ``` r
 library(einops)
 ## basic example code
 ```
 
-## Planned Backends & Implementation
+## Roadmap (Subject to change)
 
-> The python einops implementation uses wrappers for each datastructure over some central mixins, but the current plan for the R version is to simply use S3 dispatch with some helpers. Functions like `reduce` will by default override existing conventions so aliases may be needed
-
-- R torch tensors
-- R 2d matrices (and matrix like objects like dfs)
-    - SparseMatrices
-- R multidim arrays
-- R keras/TF datastructures?
-
-Issue: If using Rcpp backend and we are modifying by reference, need to be careful about the case where a user does NOT reassign the result of a function into the same binding, need to ensure the original object is not modified. An easy solution is to just make a copy and work on that - but this is suboptimal.
+- [x] Lexer
+- [ ] Parser & Ast datastructure
+- [ ] Semantic checker for each context
+- [ ] Intermediate Representation Generator (planner)
+- [ ] Executor (this handles all different backends, starting with `base::array`)
+- [ ] `einops:::parse_shape.array()`
+- [ ] `einops:::rearrange.array()`
+- [ ] `einops:::reduce.array()`
+- [ ] `einops:::repeat.array()`
+- [ ] `einops:::parse_shape.torch_tensor()`
+- [ ] `einops:::rearrange.torch_tensor()`
+- [ ] `einops:::torchRearrange()`
+- [ ] `einops:::reduce.torch_tensor()`
+- [ ] `einops:::torchReduce()`
+- [ ] packing and unpacking expression interpretation
+- [ ] `einops:::pack.array()`
+- [ ] `einops:::pack.torch_tensor()`
+- [ ] EinMix for torch
+- [ ] `einops::einsum.array()`
+- [ ] `einops::einsum.torch_tensor()`
+- [ ] Expand Roadmp by incorporating more backends 
