@@ -102,12 +102,12 @@ print.EinopsTokenSequence <- function(x, ...) {
     invisible(x)
 }
 
-#' @title Tokenize einops pattern into structured tokens
-#' @description Tokenize einops pattern into structured tokens
+#' @title Lexically analyze einops pattern into structured tokens
+#' @description Lexically analyze einops pattern into structured tokens
 #' @param pattern character string with einops pattern
 #' @return list of token objects with type, value, start, end fields
 #' @keywords internal
-tokenize <- function(pattern) {
+lex <- function(pattern) {
     if (!is.character(pattern) || length(pattern) != 1) {
         stop("Pattern must be a single character string")
     }

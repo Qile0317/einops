@@ -1,4 +1,4 @@
-test_that("tokenize produces exact ordered token objects with positions", {
+test_that("lex produces exact ordered token objects with positions", {
     expectedTokens <- TokenSequence(
         NameToken("b", 1, 1),
         NameToken("h", 3, 3),
@@ -10,20 +10,20 @@ test_that("tokenize produces exact ordered token objects with positions", {
         NameToken("w", 15, 15),
         RParenToken(16, 16)
     )
-    tokens <- tokenize("b h w -> b (h w)")
+    tokens <- lex("b h w -> b (h w)")
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("tokenize handles whitespace insensitivity", {
+test_that("lex handles whitespace insensitivity", {
     expectedTokens <- TokenSequence(
         NameToken("b", 1, 1),
         NameToken("h", 3, 3),
         NameToken("w", 5, 5)
     )
     
-    tokens1 <- tokenize("b h w")
-    tokens2 <- tokenize("b  h   w")
-    tokens3 <- tokenize(" b h w ")
+    tokens1 <- lex("b h w")
+    tokens2 <- lex("b  h   w")
+    tokens3 <- lex(" b h w ")
 
     # Extract just type and value for comparison
     extract_tokens <- function(tokens) {
@@ -38,63 +38,63 @@ test_that("tokenize handles whitespace insensitivity", {
     expect_equal(extract_tokens(tokens3), extract_expected(expectedTokens))
 })
 
-test_that("tokenize recognizes ellipsis correctly", {
+test_that("lex recognizes ellipsis correctly", {
     expectedTokens <- TokenSequence(
         EllipsisToken(1, 3),
         NameToken("h", 5, 5),
         NameToken("w", 7, 7)
     )
-    tokens <- tokenize("... h w")
+    tokens <- lex("... h w")
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("tokenize fails when two ellipses appear", {
-    expect_error(tokenize("... h ... w"), "Only one ellipsis")
+test_that("lex fails when two ellipses appear", {
+    expect_error(lex("... h ... w"), "Only one ellipsis")
 })
 
-test_that("tokenize handles numeric literals in parentheses", {
+test_that("lex handles numeric literals in parentheses", {
     expectedTokens <- TokenSequence(
         LParenToken(1, 1),
         IntToken("3", 2, 2),
         RParenToken(3, 3)
     )
-    tokens <- tokenize("(3)")
+    tokens <- lex("(3)")
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("tokenize handles complex numeric expressions", {
+test_that("lex handles complex numeric expressions", {
     expectedTokens <- TokenSequence(
         LParenToken(1, 1),
         NameToken("h", 2, 2),
         IntToken("2", 4, 4),
         RParenToken(5, 5)
     )
-    tokens <- tokenize("(h 2)")
+    tokens <- lex("(h 2)")
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("tokenize reports illegal characters with position", {
-    expect_error(tokenize("a @ b"), "Illegal character '@' at position 3")
+test_that("lex reports illegal characters with position", {
+    expect_error(lex("a @ b"), "Illegal character '@' at position 3")
 })
 
-test_that("tokenize detects unclosed parenthesis", {
-    expect_error(tokenize("(h w"), "Unclosed parenthesis")
+test_that("lex detects unclosed parenthesis", {
+    expect_error(lex("(h w"), "Unclosed parenthesis")
 })
 
-test_that("tokenize rejects unsupported operators", {
-    expect_error(tokenize("a + b"), "Unsupported operator '\\+' at position 3")
+test_that("lex rejects unsupported operators", {
+    expect_error(lex("a + b"), "Unsupported operator '\\+' at position 3")
 })
 
-test_that("tokenize provides accurate 1-based column positions", {
+test_that("lex provides accurate 1-based column positions", {
     expectedTokens <- TokenSequence(
         NameToken("ab", 1, 2),
         NameToken("cd", 4, 5)
     )
-    tokens <- tokenize("ab cd")
+    tokens <- lex("ab cd")
     expect_equal(tokens, expectedTokens)
 })
 
-test_that("tokenizer handles complex patterns", {
+test_that("lexer handles complex patterns", {
     pattern1 <- "b c (h1 2) (w1 2) -> b c h1 w1"
     expectedTokens1 <- TokenSequence(
         NameToken("b", 1, 1),
@@ -113,7 +113,7 @@ test_that("tokenizer handles complex patterns", {
         NameToken("h1", 26, 27),
         NameToken("w1", 29, 30)
     )
-    tokens1 <- tokenize(pattern1)
+    tokens1 <- lex(pattern1)
     expect_equal(tokens1, expectedTokens1)
 
     pattern2 <- "b c (h1 h2) (w1 w2) -> b c h1 w1"
@@ -134,7 +134,7 @@ test_that("tokenizer handles complex patterns", {
         NameToken("h1", 28, 29),
         NameToken("w1", 31, 32)
     )
-    tokens2 <- tokenize(pattern2)
+    tokens2 <- lex(pattern2)
     expect_equal(tokens2, expectedTokens2)
 
     pattern3 <- "b c h w -> 1 c 1 1"
@@ -149,7 +149,7 @@ test_that("tokenizer handles complex patterns", {
         IntToken("1", 16, 16),
         IntToken("1", 18, 18)
     )
-    tokens3 <- tokenize(pattern3)
+    tokens3 <- lex(pattern3)
     expect_equal(tokens3, expectedTokens3)
 
     pattern4 <- "b c h w -> b c () ()"
@@ -166,6 +166,6 @@ test_that("tokenizer handles complex patterns", {
         LParenToken(19, 19),
         RParenToken(20, 20)
     )
-    tokens4 <- tokenize(pattern4)
+    tokens4 <- lex(pattern4)
     expect_equal(tokens4, expectedTokens4)
 })
