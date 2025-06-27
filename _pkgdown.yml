@@ -1,0 +1,6 @@
+url: https://qile0317.github.io/einops/
+template:
+  bootstrap: 5
+
+development:
+  mode: auto
