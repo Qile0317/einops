@@ -4,10 +4,12 @@
 \alias{generate_constructor}
 \title{Generate constructor code for AST node}
 \usage{
-generate_constructor(node)
+generate_constructor(node, indent_level = 0)
 }
 \arguments{
 \item{node}{AST node}
+
+\item{indent_level}{Integer, current indentation level (for internal use)}
 }
 \value{
 Character string with constructor call

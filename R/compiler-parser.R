@@ -102,9 +102,12 @@ reconstruct_node <- function(node) {
 
 #' @title Generate constructor code for AST node
 #' @param node AST node
+#' @param indent_level Integer, current indentation level (for internal use)
 #' @return Character string with constructor call
 #' @keywords internal
-generate_constructor <- function(node) {
+generate_constructor <- function(node, indent_level = 0) {
+    child_indent <- paste(rep("    ", indent_level + 1), collapse = "")
+    
     if (inherits(node, "NamedAxisAstNode")) {
         src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
         return(paste0("NamedAxisAstNode(\"", node$name, "\", ", src_str, ")"))
@@ -115,8 +118,14 @@ generate_constructor <- function(node) {
         src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
         return(paste0("EllipsisAstNode(", src_str, ")"))
     } else if (inherits(node, "GroupAstNode")) {
-        children_constructors <- sapply(node$children, generate_constructor)
-        children_str <- paste0("list(\n        ", paste(children_constructors, collapse = ",\n        "), "\n    )")
+        children_constructors <- sapply(node$children, function(child) generate_constructor(child, indent_level + 2))
+        if (length(children_constructors) == 1) {
+            children_str <- paste0("list(", children_constructors[1], ")")
+        } else {
+            children_str <- paste0("list(\n", child_indent, "    ",
+                                 paste(children_constructors, collapse = paste0(",\n", child_indent, "    ")), 
+                                 "\n", child_indent, ")")
+        }
         src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
         return(paste0("GroupAstNode(", children_str, ", ", src_str, ")"))
     } else {
@@ -136,12 +145,23 @@ print.EinopsAst <- function(x, ...) {
     
     cat("Reconstructed expression:", reconstructed, "\n")
     
-    # Generate constructor code
-    input_constructors <- sapply(x$input_axes, generate_constructor)
-    output_constructors <- sapply(x$output_axes, generate_constructor)
+    # Generate constructor code with proper indentation
+    input_constructors <- sapply(x$input_axes, function(node) generate_constructor(node, indent_level = 1))
+    output_constructors <- sapply(x$output_axes, function(node) generate_constructor(node, indent_level = 1))
     
-    input_list_str <- paste0("list(\n    ", paste(input_constructors, collapse = ",\n    "), "\n)")
-    output_list_str <- paste0("list(\n    ", paste(output_constructors, collapse = ",\n    "), "\n)")
+    # Format the lists with proper indentation
+    if (length(input_constructors) == 1) {
+        input_list_str <- paste0("list(", input_constructors[1], ")")
+    } else {
+        input_list_str <- paste0("list(\n        ", paste(input_constructors, collapse = ",\n        "), "\n    )")
+    }
+    
+    if (length(output_constructors) == 1) {
+        output_list_str <- paste0("list(", output_constructors[1], ")")
+    } else {
+        output_list_str <- paste0("list(\n        ", paste(output_constructors, collapse = ",\n        "), "\n    )")
+    }
+    
     src_str <- paste0("list(start = ", x$src$start, ", length = ", x$src$length, ")")
     
     cat("EinopsAst(\n")
