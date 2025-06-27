@@ -112,7 +112,7 @@ to_tokens.EinopsAst <- function(x, ...) {
 #' @export
 print.AstNode <- function(x, ...) {
     format_value <- function(value, indent = 0) {
-        indent_str <- paste(rep("  ", indent), collapse = "")
+        indent_str <- paste(rep("    ", indent), collapse = "")
         
         if (is.character(value)) {
             return(paste0('"', value, '"'))
@@ -127,7 +127,7 @@ print.AstNode <- function(x, ...) {
                 }
                 
                 params <- sapply(names(value), function(name) {
-                    paste0("\n", indent_str, "  ", name, " = ", format_value(value[[name]], indent + 1))
+                    paste0("\n", indent_str, "    ", name, " = ", format_value(value[[name]], indent + 1))
                 })
                 return(paste0(class_name, "(", paste(params, collapse = ","), "\n", indent_str, ")"))
             } else if (length(value) == 0) {
@@ -135,7 +135,7 @@ print.AstNode <- function(x, ...) {
             } else if (all(sapply(value, function(x) inherits(x, "AstNode")))) {
                 # List of AST nodes
                 formatted_items <- sapply(value, function(item) {
-                    paste0("\n", indent_str, "  ", format_value(item, indent + 1))
+                    paste0("\n", indent_str, "    ", format_value(item, indent + 1))
                 })
                 return(paste0("list(", paste(formatted_items, collapse = ","), "\n", indent_str, ")"))
             } else {
@@ -155,7 +155,7 @@ print.AstNode <- function(x, ...) {
         cat(class_name, "()\n", sep = "")
     } else {
         params <- sapply(names(x), function(name) {
-            paste0("\n  ", name, " = ", format_value(x[[name]], 1))
+            paste0("\n    ", name, " = ", format_value(x[[name]], 1))
         })
         cat(class_name, "(", paste(params, collapse = ","), "\n)\n", sep = "")
     }
