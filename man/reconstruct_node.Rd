@@ -7,7 +7,7 @@
 reconstruct_node(node)
 }
 \arguments{
-\item{node}{AST node (NamedAxisAstNode, EllipsisAstNode, or GroupAstNode)}
+\item{node}{AST node (NamedAxisAstNode, ConstantAstNode, EllipsisAstNode, or GroupAstNode)}
 }
 \value{
 Character string representation

@@ -2,7 +2,7 @@
 % Please edit documentation in R/compiler-parser.R
 \name{parse_axes_iter}
 \alias{parse_axes_iter}
-\title{Parse a sequence of axis tokens iteratively}
+\title{Parse a sequence of axis tokens}
 \usage{
 parse_axes_iter(tokens)
 }
@@ -13,6 +13,6 @@ parse_axes_iter(tokens)
 List of AST nodes
 }
 \description{
-Parse a sequence of axis tokens iteratively
+Parse a sequence of axis tokens
 }
 \keyword{internal}

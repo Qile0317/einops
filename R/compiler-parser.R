@@ -3,16 +3,26 @@
 
 #' @title Create a NamedAxisAstNode
 #' @param name Character string, the name of the axis
-#' @param count Integer or NULL, optional count/size for the axis
 #' @param src List with start position and length
 #' @return NamedAxisAstNode object
 #' @keywords internal
-NamedAxisAstNode <- function(name, count, src) {
+NamedAxisAstNode <- function(name, src) {
     structure(list(
         name = name,
-        count = count,
         src = src
     ), class = c("NamedAxisAstNode", "AstNode"))
+}
+
+#' @title Create a ConstantAstNode
+#' @param count Character string representing the constant value
+#' @param src List with start position and length
+#' @return ConstantAstNode object
+#' @keywords internal
+ConstantAstNode <- function(count, src) {
+    structure(list(
+        count = count,
+        src = src
+    ), class = c("ConstantAstNode", "AstNode"))
 }
 
 #' @title Create an EllipsisAstNode
@@ -72,16 +82,14 @@ merge_src <- function(src_a, src_b) {
 }
 
 #' @title Reconstruct expression text from AST node
-#' @param node AST node (NamedAxisAstNode, EllipsisAstNode, or GroupAstNode)
+#' @param node AST node (NamedAxisAstNode, ConstantAstNode, EllipsisAstNode, or GroupAstNode)
 #' @return Character string representation
 #' @keywords internal
 reconstruct_node <- function(node) {
     if (inherits(node, "NamedAxisAstNode")) {
-        if (is.null(node$count)) {
-            return(node$name)
-        } else {
-            return(paste0(node$name, node$count))
-        }
+        return(node$name)
+    } else if (inherits(node, "ConstantAstNode")) {
+        return(node$count)
     } else if (inherits(node, "EllipsisAstNode")) {
         return("...")
     } else if (inherits(node, "GroupAstNode")) {
@@ -98,9 +106,11 @@ reconstruct_node <- function(node) {
 #' @keywords internal
 generate_constructor <- function(node) {
     if (inherits(node, "NamedAxisAstNode")) {
-        count_str <- if (is.null(node$count)) "NULL" else paste0("\"", node$count, "\"")
         src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
-        return(paste0("NamedAxisAstNode(\"", node$name, "\", ", count_str, ", ", src_str, ")"))
+        return(paste0("NamedAxisAstNode(\"", node$name, "\", ", src_str, ")"))
+    } else if (inherits(node, "ConstantAstNode")) {
+        src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
+        return(paste0("ConstantAstNode(\"", node$count, "\", ", src_str, ")"))
     } else if (inherits(node, "EllipsisAstNode")) {
         src_str <- paste0("list(start = ", node$src$start, ", length = ", node$src$length, ")")
         return(paste0("EllipsisAstNode(", src_str, ")"))
@@ -143,18 +153,18 @@ print.EinopsAst <- function(x, ...) {
     invisible(x)
 }
 
-#' @title Find the top-level arrow in a token sequence
+#' @title Find the arrow in a token sequence
 #' @param tokens EinopsTokenSequence object
-#' @return one-indexed Integer position of the top-level arrow token
+#' @return one-indexed Integer position of the arrow token
 #' @keywords internal
 find_top_level_arrow_index <- function(tokens) {
-    arrow_position <- which(sapply(tokens, function(x) x$type == "ARROW"))[1]
-    if (length(arrow_position) == 0) stop("No '->' found in expression")
-    if (length(arrow_position) > 1) stop("Multiple '->' found in expression")
-    arrow_position
+    arrow_positions <- which(sapply(tokens, function(x) x$type == "ARROW"))
+    if (length(arrow_positions) == 0) stop("No '->' found in expression")
+    if (length(arrow_positions) > 1) stop("Multiple '->' found in expression")
+    arrow_positions[1]
 }
 
-#' @title Parse a sequence of axis tokens iteratively
+#' @title Parse a sequence of axis tokens 
 #' @param tokens List of tokens representing one side of the pattern
 #' @return List of AST nodes
 #' @keywords internal
@@ -163,28 +173,22 @@ parse_axes_iter <- function(tokens) {
         stop("Empty axis pattern")
     }
     
-    # Stack of axis lists, one per nesting level
-    stack <- list(list())
+    result <- list()
     has_ellipsis <- FALSE
     i <- 1
     
     while (i <= length(tokens)) {
         token <- tokens[[i]]
-        current_frame <- length(stack)
         
         if (token$type == "NAME") {
-            # Check if next token is an INT (count)
-            count <- NULL
             src <- list(start = token$start, length = nchar(token$value))
-            if (i < length(tokens) && tokens[[i + 1]]$type == "INT") {
-                count <- tokens[[i + 1]]$value
-                count_token <- tokens[[i + 1]]
-                src <- merge_src(src, list(start = count_token$start, length = nchar(count_token$value)))
-                i <- i + 1  # consume the INT token
-            }
+            node <- NamedAxisAstNode(token$value, src)
+            result <- append(result, list(node))
             
-            node <- NamedAxisAstNode(token$value, count, src)
-            stack[[current_frame]] <- append(stack[[current_frame]], list(node))
+        } else if (token$type == "INT") {
+            src <- list(start = token$start, length = nchar(token$value))
+            node <- ConstantAstNode(token$value, src)
+            result <- append(result, list(node))
             
         } else if (token$type == "ELLIPSIS") {
             if (has_ellipsis) {
@@ -192,68 +196,64 @@ parse_axes_iter <- function(tokens) {
             }
             has_ellipsis <- TRUE
             
-            node <- EllipsisAstNode(list(start = token$start, length = nchar(token$value)))
-            stack[[current_frame]] <- append(stack[[current_frame]], list(node))
+            src <- list(start = token$start, length = nchar(token$value))
+            node <- EllipsisAstNode(src)
+            result <- append(result, list(node))
             
         } else if (token$type == "LPAREN") {
-            # Push new empty frame onto stack
-            stack <- append(stack, list(list()))
+            # Find matching closing paren
+            paren_depth <- 1
+            group_start <- i + 1
+            group_end <- i + 1
             
-        } else if (token$type == "RPAREN") {
-            if (length(stack) <= 1) {
-                stop("Unmatched closing parenthesis ')' at position ", token$start)
-            }
-            
-            # Pop the top frame
-            popped_frame <- stack[[length(stack)]]
-            stack <- stack[-length(stack)]
-            
-            if (length(popped_frame) == 0) {
-                stop("Empty group '()' at position ", token$start)
-            }
-            
-            # Find the source span for this group by locating the matching LPAREN
-            lparen_pos <- i - 1
-            depth <- 1
-            while (lparen_pos > 0 && depth > 0) {
-                lparen_pos <- lparen_pos - 1
-                if (tokens[[lparen_pos]]$type == "RPAREN") {
-                    depth <- depth + 1
-                } else if (tokens[[lparen_pos]]$type == "LPAREN") {
-                    depth <- depth - 1
+            while (group_end <= length(tokens) && paren_depth > 0) {
+                if (tokens[[group_end]]$type == "LPAREN") {
+                    paren_depth <- paren_depth + 1
+                    # Check for nesting - not allowed in einops
+                    if (paren_depth > 1) {
+                        stop("Groups cannot be nested at position ", tokens[[group_end]]$start)
+                    }
+                } else if (tokens[[group_end]]$type == "RPAREN") {
+                    paren_depth <- paren_depth - 1
+                }
+                if (paren_depth > 0) {
+                    group_end <- group_end + 1
                 }
             }
             
-            if (lparen_pos > 0) {
-                lparen_token <- tokens[[lparen_pos]]
-                src <- merge_src(
-                    list(start = lparen_token$start, length = nchar(lparen_token$value)),
-                    list(start = token$start, length = nchar(token$value))
-                )
-            } else {
-                src <- list(start = token$start, length = nchar(token$value))
+            if (paren_depth > 0) {
+                stop("Unmatched opening parenthesis '(' at position ", token$start)
             }
             
-            # Create group node and add to current frame
-            group_node <- GroupAstNode(popped_frame, src)
-            current_frame <- length(stack)
-            stack[[current_frame]] <- append(stack[[current_frame]], list(group_node))
+            # Parse group contents
+            group_tokens <- tokens[group_start:(group_end - 1)]
+            if (length(group_tokens) == 0) {
+                stop("Empty group '()' at position ", token$start)
+            }
+            
+            group_children <- parse_axes_iter(group_tokens)
+            
+            # Calculate group source span
+            rparen_token <- tokens[[group_end]]
+            src <- merge_src(
+                list(start = token$start, length = nchar(token$value)),
+                list(start = rparen_token$start, length = nchar(rparen_token$value))
+            )
+            
+            group_node <- GroupAstNode(group_children, src)
+            result <- append(result, list(group_node))
+            
+            # Skip to after the closing paren
+            i <- group_end
+            
+        } else if (token$type == "RPAREN") {
+            stop("Unmatched closing parenthesis ')' at position ", token$start)
             
         } else {
             stop("Unexpected token type '", token$type, "' at position ", token$start)
         }
         
         i <- i + 1
-    }
-    
-    # Final checks
-    if (length(stack) != 1) {
-        stop("Unmatched opening parenthesis '(' - missing closing parenthesis")
-    }
-    
-    result <- stack[[1]]
-    if (length(result) == 0) {
-        stop("Empty axis pattern")
     }
     
     result

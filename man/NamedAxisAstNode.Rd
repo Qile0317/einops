@@ -4,12 +4,10 @@
 \alias{NamedAxisAstNode}
 \title{AST Node Constructors and Einops Parser}
 \usage{
-NamedAxisAstNode(name, count, src)
+NamedAxisAstNode(name, src)
 }
 \arguments{
 \item{name}{Character string, the name of the axis}
-
-\item{count}{Integer or NULL, optional count/size for the axis}
 
 \item{src}{List with start position and length}
 }

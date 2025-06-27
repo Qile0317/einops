@@ -1,10 +1,15 @@
 test_that("AST node constructors work correctly", {
   # Test NamedAxisAstNode
-  node <- NamedAxisAstNode("width", 224, list(start = 1, length = 5))
+  node <- NamedAxisAstNode("width", list(start = 1, length = 5))
   expect_s3_class(node, c("NamedAxisAstNode", "AstNode"))
   expect_equal(node$name, "width")
-  expect_equal(node$count, 224)
   expect_equal(node$src, list(start = 1, length = 5))
+  
+  # Test ConstantAstNode
+  constant <- ConstantAstNode("224", list(start = 7, length = 3))
+  expect_s3_class(constant, c("ConstantAstNode", "AstNode"))
+  expect_equal(constant$count, "224")
+  expect_equal(constant$src, list(start = 7, length = 3))
   
   # Test EllipsisAstNode
   ellipsis <- EllipsisAstNode(list(start = 10, length = 3))
@@ -12,8 +17,8 @@ test_that("AST node constructors work correctly", {
   expect_equal(ellipsis$src, list(start = 10, length = 3))
   
   # Test GroupAstNode
-  child1 <- NamedAxisAstNode("h", NULL, list(start = 1, length = 1))
-  child2 <- NamedAxisAstNode("w", NULL, list(start = 3, length = 1))
+  child1 <- NamedAxisAstNode("h", list(start = 1, length = 1))
+  child2 <- NamedAxisAstNode("w", list(start = 3, length = 1))
   group <- GroupAstNode(list(child1, child2), list(start = 0, length = 5))
   expect_s3_class(group, c("GroupAstNode", "AstNode"))
   expect_length(group$children, 2)
@@ -40,40 +45,43 @@ test_that("merge_src utility works correctly", {
   expect_equal(merged_rev, list(start = 5, length = 15))
 })
 
-test_that("find_top_level_arrow locates arrow correctly", {
+test_that("find_arrow locates arrow correctly", {
   # Simple case: "a -> b"
   tokens <- TokenSequence(
     NameToken("a", 1),
     ArrowToken(3),
     NameToken("b", 6)
   )
-  arrow_pos <- find_top_level_arrow(tokens)
+  arrow_pos <- find_top_level_arrow_index(tokens)
   expect_equal(arrow_pos, 2)
   
-  # Nested case: "a (b -> c) -> d" - should find position 4 (the outer arrow)
-  tokens_nested <- TokenSequence(
+  # Case with groups: "a (b c) -> d (e f)"
+  tokens_with_groups <- TokenSequence(
     NameToken("a", 1),
     LParenToken(3),
     NameToken("b", 5),
-    ArrowToken(7),
-    NameToken("c", 10),
-    RParenToken(12),
-    ArrowToken(14),
-    NameToken("d", 17)
+    NameToken("c", 7),
+    RParenToken(9),
+    ArrowToken(11),
+    NameToken("d", 14),
+    LParenToken(16),
+    NameToken("e", 18),
+    NameToken("f", 20),
+    RParenToken(22)
   )
-  arrow_pos_nested <- find_top_level_arrow(tokens_nested)
-  expect_equal(arrow_pos_nested, 7)
+  arrow_pos_groups <- find_top_level_arrow_index(tokens_with_groups)
+  expect_equal(arrow_pos_groups, 6)
 })
 
-test_that("find_top_level_arrow errors on missing arrow", {
+test_that("find_arrow errors on missing arrow", {
   tokens <- TokenSequence(
     NameToken("a", 1),
     NameToken("b", 3)
   )
-  expect_error(find_top_level_arrow(tokens), "Missing arrow")
+  expect_error(find_top_level_arrow_index(tokens), "No '->' found")
 })
 
-test_that("find_top_level_arrow errors on multiple top-level arrows", {
+test_that("find_arrow errors on multiple arrows", {
   tokens <- TokenSequence(
     NameToken("a", 1),
     ArrowToken(3),
@@ -81,7 +89,7 @@ test_that("find_top_level_arrow errors on multiple top-level arrows", {
     ArrowToken(8),
     NameToken("c", 11)
   )
-  expect_error(find_top_level_arrow(tokens), "Multiple top-level arrows")
+  expect_error(find_top_level_arrow_index(tokens), "Multiple '->' found")
 })
 
 test_that("parse_axes_iter handles simple axis lists", {
@@ -99,7 +107,7 @@ test_that("parse_axes_iter handles simple axis lists", {
   expect_equal(result[[3]]$name, "c")
 })
 
-test_that("parse_axes_iter handles named axes with counts", {
+test_that("parse_axes_iter handles named axes with constants", {
   # Case: "batch height 224 width 224"
   tokens <- TokenSequence(
     NameToken("batch", 1),
@@ -109,13 +117,14 @@ test_that("parse_axes_iter handles named axes with counts", {
     IntToken("224", 24)
   )
   result <- parse_axes_iter(tokens)
-  expect_length(result, 3)
+  expect_length(result, 5)
   expect_equal(result[[1]]$name, "batch")
-  expect_null(result[[1]]$count)
   expect_equal(result[[2]]$name, "height")
-  expect_equal(result[[2]]$count, "224")
-  expect_equal(result[[3]]$name, "width")
+  expect_s3_class(result[[3]], "ConstantAstNode")
   expect_equal(result[[3]]$count, "224")
+  expect_equal(result[[4]]$name, "width")
+  expect_s3_class(result[[5]], "ConstantAstNode")
+  expect_equal(result[[5]]$count, "224")
 })
 
 test_that("parse_axes_iter handles ellipsis", {
@@ -152,34 +161,40 @@ test_that("parse_axes_iter handles groups", {
   expect_equal(result[[2]]$children[[2]]$name, "width")
 })
 
-test_that("parse_axes_iter handles nested groups", {
-  # Case: "((a1 2) (b 3))"
+test_that("parse_axes_iter handles groups with constants", {
+  # Case: "(h 224 w 224)" - group with constants
   tokens <- TokenSequence(
     LParenToken(1),
-    LParenToken(3),
-    NameToken("a1", 5),
-    IntToken("2", 8),
-    RParenToken(10),
-    LParenToken(12),
-    NameToken("b", 14),
-    IntToken("3", 16),
-    RParenToken(18),
-    RParenToken(20)
+    NameToken("h", 3),
+    IntToken("224", 5),
+    NameToken("w", 9),
+    IntToken("224", 11),
+    RParenToken(15)
   )
   result <- parse_axes_iter(tokens)
   expect_length(result, 1)
   expect_s3_class(result[[1]], "GroupAstNode")
-  expect_length(result[[1]]$children, 2)
-  
-  # Check nested structure
-  inner_group1 <- result[[1]]$children[[1]]
-  inner_group2 <- result[[1]]$children[[2]]
-  expect_s3_class(inner_group1, "GroupAstNode")
-  expect_s3_class(inner_group2, "GroupAstNode")
-  expect_equal(inner_group1$children[[1]]$name, "a1")
-  expect_equal(inner_group1$children[[1]]$count, "2")
-  expect_equal(inner_group2$children[[1]]$name, "b")
-  expect_equal(inner_group2$children[[1]]$count, "3")
+  expect_length(result[[1]]$children, 4)  # h, 224, w, 224
+  expect_equal(result[[1]]$children[[1]]$name, "h")
+  expect_s3_class(result[[1]]$children[[2]], "ConstantAstNode")
+  expect_equal(result[[1]]$children[[2]]$count, "224")
+  expect_equal(result[[1]]$children[[3]]$name, "w")
+  expect_s3_class(result[[1]]$children[[4]], "ConstantAstNode")
+  expect_equal(result[[1]]$children[[4]]$count, "224")
+})
+
+test_that("parse_axes_iter errors on nesting groups", {
+  # Case: "((a b) c)" - nesting not allowed in einops
+  tokens <- TokenSequence(
+    LParenToken(1),
+    LParenToken(3),
+    NameToken("a", 5),
+    NameToken("b", 7),
+    RParenToken(9),
+    NameToken("c", 11),
+    RParenToken(13)
+  )
+  expect_error(parse_axes_iter(tokens), "Groups cannot be nested")
 })
 
 test_that("parse_axes_iter errors on multiple ellipses", {
@@ -286,49 +301,62 @@ test_that("parse_einops_ast handles ellipsis patterns", {
   expect_s3_class(ast$output_axes[[1]], "EllipsisAstNode")
 })
 
-test_that("parse_einops_ast handles stress test with deep nesting", {
-  # Build 100 nested parentheses: "((((...(a)...))))"
-  tokens <- list()
+test_that("parse_einops_ast handles real einops patterns", {
+  # "b h w c -> b (h w) c" - common rearrange pattern
+  tokens <- TokenSequence(
+    NameToken("b", 1),
+    NameToken("h", 3),
+    NameToken("w", 5),
+    NameToken("c", 7),
+    ArrowToken(9),
+    NameToken("b", 12),
+    LParenToken(14),
+    NameToken("h", 16),
+    NameToken("w", 18),
+    RParenToken(20),
+    NameToken("c", 22)
+  )
   
-  # Add 100 opening parens
-  for (i in 1:100) {
-    tokens <- append(tokens, list(LParenToken(i)))
-  }
-  
-  # Add the axis
-  tokens <- append(tokens, list(NameToken("a", 101)))
-  
-  # Add 100 closing parens
-  for (i in 103:202) {
-    tokens <- append(tokens, list(RParenToken(i)))
-  }
-  
-  # Add arrow and output
-  tokens <- append(tokens, list(ArrowToken(203)))
-  tokens <- append(tokens, list(NameToken("a", 206)))
-  
-  token_seq <- do.call(TokenSequence, tokens)
-  
-  # This should not cause stack overflow
-  ast <- parse_einops_ast(token_seq)
+  ast <- parse_einops_ast(tokens)
   expect_s3_class(ast, "EinopsAst")
-  expect_length(ast$input_axes, 1)
-  expect_length(ast$output_axes, 1)
+  expect_length(ast$input_axes, 4)
+  expect_length(ast$output_axes, 3)
   
-  # Traverse the nested structure to ensure it's correct
-  current <- ast$input_axes[[1]]
-  depth <- 0
-  while (inherits(current, "GroupAstNode")) {
-    depth <- depth + 1
-    expect_length(current$children, 1)
-    current <- current$children[[1]]
-  }
-  expect_equal(depth, 100)
-  expect_equal(current$name, "a")
+  # Check that group is parsed correctly
+  expect_s3_class(ast$output_axes[[2]], "GroupAstNode")
+  expect_length(ast$output_axes[[2]]$children, 2)
+})
+
+test_that("parse_einops_ast handles patterns with constants", {
+  # "b h w -> b (h 2 w)" - repeat pattern with constant
+  tokens <- TokenSequence(
+    NameToken("b", 1),
+    NameToken("h", 3),
+    NameToken("w", 5),
+    ArrowToken(7),
+    NameToken("b", 10),
+    LParenToken(12),
+    NameToken("h", 14),
+    IntToken("2", 16),
+    NameToken("w", 18),
+    RParenToken(20)
+  )
+  
+  ast <- parse_einops_ast(tokens)
+  expect_s3_class(ast, "EinopsAst")
+  expect_length(ast$input_axes, 3)
+  expect_length(ast$output_axes, 2)
+  
+  # Check that group contains constant
+  group <- ast$output_axes[[2]]
+  expect_s3_class(group, "GroupAstNode")
+  expect_length(group$children, 3)  # h, 2, w
+  expect_s3_class(group$children[[2]], "ConstantAstNode")
+  expect_equal(group$children[[2]]$count, "2")
 })
 
 test_that("parse_einops_ast errors on unmatched parentheses", {
-  # "b (h w -> c" - unmatched paren will cause arrow detection to fail
+  # "b (h w -> c" - unmatched opening paren
   tokens <- TokenSequence(
     NameToken("b", 1),
     LParenToken(3),
@@ -337,10 +365,21 @@ test_that("parse_einops_ast errors on unmatched parentheses", {
     ArrowToken(9),
     NameToken("c", 12)
   )
-  expect_error(parse_einops_ast(tokens), "Missing arrow")
+  expect_error(parse_einops_ast(tokens), "Unmatched opening parenthesis")
+  
+  # "b h w) -> c" - unmatched closing paren
+  tokens2 <- TokenSequence(
+    NameToken("b", 1),
+    NameToken("h", 3),
+    NameToken("w", 5),
+    RParenToken(7),
+    ArrowToken(9),
+    NameToken("c", 12)
+  )
+  expect_error(parse_einops_ast(tokens2), "Unmatched closing parenthesis")
 })
 
-test_that("parse_einops_ast errors on double ellipsis", {
+test_that("parse_einops_ast errors on multiple ellipses on one side", {
   # "b ... ... -> c"
   tokens <- TokenSequence(
     NameToken("b", 1),
@@ -359,7 +398,7 @@ test_that("parse_einops_ast errors on missing arrow", {
     NameToken("h", 3),
     NameToken("w", 5)
   )
-  expect_error(parse_einops_ast(tokens), "Missing arrow")
+  expect_error(parse_einops_ast(tokens), "No '->' found")
 })
 
 test_that("parse_einops_ast errors on empty group", {
