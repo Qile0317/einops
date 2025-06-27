@@ -189,7 +189,6 @@ lex <- function(pattern) {
         pos <- pos + 1
     }
 
-    # Return tokens with a custom class for better printing
     structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
