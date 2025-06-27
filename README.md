@@ -24,10 +24,11 @@ library(einops)
 ## Roadmap (Subject to change)
 
 - [x] Lexer
-- [ ] Parser & Ast datastructure
-- [ ] Semantic checker for each context
+- [x] Ast Datastructure
+- [ ] [IN PROGRESS] Token -> Ast Parser
+- [ ] Semantic Analyzer
 - [ ] Intermediate Representation Generator (planner)
-- [ ] Executor (this handles all different backends, starting with `base::array`)
+- [ ] Executor (this should handles all backends, starting with `base::array`)
 - [ ] `einops:::parse_shape.array()`
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`
