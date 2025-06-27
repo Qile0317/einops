@@ -8,18 +8,29 @@ create_token <- function(type, value, start, end) {
 }
 
 #' @title Print method for EinopsToken
-#' @description Print EinopsToken objects in a clean format
+#' @description Print EinopsToken objects in a clean format showing construction
 #' @param x EinopsToken object
 #' @param ... additional arguments (unused)
 #' @return invisible x
 #' @export
 print.EinopsToken <- function(x, ...) {
-    cat(sprintf("%s('%s') [%d:%d]", x$type, x$value, x$start, x$end), "\n")
+    # Map token types to their constructor functions
+    constructor_call <- switch(x$type,
+        "ARROW" = sprintf("ArrowToken(%d, %d)", x$start, x$end),
+        "ELLIPSIS" = sprintf("EllipsisToken(%d, %d)", x$start, x$end),
+        "LPAREN" = sprintf("LParenToken(%d, %d)", x$start, x$end),
+        "RPAREN" = sprintf("RParenToken(%d, %d)", x$start, x$end),
+        "INT" = sprintf("IntToken(\"%s\", %d, %d)", x$value, x$start, x$end),
+        "NAME" = sprintf("NameToken(\"%s\", %d, %d)", x$value, x$start, x$end),
+        # Fallback for unknown types
+        sprintf("create_token(\"%s\", \"%s\", %d, %d)", x$type, x$value, x$start, x$end)
+    )
+    cat(constructor_call, "\n")
     invisible(x)
 }
 
 #' @title Print method for EinopsTokenSequence
-#' @description Print EinopsTokenSequence objects in a clean format
+#' @description Print EinopsTokenSequence objects showing reconstructed expression and construction
 #' @param x EinopsTokenSequence object
 #' @param ... additional arguments (unused)
 #' @return invisible x
@@ -30,15 +41,58 @@ print.EinopsTokenSequence <- function(x, ...) {
         return(invisible(x))
     }
     
-    cat("Token sequence:\n")
+    # Reconstruct the original expression
+    reconstructed <- ""
     for (i in seq_along(x)) {
-        if (inherits(x[[i]], "EinopsToken")) {
-            cat(sprintf("  [%d] %s('%s') [%d:%d]\n", 
-                       i, x[[i]]$type, x[[i]]$value, x[[i]]$start, x[[i]]$end))
-        } else {
-            cat(sprintf("  [%d] %s\n", i, as.character(x[[i]])))
+        token <- x[[i]]
+        if (inherits(token, "EinopsToken")) {
+            reconstructed <- paste0(reconstructed, token$value)
+            # Add space after tokens except before arrows and closing parens
+            if (i < length(x) && 
+                !x[[i+1]]$type %in% c("ARROW", "RPAREN") && 
+                !token$type %in% c("LPAREN", "ARROW")) {
+                reconstructed <- paste0(reconstructed, " ")
+            }
         }
     }
+    
+    cat("Reconstructed expression: ", reconstructed, "\n")
+    
+    # Generate constructor calls for each token
+    constructor_calls <- character(length(x))
+    for (i in seq_along(x)) {
+        token <- x[[i]]
+        if (inherits(token, "EinopsToken")) {
+            constructor_calls[i] <- switch(token$type,
+                "ARROW" = sprintf("ArrowToken(%d, %d)", token$start, token$end),
+                "ELLIPSIS" = sprintf("EllipsisToken(%d, %d)", token$start, token$end),
+                "LPAREN" = sprintf("LParenToken(%d, %d)", token$start, token$end),
+                "RPAREN" = sprintf("RParenToken(%d, %d)", token$start, token$end),
+                "INT" = sprintf("IntToken(\"%s\", %d, %d)", token$value, token$start, token$end),
+                "NAME" = sprintf("NameToken(\"%s\", %d, %d)", token$value, token$start, token$end),
+                # Fallback for unknown types
+                sprintf("create_token(\"%s\", \"%s\", %d, %d)", token$type, token$value, token$start, token$end)
+            )
+        } else {
+            constructor_calls[i] <- as.character(token)
+        }
+    }
+    
+    # Print the TokenSequence constructor call
+    if (length(constructor_calls) == 1) {
+        cat("TokenSequence(", constructor_calls[1], ")\n")
+    } else {
+        cat("TokenSequence(\n")
+        for (i in seq_along(constructor_calls)) {
+            if (i < length(constructor_calls)) {
+                cat("  ", constructor_calls[i], ",\n")
+            } else {
+                cat("  ", constructor_calls[i], "\n")
+            }
+        }
+        cat(")\n")
+    }
+    
     invisible(x)
 }
 

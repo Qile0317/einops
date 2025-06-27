@@ -15,5 +15,5 @@
 invisible x
 }
 \description{
-Print EinopsTokenSequence objects in a clean format
+Print EinopsTokenSequence objects showing reconstructed expression and construction
 }

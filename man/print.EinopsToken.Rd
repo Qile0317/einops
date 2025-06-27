@@ -15,5 +15,5 @@
 invisible x
 }
 \description{
-Print EinopsToken objects in a clean format
+Print EinopsToken objects in a clean format showing construction
 }
