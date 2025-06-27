@@ -52,6 +52,14 @@ asTokenSequence <- function(x) {
     x
 }
 
+#' @export
+tail.TokenSequence <- function(x, n = 1) { # nolint: object_name_linter.
+    if (n < 1) {
+        stop("n must be at least 1")
+    }
+    asTokenSequence(tail(unclass(x), n))
+}
+
 #' @title Print method for EinopsToken
 #' @description Print EinopsToken objects in a clean format showing construction
 #' @param x EinopsToken object

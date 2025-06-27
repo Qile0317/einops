@@ -105,6 +105,7 @@ to_tokens.EinopsAst <- function(x, ...) {
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
     last_input_tokens <- to_tokens(last_input_astnode)
     last_token <- tail(last_input_tokens, 1)[[1]]
+    # print(last_token)
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
