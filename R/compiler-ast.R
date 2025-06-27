@@ -86,7 +86,7 @@ to_tokens.GroupAstNode <- function(x, ...) {
     last_token <- tail(last_child_tokens, 1)[[1]]
     rparen_token <- RParenToken(last_token$start + nchar(last_token$value))
     child_tokens <- lapply(x$children, to_tokens)
-    asEinopsTokenSequence(
+    EinopsTokenSequence(
         c(lparen_token, unlist(child_tokens, recursive = FALSE), rparen_token)
     )
 }
@@ -113,14 +113,14 @@ to_tokens.EinopsAst <- function(x, ...) {
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
 
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
-    print("=========================")
-    print(last_input_astnode)
+    # print("=========================")
+    # print(last_input_astnode)
     last_input_tokens <- to_tokens(last_input_astnode)
-    print("=========================")
-    print(last_input_tokens)
+    # print("=========================")
+    # print(last_input_tokens)
     last_token <- tail(last_input_tokens, 1)[[1]]
-    print("=========================")
-    print(last_token)
+    # print("=========================")
+    # print(last_token)
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }

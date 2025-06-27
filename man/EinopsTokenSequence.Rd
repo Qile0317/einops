@@ -7,7 +7,7 @@
 EinopsTokenSequence(...)
 }
 \arguments{
-\item{...}{tokens to include}
+\item{...}{tokens or EinopsTokenSequences to include}
 }
 \value{
 list of tokens

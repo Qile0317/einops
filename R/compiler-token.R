@@ -32,12 +32,25 @@ NameToken <- function(value, start) {
 
 #' @title TokenSequence
 #' @description Helper to build a token sequence (list of tokens)
-#' @param ... tokens to include
+#' @param ... tokens or EinopsTokenSequences to include
 #' @return list of tokens
 #' @keywords internal
 EinopsTokenSequence <- function(...) {
-    tokens <- list(...)
-    tokens <- tokens[!vapply(tokens, is.null, logical(1))]
+    inputs <- list(...)
+    inputs <- inputs[!vapply(inputs, is.null, logical(1))]
+    
+    # Flatten any EinopsTokenSequences and extract their tokens
+    tokens <- list()
+    for (input in inputs) {
+        if (inherits(input, "EinopsTokenSequence")) {
+            # Extract tokens from the sequence
+            tokens <- c(tokens, unclass(input))
+        } else {
+            # Assume it's a regular token
+            tokens <- c(tokens, list(input))
+        }
+    }
+    
     structure(tokens, class = c("EinopsTokenSequence", "list"))
 }
 
