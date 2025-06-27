@@ -6,7 +6,7 @@
 [![Codecov test coverage](https://codecov.io/gh/Qile0317/einops/graph/badge.svg)](https://app.codecov.io/gh/Qile0317/einops)
 <!-- badges: end -->
 
-This is a work in progress implementation of the einops library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, in addition to several syntactic conveniences for use in torch.
+This is a work in progress implementation of the [einops](https://einops.rocks/) library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, in addition to several syntactic conveniences for use in torch.
 
 ## Installation
 
@@ -25,7 +25,7 @@ library(einops)
 
 - [x] Lexer
 - [x] Ast Datastructure
-- [ ] [IN PROGRESS] Token -> Ast Parser
+- [x] Token -> Ast Parser
 - [ ] Semantic Analyzer
 - [ ] Intermediate Representation Generator (planner)
 - [ ] Executor (this should handles all backends, starting with `base::array`)
