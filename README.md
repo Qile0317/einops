@@ -4,6 +4,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/Qile0317/einops/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Qile0317/einops/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/Qile0317/einops/graph/badge.svg)](https://app.codecov.io/gh/Qile0317/einops)
+[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/einops/blob/main/LICENSE.md)
 <!-- badges: end -->
 
 This is a work in progress implementation of the [einops](https://einops.rocks/) library for R. The einops library is a powerful tool for manipulating tensors and arrays in a flexible and readable way. It provides a set of functions for reshaping, reducing, and repeating tensors, in addition to several syntactic conveniences for use in torch.

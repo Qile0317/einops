@@ -121,6 +121,6 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
     )
 
     expect_identical(parse_einops_ast(tokens), ast)
-    # expect_identical(to_tokens(ast), tokens)
+    expect_identical(to_tokens(ast), tokens)
 
 })
