@@ -48,15 +48,15 @@ print.EinopsTokenSequence <- function(x, ...) {
         if (inherits(token, "EinopsToken")) {
             reconstructed <- paste0(reconstructed, token$value)
             # Add space after tokens except before arrows and closing parens
-            if (i < length(x) && 
-                !x[[i+1]]$type %in% c("ARROW", "RPAREN") && 
-                !token$type %in% c("LPAREN", "ARROW")) {
+            if ((i < length(x)) &&
+                (x[[i+1]]$type != "RPAREN") &&
+                (x[[i]]$type != "LPAREN")) {
                 reconstructed <- paste0(reconstructed, " ")
             }
         }
     }
     
-    cat("Reconstructed expression: ", reconstructed, "\n")
+    cat("Reconstructed expression:", reconstructed, "\n")
     
     # Generate constructor calls for each token by capturing print output
     constructor_calls <- character(length(x))
@@ -77,9 +77,9 @@ print.EinopsTokenSequence <- function(x, ...) {
         cat("TokenSequence(\n")
         for (i in seq_along(constructor_calls)) {
             if (i < length(constructor_calls)) {
-                cat("  ", constructor_calls[i], ",\n", sep = "")
+                cat(paste0("  ", constructor_calls[i], ",\n"))
             } else {
-                cat("  ", constructor_calls[i], "\n", sep = "")
+                cat(paste0("  ", constructor_calls[i], "\n"))
             }
         }
         cat(")\n")
