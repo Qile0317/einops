@@ -1,9 +1,17 @@
 Package: einops
-Title: What the Package Does (One Line, Title Case)
+Title: Flexible and powerful tensor operations for readable and reliable code
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person(
+        "Qile",
+        "Yang",
+        email = "qile.yang@berkeley.edu",
+        role = c("cre","aut","cph"),
+        comment = c(ORCID = "0009-0005-0148-2499")
+    ))
+Maintainer: Qile Yang <qile.yang@berkeley.edu>
+Description: R port of the einops library for flexible and powerful array and tensor operations.
+    It provides a concise and readable syntax for reshaping, rearranging, and combination.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

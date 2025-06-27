@@ -4,9 +4,9 @@
 \name{einops-package}
 \alias{einops}
 \alias{einops-package}
-\title{einops: What the Package Does (One Line, Title Case)}
+\title{einops: Flexible and powerful tensor operations for readable and reliable code}
 \description{
-What the package does (one paragraph).
+R port of the einops library for flexible and powerful array and tensor operations. It provides a concise and readable syntax for reshaping, rearranging, and combination.
 }
 \seealso{
 Useful links:
@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Qile Yang \email{qile.yang@berkeley.edu} (\href{https://orcid.org/0009-0005-0148-2499}{ORCID}) [copyright holder]
 
 }
 \keyword{internal}
