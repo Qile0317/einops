@@ -145,41 +145,13 @@ print.EinopsAst <- function(x, ...) {
 
 #' @title Find the top-level arrow in a token sequence
 #' @param tokens EinopsTokenSequence object
-#' @return Integer position of the top-level arrow token
+#' @return one-indexed Integer position of the top-level arrow token
 #' @keywords internal
-find_top_level_arrow <- function(tokens) {
-    depth <- 0
-    arrow_positions <- c()
-    
-    for (i in seq_along(tokens)) {
-        token <- tokens[[i]]
-        
-        if (token$type == "LPAREN") {
-            depth <- depth + 1
-        } else if (token$type == "RPAREN") {
-            depth <- depth - 1
-        } else if (token$type == "ARROW" && depth == 0) {
-            arrow_positions <- c(arrow_positions, i)
-        }
-    }
-    
-    if (length(arrow_positions) == 0) {
-        last_pos <- if (length(tokens) > 0) {
-            last_token <- tokens[[length(tokens)]]
-            last_token$start + nchar(last_token$value) - 1
-        } else {
-            0
-        }
-        stop("Missing arrow (->) in einops pattern at position ", last_pos)
-    }
-    
-    if (length(arrow_positions) > 1) {
-        first_extra <- arrow_positions[2]
-        stop("Multiple top-level arrows found in einops pattern at position ", 
-             tokens[[first_extra]]$start)
-    }
-    
-    arrow_positions[1]
+find_top_level_arrow_index <- function(tokens) {
+    arrow_position <- which(sapply(tokens, function(x) x$type == "ARROW"))[1]
+    if (length(arrow_position) == 0) stop("No '->' found in expression")
+    if (length(arrow_position) > 1) stop("Multiple '->' found in expression")
+    arrow_position
 }
 
 #' @title Parse a sequence of axis tokens iteratively
@@ -297,7 +269,7 @@ parse_einops_ast <- function(tokens) {
     }
     
     # Find the top-level arrow
-    arrow_pos <- find_top_level_arrow(tokens)
+    arrow_pos <- find_top_level_arrow_index(tokens)
     
     # Split into input and output slices
     if (arrow_pos == 1) {
