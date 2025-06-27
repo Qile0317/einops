@@ -1,0 +1,103 @@
+create_token <- function(type, value, start) {
+    structure(list(
+        type = type,
+        value = value,
+        start = start
+    ), class = "EinopsToken")
+}
+
+ArrowToken <- function(start) {
+    create_token("ARROW", "->", start)
+}
+
+EllipsisToken <- function(start) {
+    create_token("ELLIPSIS", "...", start)
+}
+
+LParenToken <- function(start) {
+    create_token("LPAREN", "(", start)
+}
+
+RParenToken <- function(start) {
+    create_token("RPAREN", ")", start)
+}
+
+IntToken <- function(value, start) {
+    create_token("INT", value, start)
+}
+
+NameToken <- function(value, start) {
+    create_token("NAME", value, start)
+}
+
+#' @title TokenSequence
+#' @description Helper to build a token sequence (list of tokens)
+#' @param ... tokens to include
+#' @return list of tokens
+#' @keywords internal
+TokenSequence <- function(...) {
+    tokens <- list(...)
+    tokens <- tokens[!vapply(tokens, is.null, logical(1))]
+    structure(tokens, class = c("EinopsTokenSequence", "list"))
+}
+
+#' @title Print method for EinopsToken
+#' @description Print EinopsToken objects in a clean format showing construction
+#' @param x EinopsToken object
+#' @param ... additional arguments (unused)
+#' @return invisible x
+#' @export
+print.EinopsToken <- function(x, ...) {
+    constructor_call <- switch(x$type,
+        "ARROW" = glue::glue("ArrowToken({x$start})"),
+        "ELLIPSIS" = glue::glue("EllipsisToken({x$start})"),
+        "LPAREN" = glue::glue("LParenToken({x$start})"),
+        "RPAREN" = glue::glue("RParenToken({x$start})"),
+        "INT" = glue::glue("IntToken(\"{x$value}\", {x$start})"),
+        "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start})"),
+        glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start})")
+    )
+    cat(constructor_call, "\n")
+    invisible(x)
+}
+
+#' @title Print method for EinopsTokenSequence
+#' @description Print EinopsTokenSequence objects showing reconstructed expression and construction
+#' @param x EinopsTokenSequence object
+#' @param ... additional arguments (unused)
+#' @return invisible x
+#' @export
+print.EinopsTokenSequence <- function(x, ...) {
+
+    if (length(x) == 0) {
+        cat("Empty EinopsTokenSequence()\n")
+        return(invisible(x))
+    }
+    
+    # Calculate total length by finding rightmost token end
+    total_length <- 0
+    for (token in x) {
+        if (inherits(token, "EinopsToken")) {
+            token_end <- token$start + nchar(token$value) - 1
+            total_length <- max(total_length, token_end)
+        }
+    }
+    
+    chars <- rep(" ", total_length)
+    for (token in x) {
+        if (inherits(token, "EinopsToken")) {
+            token_chars <- strsplit(token$value, "")[[1]]
+            for (i in seq_along(token_chars)) {
+                chars[token$start + i - 1] <- token_chars[i]
+            }
+        }
+    }
+    reconstructed <- paste(chars, collapse = "")
+    cat("Reconstructed expression:", reconstructed, "\n")
+    
+    # Generate constructor calls for each token by capturing print output
+    constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
+    tokens_string <- paste(constructor_calls, collapse = ",\n    ")
+    cat("TokenSequence(\n   ", tokens_string, "\n)\n")
+    invisible(x)
+}

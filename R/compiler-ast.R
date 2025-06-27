@@ -1,6 +1,3 @@
-#' @title AST Node Constructors and Einops Parser
-#' @description Functions to create AST nodes and parse einops patterns
-
 #' @title Create a NamedAxisAstNode
 #' @param name Character string, the name of the axis
 #' @param src List with start position
@@ -59,6 +56,14 @@ EinopsAst <- function(input_axes, output_axes, src) {
         output_axes = output_axes,
         src = src
     ), class = c("EinopsAst", "AstNode"))
+}
+
+to_tokens <- function(astNode, ...) {
+    UseMethod("to_tokens", astNode)
+}
+
+to_tokens.AstNode <- function(astNode, ...) {
+    
 }
 
 #' @title Print method for AstNode
