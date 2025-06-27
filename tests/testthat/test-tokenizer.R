@@ -8,7 +8,7 @@ test_that("tokenize produces exact ordered token objects with positions", {
         LParenToken(12, 12),
         NameToken("h", 13, 13),
         NameToken("w", 15, 15),
-        RParenToken(16, 16) 
+        RParenToken(16, 16)
     )
     tokens <- tokenize("b h w -> b (h w)")
     expect_equal(tokens, expectedTokens)
@@ -111,7 +111,7 @@ test_that("tokenizer handles complex patterns", {
         NameToken("b", 22, 22),
         NameToken("c", 24, 24),
         NameToken("h1", 26, 27),
-        NameToken("w1", 29, 30) 
+        NameToken("w1", 29, 30)
     )
     tokens1 <- tokenize(pattern1)
     expect_equal(tokens1, expectedTokens1)
@@ -132,7 +132,7 @@ test_that("tokenizer handles complex patterns", {
         NameToken("b", 24, 24),
         NameToken("c", 26, 26),
         NameToken("h1", 28, 29),
-        NameToken("w1", 31, 32) 
+        NameToken("w1", 31, 32)
     )
     tokens2 <- tokenize(pattern2)
     expect_equal(tokens2, expectedTokens2)
@@ -147,7 +147,7 @@ test_that("tokenizer handles complex patterns", {
         IntToken("1", 12, 12),
         NameToken("c", 14, 14),
         IntToken("1", 16, 16),
-        IntToken("1", 18, 18) 
+        IntToken("1", 18, 18)
     )
     tokens3 <- tokenize(pattern3)
     expect_equal(tokens3, expectedTokens3)
@@ -164,7 +164,7 @@ test_that("tokenizer handles complex patterns", {
         LParenToken(16, 16),
         RParenToken(17, 17),
         LParenToken(19, 19),
-        RParenToken(20, 20) 
+        RParenToken(20, 20)
     )
     tokens4 <- tokenize(pattern4)
     expect_equal(tokens4, expectedTokens4)
