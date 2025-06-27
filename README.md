@@ -54,3 +54,4 @@ library(einops)
 - [ ] Google Analytics for the docsite
 - [ ] R-universe upload
 - [ ] Much better README
+- [ ] Rcpp Acceleration for `base::array` operations
