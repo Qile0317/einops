@@ -7,7 +7,7 @@
 GroupAstNode(children, src)
 }
 \arguments{
-\item{children}{List of axis nodes contained in this group}
+\item{children}{List of axis nodes contained in this group, potentially empty}
 
 \item{src}{List with start position}
 }

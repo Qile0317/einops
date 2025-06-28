@@ -162,4 +162,23 @@ test_that("lexer handles complex patterns", {
     tokens4 <- lex(pattern4)
     expect_equal(tokens4, expectedTokens4)
     expect_equal(to_expression(tokens4), pattern4)
+
+    pattern5 <- "... h w c -> ... (h w) c"
+    expectedTokens5 <- EinopsTokenSequence(
+        EllipsisToken(1),
+        NameToken("h", 5),
+        NameToken("w", 7),
+        NameToken("c", 9),
+        ArrowToken(11),
+        EllipsisToken(14),
+        LParenToken(18),
+        NameToken("h", 19),
+        NameToken("w", 21),
+        RParenToken(22),
+        NameToken("c", 24) 
+    )
+    tokens5 <- lex(pattern5)
+    expect_equal(tokens5, expectedTokens5)
+    expect_equal(to_expression(tokens5), pattern5)
+
 })
