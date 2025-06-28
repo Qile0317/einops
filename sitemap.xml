@@ -24,9 +24,6 @@
 <url><loc>https://qile0317.github.io/einops/reference/parse_einops_ast.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_shape.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_shape_tokens.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/print.AstNode.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/print.EinopsToken.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/print.EinopsTokenSequence.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/reduce.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/tail.GroupAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/validate_dimension_count.html</loc></url>
