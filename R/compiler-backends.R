@@ -49,10 +49,7 @@ public = list(
     #' @param backend an EinopsBackend subclass
     #' @return this object
     register_backend = function(backend) {
-        assert_that(
-            (inherits(backend, "EinopsBackend") &&
-            inherits(backend, "Singleton")) == TRUE
-        )
+        assert_that(inherits(backend, "EinopsBackend") == TRUE)
         assign(envir = private$type2backend, backend$tensor_type(), backend)
         return(self)
     }
