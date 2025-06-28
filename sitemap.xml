@@ -7,6 +7,7 @@
 <url><loc>https://qile0317.github.io/einops/authors.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/news/index.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/BackendRegistry.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/ConstantAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EinopsAst.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EinopsConstraint.html</loc></url>
@@ -19,12 +20,12 @@
 <url><loc>https://qile0317.github.io/einops/reference/GroupAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/NamedAxisAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/NothingAstNode.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/analyse_semantics.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/check_einops_constraints.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/dot-next_token.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops-package.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops_repeat.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/find_top_level_arrow_index.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/get_backend.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/lex.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/match_dimensions.html</loc></url>

@@ -78,31 +78,24 @@ have different last axis). Find more examples in the vignettes.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># stack along first (batch) axis, output is a single array</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b h w c'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># stacked and reordered axes to "b c h w" format</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b c h w'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># concatenate images along height (vertical axis), 960 = 32 * 30</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; (b h) w c'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># concatenated images along horizontal axis, 1280 = 32 * 40</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; h (b w) c'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># flattened each image into a vector, 3600 = 30 * 40 * 3</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b (c h w)'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># split each image into 4 smaller (top-left, top-right, bottom-left, bottom-right), 128 = 32 * 2 * 2</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b (h1 h) (w1 w) c -&gt; (b h1 w1) h w c'</span>, h1<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># space-to-depth operation</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b (h h1) (w w1) c -&gt; b h w (c h1 w1)'</span>, h1<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("reduce"):</span> no applicable method for 'reduce' applied to an object of class "list"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
