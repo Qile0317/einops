@@ -89,6 +89,10 @@ public = list(
         stop("Not implemented")
     },
 
+    #' @description
+    #' @param start integer, inclusive
+    #' @param stop integer, inclusive
+    #' @return a sequence from start to stop
     arange = function(start, stop) {
         stop("framework doesn't implement arange")
     },
@@ -175,7 +179,56 @@ public = list(
 
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
-    tensor_type = function() "array"
+
+    initialize = function() {
+        if (!requireNamespace("abind", quietly = TRUE)) {
+            stop("abind package required for array operations")
+        }
+    },
+
+    tensor_type = function() "array",
+
+    arange = function(start, stop) {
+        seq(from = start, to = stop)
+    },
+
+    stack_on_zeroth_dimension = function(tensors) {
+        abind::abind(tensors, along = 1)
+    },
+
+    tile = function(x, repeats) {
+
+        dims <- dim(x)
+        if (length(dims) != length(repeats)) {
+            stop("Length of repeats must match number of dimensions")
+        }
+        for (i in seq_along(repeats)) {
+            if (repeats[i] == 0) next
+            x <- do.call(
+                abind::abind,
+                c(replicate(repeats[i], x, simplify = FALSE), list(along = i))
+            )
+        }
+        x
+    },
+
+    concat = function(tensors, axis) {
+        abind::abind(tensors, along = axis)
+    },
+
+    is_float_type = function(x) {
+        TRUE
+    },
+
+    add_axis = function(x, new_position) {
+        dims <- dim(x)
+        new_dims <- append(dims, 1, after = new_position - 1)
+        array(x, dim = new_dims)
+    },
+
+    einsum = function(pattern, ...) {
+        stop("einsum not implemented for base R arrays")
+    }
 ))
 
 # nolint end: indentation_linter.

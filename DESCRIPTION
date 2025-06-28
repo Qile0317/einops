@@ -25,6 +25,7 @@ Imports:
     R6P,
     Rcpp
 Suggests: 
+    abind,
     assertthat,
     conflicted,
     lobstr,
