@@ -5,6 +5,10 @@ get_backend <- function(tensor) {
     BackendRegistry$new()$get_backend(tensor)
 }
 
+register_backend <- function(backend_class) {
+    BackendRegistry$new()$register_backend(backend_class)
+}
+
 #' @title
 #' Singleton Backend Registry, managing all available backends.
 #' @description
@@ -234,5 +238,7 @@ public = list(
         array(x, dim = append(dim(x), 1, after = new_position - 1))
     }
 ))
+
+register_backend(BaseArrayBackend)
 
 # nolint end: indentation_linter.

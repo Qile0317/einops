@@ -15,6 +15,26 @@ test_that("Basic shape parsing works for base::array", {
     )
 
     expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "... c h w"),
+        list(c = 4L, h = 5L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "3 c h w"),
+        list(c = 4L, h = 5L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "3 c 5 w"),
+        list(c = 4L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "3 c ..."),
+        list(c = 4L)
+    )
+
+    expect_identical(
         parse_shape(array(1:360, dim = 3:6), "c h w1 w2"),
         list(c = 3L, h = 4L, w1 = 5L, w2 = 6L)
     )
@@ -32,5 +52,15 @@ test_that("Basic shape parsing works for base::array", {
     expect_identical(
         parse_shape(array(1:360, dim = 3:6), "b _ _ _"),
         list(b = 3L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "b ..."),
+        list(b = 3L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "... h _ w"),
+        list(h = 4L, w = 6L)
     )
 })

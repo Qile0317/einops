@@ -35,7 +35,7 @@ parse_shape <- function(x, expr, ...) {
     tokens <- lex(expr)
     onesided_ast <- parse_onesided_ast(tokens) %>%
         validate_shape_ast(shape) %>%
-        preprocess_shape_ast(onesided_ast)
+        preprocess_shape_ast()
     
     result <- list()
     for (i in seq_along(shape)) {
