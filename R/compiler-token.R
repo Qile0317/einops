@@ -131,7 +131,7 @@ print.ParameterizedEinopsToken <- function(x, ...) {
 print.EinopsTokenSequence <- function(x, ...) {
 
     if (length(x) == 0) {
-        cat("Empty EinopsTokenSequence()\n")
+        cat("EinopsTokenSequence()\n")
         return(invisible(x))
     }
 

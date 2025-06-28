@@ -122,6 +122,20 @@ to_tokens.EinopsAst <- function(x, ...) {
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
 
+#' @title Create a NothingAstNode
+#' @param src List with start position
+#' @return NothingAstNode object
+#' @keywords internal
+NothingAstNode <- function() {
+    structure(list(), class = c("NothingAstNode", "AstNode"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.NothingAstNode <- function(x, ...) {
+    EinopsTokenSequence()
+}
+
 #' @export
 print.AstNode <- function(x, ...) {
     format_value <- function(value, indent = 0) {

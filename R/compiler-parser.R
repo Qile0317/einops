@@ -28,17 +28,14 @@ parse_einops_ast <- function(tokens) {
         stop("Empty input pattern before arrow")
     }
     if (length(output_tokens) == 0) {
-        stop("Empty output pattern after arrow")
+        output_axes <- list(NothingAstNode())
+    } else {
+        output_axes <- parse_axes_iter(output_tokens)
     }
-    
     input_axes <- parse_axes_iter(input_tokens)
-    output_axes <- parse_axes_iter(output_tokens)
-    
     # Create the root AST node
     first_token <- tokens[[1]]
-    
     full_src <- list(start = first_token$start)
-    
     EinopsAst(input_axes, output_axes, full_src)
 }
 

@@ -199,4 +199,14 @@ test_that("lexer handles complex patterns", {
     expect_equal(tokens6, expectedTokens6)
     expect_equal(to_expression(tokens6), pattern6)
 
+    pattern7 <- "a b ->"
+    expectedTokens7 <- EinopsTokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        ArrowToken(5)
+    )
+    tokens7 <- lex(pattern7)
+    expect_equal(tokens7, expectedTokens7)
+    expect_equal(to_expression(tokens7), pattern7)
+
 })
