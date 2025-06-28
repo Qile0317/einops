@@ -177,6 +177,22 @@ to_tokens.NothingAstNode <- function(x, ...) {
     EinopsTokenSequence()
 }
 
+#' @title Create an UnderscoreAstNode
+#' @param src List with start position
+#' @return UnderscoreAstNode object
+#' @keywords internal
+UnderscoreAstNode <- function(src) {
+    structure(list(
+        src = src
+    ), class = c("UnderscoreAstNode", "AstNode"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.UnderscoreAstNode <- function(x, ...) {
+    EinopsTokenSequence(UnderscoreToken(x$src$start))
+}
+
 #' @export
 print.AstNode <- function(x, ...) {
 

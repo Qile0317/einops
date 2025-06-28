@@ -97,7 +97,12 @@ parse_axes_iter <- function(tokens) {
             src <- list(start = token$start)
             node <- EllipsisAstNode(src)
             result <- append(result, list(node))
-            
+        
+        } else if (token$type == "UNDERSCORE") {
+            src <- list(start = token$start)
+            node <- UnderscoreAstNode(src)
+            result <- append(result, list(node))
+        
         } else if (token$type == "LPAREN") {
             # Find matching closing paren
             paren_depth <- 1
