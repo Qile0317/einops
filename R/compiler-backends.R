@@ -10,7 +10,7 @@ get_backend <- function(tensor) {
 #' @description
 #' Contains global backend pool
 #' @keywords internal
-BackendRegistry <- R6Class("BackendRegistry", inherit = R6P::Singleton, cloneable=FALSE,
+BackendRegistry <- R6Class("BackendRegistry", inherit = Singleton, cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class generators
@@ -80,60 +80,94 @@ public = list(
     }
 ))
 
-EinopsBackend <- R6Class("EinopsBackend", inherit = R6P::Singleton, cloneable=FALSE,
+#' @noRd
+EinopsBackend <- R6Class("EinopsBackend", inherit = Singleton, cloneable = FALSE,
 
 public = list(
+
     tensor_type = function() {
         stop("Not implemented")
     },
-    is_appropriate_type = function(tensor) {
-        stop("Not implemented")
-    },
-    create_symbol = function(shape) {
-        stop("framework doesn't support symbolic computations")
-    },
-    eval_symbol = function(symbol, symbol_value_pairs) {
-        stop("framework doesn't support symbolic computations")
-    },
+
     arange = function(start, stop) {
         stop("framework doesn't implement arange")
     },
+
+    #' @description
+    #' shape should return a tuple with integers or "shape symbols"
+    #' (which will evaluate to actual size)
     shape = function(x) {
         stop("Not implemented")
     },
+
     reshape = function(x, shape) {
         stop("Not implemented")
     },
+
     transpose = function(x, axes) {
         stop("Not implemented")
     },
+
     reduce = function(x, operation, axes) {
         stop("Not implemented")
     },
+
     stack_on_zeroth_dimension = function(tensors) {
         stop("Not implemented")
     },
+
     add_axis = function(x, new_position) {
         stop("Not implemented")
     },
+
+    #' @description
+    #' Add multiple axes to a tensor and tile along specified axes.
+    #'
+    #' This function adds new axes to the input tensor at the specified
+    #' positions and tiles the tensor along those axes according to the
+    #' provided lengths.
+    #'
+    #' @param x The input tensor/array.
+    #' @param n_axes The total number of axes after addition.
+    #' @param pos2len A named list or vector mapping axis positions
+    #' (1-based) to their lengths (number of repeats).
+    #' @return The tensor/array with new axes added and tiled as specified.
     add_axes = function(x, n_axes, pos2len) {
-        stop("Not implemented")
+        repeats <- rep(1, n_axes)
+        if (length(pos2len) > 0) {
+            for (axis_position in as.integer(names(pos2len))) {
+                x <- self$add_axis(x, axis_position)
+                repeats[axis_position] <- pos2len[[as.character(axis_position)]]
+            }
+        }
+        self$tile(x, repeats)
     },
+
+    #' @description
+    #' repeats - same lengths as x.shape
     tile = function(x, repeats) {
         stop("Not implemented")
     },
+
+    #' @description
+    #' concatenates tensors along axis. Assume identical across tensors:
+    #' devices, dtypes and shapes except selected axis.
     concat = function(tensors, axis) {
         stop("Not implemented")
     },
+
     is_float_type = function(x) {
         stop("Not implemented")
     },
+
     layers = function() {
         stop("backend does not provide layers")
     },
+
     repr = function() {
-        sprintf("<einops backend for %s>", self$framework_name)
+        sprintf("<einops backend for %s>", self$tensor_type())
     },
+    
     einsum = function(pattern, ...) {
         stop("backend does not support einsum")
     }
