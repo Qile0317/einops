@@ -50,6 +50,18 @@ find_top_level_arrow_index <- function(tokens) {
     arrow_positions[1]
 }
 
+#' @title Parse a one-sided einops pattern into OneSidedAstNode
+#' @param tokens EinopsTokenSequence object from the lexer (no arrow expected)
+#' @return OneSidedAstNode object
+#' @keywords internal
+parse_onesided_ast <- function(tokens) {
+    if (length(tokens) == 0) {
+        stop("Empty token sequence")
+    }
+    axes <- parse_axes_iter(tokens)
+    OneSidedAstNode(axes)
+}
+
 #' @title Parse a sequence of axis tokens 
 #' @param tokens List of tokens representing one side of the pattern
 #' @return List of AST nodes
@@ -141,3 +153,4 @@ parse_axes_iter <- function(tokens) {
     
     result
 }
+

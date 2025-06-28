@@ -350,3 +350,37 @@ test_that("a b c ->", {
     expect_identical(to_tokens(ast), tokens)
 
 })
+
+test_that("parse_onesided_ast handles simple axis names", {
+    tokens <- EinopsTokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        NameToken("c", 5)
+    )
+    ast <- OneSidedAstNode(
+        NamedAxisAstNode(name = "a", src = list(start = 1)),
+        NamedAxisAstNode(name = "b", src = list(start = 3)),
+        NamedAxisAstNode(name = "c", src = list(start = 5))
+    )
+    expect_identical(parse_onesided_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+
+    tokens <- EinopsTokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        UnderscoreToken(5),
+        NameToken("c", 7),
+        NameToken("d", 9),
+        EllipsisToken(11)
+    )
+    ast <- OneSidedAstNode(
+        NamedAxisAstNode(name = "a", src = list(start = 1)),
+        NamedAxisAstNode(name = "b", src = list(start = 3)),
+        UnderscoreAstNode(src = list(start = 5)),
+        NamedAxisAstNode(name = "c", src = list(start = 7)),
+        NamedAxisAstNode(name = "d", src = list(start = 9)),
+        EllipsisAstNode(src = list(start = 11))
+    )
+    expect_identical(parse_onesided_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+})
