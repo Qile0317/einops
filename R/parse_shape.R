@@ -1,8 +1,34 @@
-#' @title Parse shape expression
-#' @description This function is the entry point for parsing a shape expression.
-#' @param expr expression to parse
-#' @return named list of tokens to their mapped dimensions
+#' @title
+#' Parse a tensor shape to dictionary mapping axes names to their lengths.
+#'
+#' @description
+#' Use underscore to skip the dimension in parsing.
+#'
+#' @param x tensor of any supported framework
+#' @param expr character of length 1, space separated names for axes,
+#' underscore means skip axis
+#' @param ... additional arguments passed to methods
+#'
+#' @return named list, maps axes names to their lengths
 #' @export
+#'
+#' @examples
+#' # Use underscore to skip the dimension in parsing.
+#' x <- array(0, dim = c(2, 3, 5, 7))
+#' parse_shape(x, 'batch _ h w')
+#' # $batch
+#' # [1] 2
+#' # $h
+#' # [1] 5
+#' # $w
+#' # [1] 7
+#'
+#' # `parse_shape` output can be used to specify axes_lengths for other operations:
+#' y <- array(0, dim = 700)
+#' shape_info <- parse_shape(x, 'b _ h w')
+#' # rearrange(y, '(b c h w) -> b c h w', **shape_info) would give shape (2, 10, 5, 7)
+#' # note that **shape_info refers to putting the list arguments as named arguments
+#'
 parse_shape <- function(x, expr, ...) {
     UseMethod("parse_shape", x)
 }
