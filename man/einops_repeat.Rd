@@ -2,25 +2,26 @@
 % Please edit documentation in R/repeat.R
 \name{einops_repeat}
 \alias{einops_repeat}
-\title{einops.repeat allows reordering elements and repeating them in arbitrary combinations.
-This operation includes functionality of repeat, tile, and broadcast functions.}
+\title{Allows reordering elements and repeating them in arbitrary combinations.}
 \usage{
 einops_repeat(x, expr, ...)
 }
 \arguments{
-\item{x}{tensor of any supported library.
-list of tensors is also accepted, those should be of the same type and shape}
+\item{x}{tensor: array, matrix, or list of arrays of the same shape and type}
 
-\item{expr}{string, rearrangement pattern}
+\item{expr}{string: reduction pattern}
 
-\item{...}{any additional specifications for dimensions}
+\item{...}{either corresponding axes lengths or a single list of them.}
 }
 \value{
-tensor of the same type as input. If possible, a view to the original tensor is returned.
+tensor of the same type as input, with dimensions according to output pattern
 }
 \description{
-When composing axes, C-order enumeration is used (consecutive elements have different last axis).
-Find more examples in the vignettes.
+This operation includes functionality of repeat, tile, and broadcast functions.
+}
+\details{
+When composing axes, C-order enumeration is used (consecutive elements
+have different last axis). Find more examples in the vignettes.
 }
 \examples{
 # a grayscale image (of shape height x width)

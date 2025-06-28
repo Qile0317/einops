@@ -5,15 +5,12 @@
 #' This operation includes functionality of transpose (axes permutation),
 #' reshape (view), squeeze, unsqueeze, stack, concatenate and other operations.
 #'
+#' @details
 #' When composing axes, C-order enumeration is used (consecutive elements
 #' have different last axis). Find more examples in the vignettes.
 #'
-#' @param x tensor of any supported library.
-#'          list of tensors is also accepted, those should be of the same type and shape
-#' @param expr string, rearrangement pattern
-#' @param ... either corresponding axes lengths or a single list of them.
-#'
-#' @return tensor of the same type as input. If possible, a view to the original tensor is 
+#' @inheritParams reduce
+#' @inherit reduce return
 #' @export
 #'
 #' @examples
@@ -41,5 +38,5 @@
 #' # space-to-depth operation
 #' rearrange(images, 'b (h h1) (w w1) c -> b h w (c h1 w1)', h1=2, w1=2)
 rearrange <- function(x, expr, ...) {
-    UseMethod("rearrange")
+    reduce(x, expr, "rearrange", ...)
 }

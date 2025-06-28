@@ -1,15 +1,12 @@
-#' einops.repeat allows reordering elements and repeating them in arbitrary combinations.
+#' @title
+#' Allows reordering elements and repeating them in arbitrary combinations.
+#'
+#' @description
 #' This operation includes functionality of repeat, tile, and broadcast functions.
 #'
-#' When composing axes, C-order enumeration is used (consecutive elements have different last axis).
-#' Find more examples in the vignettes.
-#'
-#' @param x tensor of any supported library.
-#'          list of tensors is also accepted, those should be of the same type and shape
-#' @param expr string, rearrangement pattern
-#' @param ... any additional specifications for dimensions
-#'
-#' @return tensor of the same type as input. If possible, a view to the original tensor is returned.
+#' @inherit rearrange details
+#' @inheritParams reduce
+#' @inherit reduce return
 #' @export
 #'
 #' @examples
@@ -32,5 +29,5 @@
 #' # downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
 #' # einops_repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
 einops_repeat <- function(x, expr, ...) {
-    UseMethod("einops_repeat")
+    reduce(x, expr, "repeat", ...)
 }
