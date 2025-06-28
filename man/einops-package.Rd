@@ -12,6 +12,7 @@ R port of the einops library for flexible and powerful array and tensor operatio
 Useful links:
 \itemize{
   \item \url{https://github.com/Qile0317/einops}
+  \item \url{https://qile0317.github.io/einops/}
   \item Report bugs at \url{https://github.com/Qile0317/einops/issues}
 }
 

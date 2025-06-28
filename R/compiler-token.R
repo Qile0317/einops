@@ -14,6 +14,11 @@ EllipsisToken <- function(start) {
     create_token("ELLIPSIS", "...", start)
 }
 
+# The underscore token is only used in parse_shape()
+UnderscoreToken <- function(start) {
+    create_token("UNDERSCORE", "_", start)
+}
+
 LParenToken <- function(start) {
     create_token("LPAREN", "(", start)
 }
@@ -83,6 +88,7 @@ print.EinopsToken <- function(x, ...) {
         "RPAREN" = glue::glue("RParenToken({x$start})"),
         "INT" = glue::glue("IntToken(\"{x$value}\", {x$start})"),
         "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start})"),
+        "UNDERSCORE" = glue::glue("UnderscoreToken({x$start})"),
         glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start})")
     )
     cat(constructor_call, "\n")

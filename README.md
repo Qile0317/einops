@@ -27,10 +27,10 @@ library(einops)
 - [x] Lexer
 - [x] Ast Datastructure
 - [x] Token -> Ast Parser
-- [ ] Semantic Analyzer
+- [x] `einops:::parse_shape.array()`
+- [ ] EinopsAst -> EinopsSemanticAst Semantic Analyzer & validator for different task contexts
 - [ ] Intermediate Representation Generator (planner)
 - [ ] Executor (this should handles all backends, starting with `base::array`)
-- [ ] `einops:::parse_shape.array()`
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`
 - [ ] `einops:::repeat.array()`
