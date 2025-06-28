@@ -6,33 +6,54 @@ create_token <- function(type, value, start) {
     ), class = "EinopsToken")
 }
 
+create_simple_token <- function(type, value, start) {
+    structure(list(
+        type = type,
+        value = value,
+        start = start
+    ), class = c("SimpleEinopsToken", "EinopsToken"))
+}
+
+create_parameterized_token <- function(type, value, start) {
+    structure(list(
+        type = type,
+        value = value,
+        start = start
+    ), class = c("ParameterizedEinopsToken", "EinopsToken"))
+}
+
 ArrowToken <- function(start) {
-    create_token("ARROW", "->", start)
+    create_simple_token("ARROW", "->", start)
 }
 
 EllipsisToken <- function(start) {
-    create_token("ELLIPSIS", "...", start)
+    create_simple_token("ELLIPSIS", "...", start)
 }
 
 # The underscore token is only used in parse_shape()
 UnderscoreToken <- function(start) {
-    create_token("UNDERSCORE", "_", start)
+    create_simple_token("UNDERSCORE", "_", start)
+}
+
+# This token will be used in the future for pack/unpack
+AsteriskToken <- function(start) {
+    create_simple_token("ASTERISK", "*", start)
 }
 
 LParenToken <- function(start) {
-    create_token("LPAREN", "(", start)
+    create_simple_token("LPAREN", "(", start)
 }
 
 RParenToken <- function(start) {
-    create_token("RPAREN", ")", start)
+    create_simple_token("RPAREN", ")", start)
 }
 
 IntToken <- function(value, start) {
-    create_token("INT", value, start)
+    create_parameterized_token("INT", value, start)
 }
 
 NameToken <- function(value, start) {
-    create_token("NAME", value, start)
+    create_parameterized_token("NAME", value, start)
 }
 
 #' @title EinopsTokenSequence constructor
@@ -74,32 +95,33 @@ tail.EinopsTokenSequence <- function(x, n = 1) { # nolint: object_name_linter.
     asEinopsTokenSequence(result)
 }
 
-#' @title Print method for EinopsToken
-#' @description Print EinopsToken objects in a clean format showing construction
-#' @param x EinopsToken object
-#' @param ... additional arguments (unused)
-#' @return invisible x
-#' @export
-print.EinopsToken <- function(x, ...) {
-    constructor_call <- switch(x$type,
-        "ARROW" = glue::glue("ArrowToken({x$start})"),
-        "ELLIPSIS" = glue::glue("EllipsisToken({x$start})"),
-        "LPAREN" = glue::glue("LParenToken({x$start})"),
-        "RPAREN" = glue::glue("RParenToken({x$start})"),
-        "INT" = glue::glue("IntToken(\"{x$value}\", {x$start})"),
-        "NAME" = glue::glue("NameToken(\"{x$value}\", {x$start})"),
-        "UNDERSCORE" = glue::glue("UnderscoreToken({x$start})"),
-        glue::glue("create_token(\"{x$type}\", \"{x$value}\", {x$start})")
+type_to_function_name <- function(type) {
+    type_lower <- tolower(type)
+    if (type == "LPAREN") return("LParenToken")
+    if (type == "RPAREN") return("RParenToken")
+    paste0(
+        toupper(substring(type_lower, 1, 1)),
+        substring(type_lower, 2),
+        "Token"
     )
+}
+
+#' @export
+print.SimpleEinopsToken <- function(x, ...) {
+    func_name <- type_to_function_name(x$type)
+    constructor_call <- glue::glue("{func_name}({x$start})")
     cat(constructor_call, "\n")
     invisible(x)
 }
 
-#' @title Print method for EinopsTokenSequence
-#' Print EinopsTokenSequences w/reconstructed expression & constructor
-#' @param x EinopsTokenSequence object
-#' @param ... additional arguments (unused)
-#' @return invisible x
+#' @export
+print.ParameterizedEinopsToken <- function(x, ...) {
+    func_name <- type_to_function_name(x$type)
+    constructor_call <- glue::glue("{func_name}(\"{x$value}\", {x$start})")
+    cat(constructor_call, "\n")
+    invisible(x)
+}
+
 #' @export
 print.EinopsTokenSequence <- function(x, ...) {
 
@@ -116,6 +138,7 @@ print.EinopsTokenSequence <- function(x, ...) {
     invisible(x)
 }
 
+# convert EinopsTokenSequence to a string expression
 to_expression <- function(x, ...) {
     total_length <- 0
     for (token in x) {

@@ -23,4 +23,14 @@ test_that("Basic shape parsing works for base::array", {
         parse_shape(array(1:360, dim = 3:6), "b _ h w"),
         list(b = 3L, h = 5L, w = 6L)
     )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "b _ _ w"),
+        list(b = 3L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "b _ _ _"),
+        list(b = 3L)
+    )
 })

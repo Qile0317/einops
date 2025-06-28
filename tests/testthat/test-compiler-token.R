@@ -4,27 +4,27 @@ test_that("the EinopsTokenSequence constructor works", {
         list(
             structure(
                 list(type = "NAME", value = "a", start = 1),
-                class = "EinopsToken"
+                class = c("ParameterizedEinopsToken", "EinopsToken")
             ),
             structure(
                 list(type = "NAME", value = "b", start = 3),
-                class = "EinopsToken"
+                class = c("ParameterizedEinopsToken", "EinopsToken")
             ),
             structure(
                 list(type = "NAME", value = "c", start = 5),
-                class = "EinopsToken"
+                class = c("ParameterizedEinopsToken", "EinopsToken")
             ),
             structure(
                 list(type = "ARROW", value = "->", start = 7),
-                class = "EinopsToken"
+                class = c("SimpleEinopsToken", "EinopsToken")
             ),
             structure(
                 list(type = "NAME", value = "b", start = 10),
-                class = "EinopsToken"
+                class = c("ParameterizedEinopsToken", "EinopsToken")
             ),
             structure(
                 list(type = "NAME", value = "c", start = 12),
-                class = "EinopsToken"
+                class = c("ParameterizedEinopsToken", "EinopsToken")
             )
         ),
         class = c("EinopsTokenSequence", "list")
