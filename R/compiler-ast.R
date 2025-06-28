@@ -96,6 +96,28 @@ to_tokens.GroupAstNode <- function(x, ...) {
     EinopsTokenSequence(lparen_token, child_tokens, rparen_token)
 }
 
+#' @title Create a OneSidedAstNode (wrapper for input/output axes lists)
+#' @param ... Axis nodes (or a single list of axis nodes)
+#' @return OneSidedAstNode object
+#' @keywords internal
+OneSidedAstNode <- function(...) {
+    args <- list(...)
+    # If a single argument and it's a list, treat as list of nodes
+    if (length(args) == 1 && is.list(args[[1]]) && !inherits(args[[1]], "AstNode")) {
+        axes <- args[[1]]
+    } else {
+        axes <- args
+    }
+    structure(axes, class = c("OneSidedAstNode", "AstNode"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.OneSidedAstNode <- function(x, ...) {
+    tokens <- unlist(lapply(x, to_tokens), recursive = FALSE)
+    do.call(EinopsTokenSequence, tokens)
+}
+
 #' @title Create an EinopsAst root node
 #' @param input_axes List of axis nodes for the input pattern
 #' @param output_axes List of axis nodes for the output pattern
@@ -196,19 +218,4 @@ print.EinopsAst <- function(x, ...) {
         "Einops Abstract Syntax Tree for '{to_expression(to_tokens(x))}':\n\n"
     ))
     print.AstNode(x, ...)
-}
-
-#' @title Create a OneSidedAstNode (wrapper for input/output axes lists)
-#' @param ... Axis nodes (or a single list of axis nodes)
-#' @return OneSidedAstNode object
-#' @keywords internal
-OneSidedAstNode <- function(...) {
-    args <- list(...)
-    # If a single argument and it's a list, treat as list of nodes
-    if (length(args) == 1 && is.list(args[[1]]) && !inherits(args[[1]], "AstNode")) {
-        axes <- args[[1]]
-    } else {
-        axes <- args
-    }
-    structure(axes, class = c("OneSidedAstNode", "AstNode"))
 }
