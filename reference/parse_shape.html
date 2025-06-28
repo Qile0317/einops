@@ -88,8 +88,7 @@ underscore means skip axis</p></dd>
 <span class="r-in"><span><span class="co"># `parse_shape` output can be used to specify axes_lengths for other operations:</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fl">700</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">shape_info</span> <span class="op">&lt;-</span> <span class="fu">parse_shape</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b _ h w'</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># rearrange(y, '(b c h w) -&gt; b c h w', **shape_info) would give shape (2, 10, 5, 7)</span></span></span>
-<span class="r-in"><span><span class="co"># note that **shape_info refers to putting the list arguments as named arguments</span></span></span>
+<span class="r-in"><span><span class="co"># rearrange(y, '(b c h w) -&gt; b c h w', shape_info) would give shape (2, 10, 5, 7)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

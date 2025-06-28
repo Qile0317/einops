@@ -23,6 +23,7 @@
 <url><loc>https://qile0317.github.io/einops/reference/check_einops_constraints.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/dot-next_token.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops-package.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/einops_repeat.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/find_top_level_arrow_index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/lex.html</loc></url>
@@ -31,6 +32,7 @@
 <url><loc>https://qile0317.github.io/einops/reference/parse_einops_ast.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_shape.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_shape_tokens.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/rearrange.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/reduce.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/tail.GroupAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/validate_dimension_count.html</loc></url>
