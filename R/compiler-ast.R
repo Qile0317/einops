@@ -123,9 +123,6 @@ to_tokens.EinopsAst <- function(x, ...) {
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }
 
-#' @title Print method for AstNode
-#' @param x AstNode object
-#' @param ... Additional arguments (unused)
 #' @export
 print.AstNode <- function(x, ...) {
     format_value <- function(value, indent = 0) {
