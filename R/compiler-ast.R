@@ -104,8 +104,8 @@ to_tokens.GroupAstNode <- function(x, ...) {
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
     structure(list(
-        input_axes = input_axes,
-        output_axes = output_axes,
+        input_axes = if (!inherits(input_axes, "OneSidedAstNode")) OneSidedAstNode(input_axes) else input_axes,
+        output_axes = if (!inherits(output_axes, "OneSidedAstNode")) OneSidedAstNode(output_axes) else output_axes,
         src = src
     ), class = c("EinopsAst", "AstNode"))
 }
@@ -196,4 +196,12 @@ print.EinopsAst <- function(x, ...) {
         "Einops Abstract Syntax Tree for '{to_expression(to_tokens(x))}':\n\n"
     ))
     print.AstNode(x, ...)
+}
+
+#' @title Create a OneSidedAstNode (wrapper for input/output axes lists)
+#' @param axes List of axis nodes
+#' @return OneSidedAstNode object
+#' @keywords internal
+OneSidedAstNode <- function(axes) {
+    structure(axes, class = c("OneSidedAstNode", "AstNode"))
 }

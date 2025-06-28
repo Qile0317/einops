@@ -10,7 +10,7 @@ test_that("a b c -> b c", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "a",
                 src = list(start = 1)
@@ -23,8 +23,8 @@ test_that("a b c -> b c", {
                 name = "c",
                 src = list(start = 5)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 10)
@@ -33,7 +33,7 @@ test_that("a b c -> b c", {
                 name = "c",
                 src = list(start = 12)
             )
-        ),
+        )),
         src = list(start = 1)
     )
 
@@ -63,7 +63,7 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 1)
@@ -98,8 +98,8 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
                 ),
                 src = list(start = 12)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 22)
@@ -116,7 +116,7 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
                 name = "w1",
                 src = list(start = 29)
             )
-        ),
+        )),
         src = list(start = 1)
     )
 
@@ -142,7 +142,7 @@ test_that("b c h w -> b c () ()", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 1)
@@ -159,8 +159,8 @@ test_that("b c h w -> b c () ()", {
                 name = "w",
                 src = list(start = 7)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 12)
@@ -177,7 +177,7 @@ test_that("b c h w -> b c () ()", {
                 children = list(),
                 src = list(start = 19)
             )
-        ),
+        )),
         src = list(start = 1)
     )
 
@@ -203,7 +203,7 @@ test_that("... h w c -> ... (h w) c", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             EllipsisAstNode(
                 src = list(start = 1)
             ),
@@ -219,8 +219,8 @@ test_that("... h w c -> ... (h w) c", {
                 name = "c",
                 src = list(start = 9)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             EllipsisAstNode(
                 src = list(start = 14)
             ),
@@ -241,7 +241,7 @@ test_that("... h w c -> ... (h w) c", {
                 name = "c",
                 src = list(start = 24)
             )
-        ),
+        )),
         src = list(start = 1)
     )
 
@@ -267,7 +267,7 @@ test_that("b h w c -> (b h w c)", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "b",
                 src = list(start = 1)
@@ -284,8 +284,8 @@ test_that("b h w c -> (b h w c)", {
                 name = "c",
                 src = list(start = 7)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             GroupAstNode(
                 children = list(
                     NamedAxisAstNode(
@@ -307,7 +307,7 @@ test_that("b h w c -> (b h w c)", {
                 ),
                 src = list(start = 12)
             )
-        ),
+        )),
         src = list(start = 1)
     )
 
@@ -326,7 +326,7 @@ test_that("a b c ->", {
     )
 
     ast <- EinopsAst(
-        input_axes = list(
+        input_axes = OneSidedAstNode(list(
             NamedAxisAstNode(
                 name = "a",
                 src = list(start = 1)
@@ -339,10 +339,10 @@ test_that("a b c ->", {
                 name = "c",
                 src = list(start = 5)
             )
-        ),
-        output_axes = list(
+        )),
+        output_axes = OneSidedAstNode(list(
             NothingAstNode()
-        ),
+        )),
         src = list(start = 1)
     )
 
