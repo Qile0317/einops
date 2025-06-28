@@ -65,7 +65,7 @@ public = list(
         assert_that(inherits(backend_class, "R6ClassGenerator"))
         backend_singleton_instance <- backend_class$new()
         if (!inherits(backend_singleton_instance, "EinopsBackend")) {
-            stop(glue::glue("{backend_class} is not an EinopsBackend"))
+            stop(glue("{backend_class} is not an EinopsBackend"))
         }
         tensor_type_name <- backend_singleton_instance$tensor_type()
         if (private$debug_importing) {

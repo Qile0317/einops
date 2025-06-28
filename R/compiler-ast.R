@@ -55,6 +55,36 @@ to_tokens.EllipsisAstNode <- function(x, ...) {
     EinopsTokenSequence(EllipsisToken(x$src$start))
 }
 
+#' @title Create a NothingAstNode
+#' @param src List with start position
+#' @return NothingAstNode object
+#' @keywords internal
+NothingAstNode <- function() {
+    structure(list(), class = c("NothingAstNode", "AstNode"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.NothingAstNode <- function(x, ...) {
+    EinopsTokenSequence()
+}
+
+#' @title Create an UnderscoreAstNode
+#' @param src List with start position
+#' @return UnderscoreAstNode object
+#' @keywords internal
+UnderscoreAstNode <- function(src) {
+    structure(list(
+        src = src
+    ), class = c("UnderscoreAstNode", "AstNode"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.UnderscoreAstNode <- function(x, ...) {
+    EinopsTokenSequence(UnderscoreToken(x$src$start))
+}
+
 #' @title Create a GroupAstNode
 #' @param children List of axis nodes contained in this group, potentially empty
 #' @param src List with start position
@@ -131,10 +161,45 @@ print.OneSidedAstNode <- function(x, ...) {
 }
 
 #' @export
-#' @keywords internal
 to_tokens.OneSidedAstNode <- function(x, ...) {
     tokens <- unlist(lapply(x, to_tokens), recursive = FALSE)
     do.call(EinopsTokenSequence, tokens)
+}
+
+#' @export
+"[.OneSidedAstNode" <- function(x, ...) {
+    structure(unclass(x)[...], class = class(x))
+}
+
+#' @export
+append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
+    if (!is.list(values) || inherits(values, "AstNode")) {
+        values <- list(values)
+    }
+    new_x <- append(unclass(x), values, after = after, ...)
+    structure(new_x, class = class(x))
+}
+
+contains_node <- function(x, node_type, ...) {
+    UseMethod("contains_node", x)
+}
+
+#' @export
+contains_node.OneSidedAstNode <- function(x, node_type, ...) {
+    any(sapply(x, function(child) inherits(child, node_type)))
+}
+
+find_node_types_indices <- function(x, node_type, ...) {
+    UseMethod("find_node_types_indices", x)
+}
+
+#' @export
+find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
+    indices <- which(sapply(x, function(child) inherits(child, node_type)))
+    if (length(indices) == 0) {
+        return(integer(0))
+    }
+    indices
 }
 
 #' @title Create an EinopsAst root node
@@ -161,36 +226,6 @@ to_tokens.EinopsAst <- function(x, ...) {
     last_token <- tail(last_input_tokens, 1)[[1]]
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
-}
-
-#' @title Create a NothingAstNode
-#' @param src List with start position
-#' @return NothingAstNode object
-#' @keywords internal
-NothingAstNode <- function() {
-    structure(list(), class = c("NothingAstNode", "AstNode"))
-}
-
-#' @export
-#' @keywords internal
-to_tokens.NothingAstNode <- function(x, ...) {
-    EinopsTokenSequence()
-}
-
-#' @title Create an UnderscoreAstNode
-#' @param src List with start position
-#' @return UnderscoreAstNode object
-#' @keywords internal
-UnderscoreAstNode <- function(src) {
-    structure(list(
-        src = src
-    ), class = c("UnderscoreAstNode", "AstNode"))
-}
-
-#' @export
-#' @keywords internal
-to_tokens.UnderscoreAstNode <- function(x, ...) {
-    EinopsTokenSequence(UnderscoreToken(x$src$start))
 }
 
 #' @export
@@ -265,7 +300,7 @@ print.AstNode <- function(x, ...) {
 
 #' @export
 print.EinopsAst <- function(x, ...) {
-    cat(glue::glue(
+    cat(glue(
         "Einops Abstract Syntax Tree for '{to_expression(to_tokens(x))}':\n\n"
     ))
     print.AstNode(x, ...)

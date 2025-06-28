@@ -4,10 +4,12 @@
 \alias{parse_shape_tokens}
 \title{Parse shape tokens into AST, then does semantic Analysis}
 \usage{
-parse_shape_tokens(tokens, dimensions)
+parse_shape_tokens(ast, dimensions)
 }
 \arguments{
-\item{tokens}{EinopsTokenSequence}
+\item{ast}{OneSidedAstNode}
+
+\item{dimensions}{numeric vector}
 }
 \value{
 EinopsShapeSemanticAst object

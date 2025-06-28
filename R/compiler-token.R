@@ -114,7 +114,7 @@ type_to_function_name <- function(type) {
 #' @export
 print.SimpleEinopsToken <- function(x, ...) {
     func_name <- type_to_function_name(x$type)
-    constructor_call <- glue::glue("{func_name}({x$start})")
+    constructor_call <- glue("{func_name}({x$start})")
     cat(constructor_call, "\n")
     invisible(x)
 }
@@ -122,7 +122,7 @@ print.SimpleEinopsToken <- function(x, ...) {
 #' @export
 print.ParameterizedEinopsToken <- function(x, ...) {
     func_name <- type_to_function_name(x$type)
-    constructor_call <- glue::glue("{func_name}(\"{x$value}\", {x$start})")
+    constructor_call <- glue("{func_name}(\"{x$value}\", {x$start})")
     cat(constructor_call, "\n")
     invisible(x)
 }
@@ -135,7 +135,7 @@ print.EinopsTokenSequence <- function(x, ...) {
         return(invisible(x))
     }
 
-    cat(glue::glue("Einops Lexed Token Sequence for '{to_expression(x)}':\n\n"))
+    cat(glue("Einops Lexed Token Sequence for '{to_expression(x)}':\n\n"))
     
     constructor_calls <- sapply(x, function(x) trimws(capture.output(print(x))))
     tokens_string <- paste(constructor_calls, collapse = ",\n    ")

@@ -4,10 +4,10 @@
 \alias{EinopsShapeSemanticAst}
 \title{EinopsShapeSemanticAst constructor}
 \usage{
-EinopsShapeSemanticAst(tokens, dimensions)
+EinopsShapeSemanticAst(ast, dimensions)
 }
 \arguments{
-\item{tokens}{parsed EinopsTokenSequence}
+\item{ast}{OneSidedAstNode}
 
 \item{dimensions}{numeric vector of array dimensions}
 }

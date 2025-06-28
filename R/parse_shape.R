@@ -29,40 +29,79 @@
 #' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape (2, 10, 5, 7)
 #'
 parse_shape <- function(x, expr, ...) {
-    UseMethod("parse_shape", x)
+    backend <- get_backend(x)
+    shape <- backend$shape(x)
+    tokens <- lex(expr)
+    onesided_ast <- parse_onesided_ast(tokens) %>%
+        validate_shape_ast(shape) %>%
+        preprocess_shape_ast(onesided_ast)
+    # TODO
 }
 
-#' @export
-parse_shape.array <- function(x, expr, ...) {
+validate_shape_ast <- function(onesided_ast, shape) {
+    throw_cannot_parse <- function() {
+        stop(glue("can't parse expression with composite axes: {expr} {shape}"))
+    }
+    if (length(onesided_ast) == 0) {
+        stop("Parsed AST is empty. Please check your expression.")
+    }
+    if (contains_node(onesided_ast, "GroupAstNode")) throw_cannot_parse()
+    if (length(shape) != length(onesided_ast)) {
+        if (contains_node(onesided_ast, "EllipsisAstNode")) {
+            if (length(shape) < length(onesided_ast) - 1) {
+                throw_cannot_parse()
+            }
+            ellipsis_index <- find_node_types_indices(
+                onesided_ast, "EllipsisAstNode"
+            )
+            if (ellipsis_index != 1L && ellipsis_index != length(shape)) {
+                throw_cannot_parse()
+            }
+        }
+        throw_cannot_parse()
+    }
+    onesided_ast
+}
 
-    tokens <- lex(expr)
+preprocess_shape_ast <- function(onesided_ast) {
+    if (!contains_node(onesided_ast, "EllipsisAstNode")) return(onesided_ast)
 
-    if (all(sapply(tokens, function(t) t$type == "UNDERSCORE"))) {
-        warning("Expression contains only underscores. Returning empty list.")
-        return(list())
+    ellipsis_index <- find_node_types_indices(onesided_ast, "EllipsisAstNode")
+    ellipsis_side <- ifelse(ellipsis_index == 1L, "left", "right")
+
+    onesided_ast <- onesided_ast[-ellipsis_index]
+    missing_dim_count <- length(onesided_ast) - length(onesided_ast)
+    new_underscore_nodes <- OneSidedAstNode(replicate(
+        missing_dim_count, UnderscoreAstNode(NULL)
+    ))
+
+    if (ellipsis_side == "left") {
+        onesided_ast <- append(onesided_ast, new_underscore_nodes)
+    } else {
+        onesided_ast <- append(new_underscore_nodes, onesided_ast)
     }
 
-    semantic_ast <- parse_shape_tokens(tokens, dim(x))
-    shape_ir_then_execute(semantic_ast)
+    onesided_ast
 }
 
 #' @title Parse shape tokens into AST, then does semantic Analysis
-#' @param tokens EinopsTokenSequence
+#' @param ast OneSidedAstNode
+#' @param dimensions numeric vector
 #' @return EinopsShapeSemanticAst object
 #' @keywords internal
-parse_shape_tokens <- function(tokens, dimensions) {
-    EinopsShapeSemanticAst(tokens, dimensions)
+parse_shape_tokens <- function(ast, dimensions) {
+    EinopsShapeSemanticAst(ast, dimensions)
 }
 
 #' @title EinopsShapeSemanticAst constructor
-#' @param tokens parsed EinopsTokenSequence
+#' @param ast OneSidedAstNode
 #' @param dimensions numeric vector of array dimensions
 #' @return EinopsShapeSemanticAst object
 #' @keywords internal
-EinopsShapeSemanticAst <- function(tokens, dimensions) {
+EinopsShapeSemanticAst <- function(ast, dimensions) {
+    tokens <- unlist(lapply(ast, to_tokens), recursive = FALSE)
     validate_syntax(tokens)
     validate_dimension_count(tokens, dimensions)
-
     dimension_map <- match_dimensions(tokens, dimensions)
     structure(
         list(
@@ -82,7 +121,7 @@ validate_syntax <- function(tokens) {
     for (i in seq_along(tokens)) {
         token <- tokens[[i]]
         if (!token$type %in% allowed_types) {
-            stop(glue::glue("Invalid token type '{token$type}' at position {i}. Only Name and Underscore tokens are allowed."))
+            stop(glue("Invalid token type '{token$type}' at position {i}. Only Name and Underscore tokens are allowed."))
         }
     }
 }
@@ -96,7 +135,7 @@ validate_dimension_count <- function(tokens, dimensions) {
     n_dims <- length(dimensions)
     
     if (n_tokens != n_dims) {
-        stop(glue::glue("Number of tokens ({n_tokens}) does not match number of dimensions ({n_dims})"))
+        stop(glue("Number of tokens ({n_tokens}) does not match number of dimensions ({n_dims})"))
     }
 }
 
@@ -124,7 +163,7 @@ match_dimensions <- function(tokens, dimensions) {
             # Verify the dimension value matches
             expected_value <- dimension_map[[dim_name]]
             if (dim_value != expected_value) {
-                stop(glue::glue("Dimension mismatch for '{dim_name}': expected {expected_value}, got {dim_value}"))
+                stop(glue("Dimension mismatch for '{dim_name}': expected {expected_value}, got {dim_value}"))
             }
         } else {
             # First time seeing this dimension name
@@ -137,10 +176,10 @@ match_dimensions <- function(tokens, dimensions) {
 
 #' @export
 print.EinopsShapeSemanticAst <- function(x, ...) {
-    cat(glue::glue("EinopsShapeSemanticAst for: {to_expression(x$tokens)}\n"))
+    cat(glue("EinopsShapeSemanticAst for: {to_expression(x$tokens)}\n"))
     cat("Dimension mapping:\n")
     for (name in names(x$dimension_map)) {
-        cat(glue::glue("  {name}: {x$dimension_map[[name]]}\n"))
+        cat(glue("  {name}: {x$dimension_map[[name]]}\n"))
     }
     invisible(x)
 }

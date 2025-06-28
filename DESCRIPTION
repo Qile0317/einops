@@ -21,6 +21,7 @@ BugReports: https://github.com/Qile0317/einops/issues
 Imports: 
     glue,
     lifecycle,
+    magrittr,
     R6,
     R6P,
     Rcpp
