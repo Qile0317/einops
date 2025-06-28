@@ -28,7 +28,6 @@ library(einops)
 - [x] Ast Datastructure
 - [x] Token -> Ast Parser
 - [x] `einops:::parse_shape.array()`
-- [x] Scaffold for context based constraint checking
 - [ ] EinopsAst -> EinopsSemanticAst Semantic Analyzer & validator for different task contexts
 - [ ] Intermediate Representation Generator (planner)
 - [ ] Executor (this should handles all backends, starting with `base::array`)
