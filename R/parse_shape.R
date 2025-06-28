@@ -106,7 +106,7 @@ match_dimensions <- function(tokens, dimensions) {
         token <- tokens[[i]]
         
         # Skip underscore tokens
-        if (token$type == "Underscore") {
+        if (token$type == "UNDERSCORE") {
             next
         }
         

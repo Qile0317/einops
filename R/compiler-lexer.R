@@ -73,6 +73,16 @@ lex <- function(pattern) {
             next
         }
 
+        # Underscore (standalone)
+        if (char == "_") {
+            if ((pos == 1 || !pattern_chars[pos-1] %in% c(letters, LETTERS, "_", as.character(0:9))) &&
+                (pos == n || !pattern_chars[pos+1] %in% c(letters, LETTERS, "_", as.character(0:9)))) {
+                tokens <- append(tokens, list(UnderscoreToken(start_pos)))
+                pos <- pos + 1
+                next
+            }
+        }
+
         # Names (letters and underscores)
         if (char %in% c(letters, LETTERS, "_")) {
             end_pos <- pos
