@@ -57,3 +57,30 @@
 reduce <- function(x, expr, func, ...) {
     UseMethod("reduce")
 }
+
+#' @export
+reduce.list <- function(x, expr, func, ...) {
+
+    if (length(x) == 0) {
+        stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
+    }
+
+    if (length(x) == 1) {
+        return(list(reduce(x[[1]], expr, func, ...)))
+    }
+
+    # if isinstance(tensor, list):
+    #     if len(tensor) == 0:
+    #         raise TypeError("Rearrange/Reduce/Repeat can't be applied to an empty list")
+    #     backend = get_backend(tensor[0])
+    #     tensor = backend.stack_on_zeroth_dimension(tensor)
+    # else:
+    #     backend = get_backend(tensor)
+
+    # hashable_axes_lengths = tuple(axes_lengths.items())
+    # shape = backend.shape(tensor)
+    # recipe = _prepare_transformation_recipe(pattern, reduction, axes_names=tuple(axes_lengths), ndim=len(shape))
+    # return _apply_recipe(
+    #     backend, recipe, cast(Tensor, tensor), reduction_type=reduction, axes_lengths=hashable_axes_lengths
+    # )
+}

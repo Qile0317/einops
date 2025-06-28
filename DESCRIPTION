@@ -21,10 +21,13 @@ BugReports: https://github.com/Qile0317/einops/issues
 Imports: 
     glue,
     lifecycle,
+    R6,
+    R6P,
     Rcpp
 Suggests: 
     assertthat,
     conflicted,
+    lobstr,
     testthat (>= 3.0.0),
     torch
 Config/testthat/edition: 3
