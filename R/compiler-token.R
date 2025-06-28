@@ -35,9 +35,14 @@ UnderscoreToken <- function(start) {
     create_simple_token("UNDERSCORE", "_", start)
 }
 
-# This token will be used in the future for pack/unpack
+# This token will be used in the future for pack()/unpack()
 AsteriskToken <- function(start) {
     create_simple_token("ASTERISK", "*", start)
+}
+
+# this token will be used in the future for einsum()
+CommaToken <- function(start) {
+    create_simple_token("COMMA", ",", start)
 }
 
 LParenToken <- function(start) {

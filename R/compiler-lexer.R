@@ -22,7 +22,8 @@ lex <- function(pattern) {
         "(" = list(constructor = LParenToken, standalone = FALSE),
         ")" = list(constructor = RParenToken, standalone = FALSE),
         "_" = list(constructor = UnderscoreToken, standalone = TRUE),
-        "*" = list(constructor = AsteriskToken, standalone = TRUE)
+        "*" = list(constructor = AsteriskToken, standalone = TRUE),
+        "," = list(constructor = CommaToken, standalone = TRUE) # Added CommaToken
     )
 
     while (pos <= n) {
@@ -36,10 +37,15 @@ lex <- function(pattern) {
 
         start_pos <- pos
 
-        # Arrow operator
-        if (char == "-" && pos < n && pattern_chars[pos + 1] == ">") {
-            tokens <- append(tokens, list(ArrowToken(start_pos)))
-            pos <- pos + 2
+        # Arrow and Comma operator (can be spaced or not)
+        if ((char == "-" && pos < n && pattern_chars[pos + 1] == ">") || char == ",") {
+            if (char == "-" && pattern_chars[pos + 1] == ">") {
+                tokens <- append(tokens, list(ArrowToken(start_pos)))
+                pos <- pos + 2
+            } else if (char == ",") {
+                tokens <- append(tokens, list(CommaToken(start_pos)))
+                pos <- pos + 1
+            }
             next
         }
 
@@ -88,6 +94,9 @@ lex <- function(pattern) {
         }
 
         # Skip any character we don't recognize
+        warning(sprintf(
+            "Invalid character '%s' at position %d, skipping...", char, pos
+        ))
         pos <- pos + 1
     }
 

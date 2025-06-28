@@ -253,3 +253,27 @@ infer_lengths <- function(elementaries, name2id, axes_lengths_hint) {
 pack_semantic_info <- function(...) {
     SemanticInfo(...)
 }
+
+#' @export
+print.SemanticInfo <- function(x, ...) {
+    cat("SemanticInfo object\n")
+    # Reconstruct input axes
+    elementaries <- x$elementaries
+    input_factorisations <- x$input_factorisations
+    axis_strs <- lapply(input_factorisations, function(fac) {
+        ids <- fac$factors
+        axes <- vapply(ids, function(id) {
+            ax <- elementaries[[id + 1L]]
+            if (!is.null(ax$name)) ax$name else "."
+        }, character(1))
+        paste(axes, collapse = " ")
+    })
+    input_str <- paste(axis_strs, collapse = ", ")
+    cat("Input axes: ", input_str, "\n", sep = "")
+    cat("Other fields:\n")
+    cat("  axes_permutation:", paste(x$axes_permutation, collapse = ", "), "\n")
+    cat("  reduced_axes:", paste(x$reduced_axes, collapse = ", "), "\n")
+    cat("  added_axes:", paste(x$added_axes, collapse = ", "), "\n")
+    cat("  output_compositions: [list of length ", length(x$output_compositions), "]\n", sep = "")
+    invisible(x)
+}
