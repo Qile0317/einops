@@ -2,6 +2,7 @@
 #' @description This function is the entry point for parsing a shape expression.
 #' @param expr expression to parse
 #' @return named list of tokens to their mapped dimensions
+#' @export
 parse_shape <- function(x, expr, ...) {
     UseMethod("parse_shape", x)
 }
