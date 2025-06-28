@@ -199,9 +199,16 @@ print.EinopsAst <- function(x, ...) {
 }
 
 #' @title Create a OneSidedAstNode (wrapper for input/output axes lists)
-#' @param axes List of axis nodes
+#' @param ... Axis nodes (or a single list of axis nodes)
 #' @return OneSidedAstNode object
 #' @keywords internal
-OneSidedAstNode <- function(axes) {
+OneSidedAstNode <- function(...) {
+    args <- list(...)
+    # If a single argument and it's a list, treat as list of nodes
+    if (length(args) == 1 && is.list(args[[1]]) && !inherits(args[[1]], "AstNode")) {
+        axes <- args[[1]]
+    } else {
+        axes <- args
+    }
     structure(axes, class = c("OneSidedAstNode", "AstNode"))
 }
