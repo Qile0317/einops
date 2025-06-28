@@ -4,8 +4,7 @@
 \alias{BackendRegistry}
 \title{Singleton Backend Registry, managing all available backends.}
 \description{
-This class should never be instantiated directly, and only used internally
-via get_backend_registry()
+Contains global backend pool
 }
 \keyword{internal}
 \section{Super class}{
@@ -17,7 +16,6 @@ via get_backend_registry()
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
 \item \href{#method-BackendRegistry-set_debug}{\code{BackendRegistry$set_debug()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
-\item \href{#method-BackendRegistry-clone}{\code{BackendRegistry$clone()}}
 }
 }
 \if{html}{\out{
@@ -73,35 +71,18 @@ this object
 \subsection{Method \code{register_backend()}}{
 Register a new backend singleton
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(backend)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(backend_class)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{backend}}{an EinopsBackend subclass}
+\item{\code{backend_class}}{an EinopsBackend subclass generator}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 this object
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-BackendRegistry-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-BackendRegistry-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
 }
 }
 }

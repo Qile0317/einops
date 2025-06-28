@@ -8,16 +8,15 @@ get_backend <- function(tensor) {
 #' @title
 #' Singleton Backend Registry, managing all available backends.
 #' @description
-#' This class should never be instantiated directly, and only used internally
-#' via get_backend_registry()
+#' Contains global backend pool
 #' @keywords internal
 BackendRegistry <- R6Class("BackendRegistry", inherit = R6P::Singleton, cloneable=FALSE,
 
 private = list(
+    # A mapping of types to backend class generators
+    type2backend = new.env(parent = emptyenv()),
+    # A mapping of types to backend instances
     loaded_backends = new.env(parent = emptyenv()),
-    type2backend = list2env(parent = emptyenv(), x = list(
-
-    )),
     debug_importing = FALSE
 ),
 
@@ -27,13 +26,27 @@ public = list(
     #' @param tensor any support tensor-like class
     #' @return A singleton instance of a [BackendRegistry()] object
     get_backend = function(tensor) {
-        tensor_class <- class(tensor)[1]
-        if (!exists(
-            tensor_class, envir = private$type2backend, inherits = FALSE
-        )) {
-            stop(sprintf("Tensor type unknown to einops: %s", tensor_class))
+        tensor_classes <- class(tensor)
+        for (tensor_class in tensor_classes) {
+            # Check if backend instance is already loaded
+            if (exists(tensor_class, envir = private$loaded_backends, inherits = FALSE)) {
+                if (private$debug_importing) {
+                    message(sprintf("[einops] Using loaded backend for class: %s", tensor_class))
+                }
+                return(get(tensor_class, envir = private$loaded_backends, inherits = FALSE))
+            }
+            # Otherwise, check if a backend generator is registered
+            if (exists(tensor_class, envir = private$type2backend, inherits = FALSE)) {
+                backend_generator <- get(tensor_class, envir = private$type2backend, inherits = FALSE)
+                if (private$debug_importing) {
+                    message(sprintf("[einops] Initializing backend for class: %s", tensor_class))
+                }
+                backend_instance <- backend_generator$new()
+                assign(tensor_class, backend_instance, envir = private$loaded_backends)
+                return(backend_instance)
+            }
         }
-        get(tensor_class, envir = private$type2backend, inherits = FALSE)
+        stop(sprintf("Tensor type unknown to einops: %s", paste(tensor_classes, collapse = ", ")))
     },
 
     #' @description Set whether debug messages should be displayed
@@ -46,18 +59,27 @@ public = list(
     },
 
     #' @description Register a new backend singleton
-    #' @param backend an EinopsBackend subclass
+    #' @param backend_class an EinopsBackend subclass generator
     #' @return this object
-    register_backend = function(backend) {
-        assert_that(inherits(backend, "EinopsBackend") == TRUE)
-        assign(envir = private$type2backend, backend$tensor_type(), backend)
+    register_backend = function(backend_class) {
+        assert_that(inherits(backend_class, "R6ClassGenerator"))
+        backend_singleton_instance <- backend_class$new()
+        if (!inherits(backend_singleton_instance, "EinopsBackend")) {
+            stop(glue::glue("{backend_class} is not an EinopsBackend"))
+        }
+        tensor_type_name <- backend_singleton_instance$tensor_type()
+        if (private$debug_importing) {
+            message(sprintf("[einops] Registering backend for tensor type: %s", tensor_type_name))
+        }
+        assign(
+            x = tensor_type_name,
+            value = backend_class,
+            envir = private$type2backend
+        )
         return(self)
     }
 ))
 
-#' @title
-#' Abstract EinopsBackend base class
-#' @noRd
 EinopsBackend <- R6Class("EinopsBackend", inherit = R6P::Singleton, cloneable=FALSE,
 
 public = list(
@@ -115,6 +137,11 @@ public = list(
     einsum = function(pattern, ...) {
         stop("backend does not support einsum")
     }
+))
+
+BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
+public = list(
+    tensor_type = function() "array"
 ))
 
 # nolint end: indentation_linter.
