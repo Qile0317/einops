@@ -89,7 +89,6 @@ public = list(
         stop("Not implemented")
     },
 
-    #' @description
     #' @param start integer, inclusive
     #' @param stop integer, inclusive
     #' @return a sequence from start to stop
@@ -188,8 +187,29 @@ public = list(
 
     tensor_type = function() "array",
 
-    arange = function(start, stop) {
-        seq(from = start, to = stop)
+    arange = function(start, stop) seq(from = start, to = stop),
+
+    shape = function(x) dim(x),
+
+    reshape = function(x, shape) array(x, dim = shape),
+
+    transpose = function(x) aperm(x, perm = axes),
+
+    reduce = function(x, operation, axes) {
+        op_fun <- switch(operation,
+            sum  = sum,
+            mean = mean,
+            max  = max,
+            min  = min,
+            prod = prod,
+            operation
+        )
+        keep <- setdiff(seq_along(dim(x)), axes)
+        if (length(keep) == 0) return(op_fun(x))
+        res <- apply(x, keep, op_fun)
+        if (!is.array(res))
+            res <- array(res, dim = length(res))
+        res
     },
 
     stack_on_zeroth_dimension = function(tensors) {
@@ -197,18 +217,10 @@ public = list(
     },
 
     tile = function(x, repeats) {
-
-        dims <- dim(x)
-        if (length(dims) != length(repeats)) {
-            stop("Length of repeats must match number of dimensions")
-        }
-        for (i in seq_along(repeats)) {
-            if (repeats[i] == 0) next
-            x <- do.call(
-                abind::abind,
-                c(replicate(repeats[i], x, simplify = FALSE), list(along = i))
-            )
-        }
+        assert_that(length(dim(x)) == length(repeats))
+        old_dims <- dim(x)
+        new_dims <- old_dims * repeats
+        x <- array(rep(x, times = prod(repeats)), dim = new_dims)
         x
     },
 
@@ -216,18 +228,10 @@ public = list(
         abind::abind(tensors, along = axis)
     },
 
-    is_float_type = function(x) {
-        TRUE
-    },
+    is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
-        dims <- dim(x)
-        new_dims <- append(dims, 1, after = new_position - 1)
-        array(x, dim = new_dims)
-    },
-
-    einsum = function(pattern, ...) {
-        stop("einsum not implemented for base R arrays")
+        array(x, dim = append(dim(x), 1, after = new_position - 1))
     }
 ))
 
