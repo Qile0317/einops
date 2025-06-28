@@ -1,69 +1,59 @@
-#' Reduce operation for einops expressions
+#' @title
+#' Rearrangement and reduction in one step (einops.reduce)
 #'
-#' Reduces tensor dimensions according to einops notation. This function
-#' applies a reduction function (like sum, mean, max) along specified dimensions
-#' while potentially reshaping the tensor according to the einops pattern.
+#' @description
+#' [einops::reduce()] combines rearrangement and reduction using
+#' reader-friendly notation.
 #'
-#' @param x object to reduce (array, matrix, etc.)
-#' @param expr character string with einops expression (e.g., "h w c -> h w")
-#' @param func character string naming the reduction function (e.g., "sum", "mean", "max")
-#' @param ... additional arguments passed to the reduction function
+#' @param x tensor: array, matrix, or list of arrays of the same shape and type
+#' @param expr string: reduction pattern
+#' @param func string or function: one of available reductions ('min', 'max', 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean, prod, etc.)
+#' @param ... either corresponding axes lengths or a single list of them.
 #'
-#' @return reduced object with dimensions according to output pattern
+#' @return tensor of the same type as input, with dimensions according to output pattern
 #' @export
 #'
 #' @examples
-#' # 2D reduction
-#' arr <- array(1:12, dim = c(3, 4))
-#' reduce(arr, "h w -> h", "sum")
-#' reduce(arr, "h w -> w", "sum")
-#' reduce(arr, "h w ->", "sum")
+#' # Suppose x is a 3D array: 100 x 32 x 64
+#' x <- array(rnorm(100 * 32 * 64), dim = c(100, 32, 64))
 #'
-#' # 3D reduction with grouping
-#' arr3d <- array(1:24, dim = c(2, 3, 4))
-#' reduce(arr3d, "b h w -> h w", "sum")
-#' reduce(arr3d, "(b h) w -> w", "sum")
-#' 
-#' # Using ellipsis
-#' reduce(arr3d, "... w -> ...", "sum")
+#' # perform max-reduction on the first axis
+#' # Axis t does not appear on RHS - thus we reduced over t
+#' y <- reduce(x, 't b c -> b c', 'max')
+#'
+#' # same as previous, but using verbose names for axes
+#' y <- reduce(x, 'time batch channel -> batch channel', 'max')
+#'
+#' # let's pretend now that x is a batch of images
+#' # with 4 dims: batch=10, height=20, width=30, channel=40
+#' x <- array(rnorm(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
+#'
+#' # 2d max-pooling with kernel size = 2 * 2 for image processing
+#' y1 <- reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h2=2, w2=2)
+#'
+#' # same as previous, using anonymous axes,
+#' # note: only reduced axes can be anonymous
+#' y1 <- reduce(x, 'b c (h1 2) (w1 2) -> b c h1 w1', 'max')
+#'
+#' # adaptive 2d max-pooling to 3 * 4 grid,
+#' # each element is max of 10x10 tile in the original tensor.
+#' dim(reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h1=3, w1=4))
+#' # (10, 20, 3, 4)
+#'
+#' # Global average pooling
+#' dim(reduce(x, 'b c h w -> b c', 'mean'))
+#' # (10, 20)
+#'
+#' # subtracting mean over batch for each channel;
+#' # similar to x - apply(x, c(2,3,4), mean)
+#' y <- x - reduce(x, 'b c h w -> 1 c 1 1', 'mean')
+#'
+#' # Subtracting per-image mean for each channel
+#' y <- x - reduce(x, 'b c h w -> b c 1 1', 'mean')
+#'
+#' # same as previous, but using empty compositions
+#' y <- x - reduce(x, 'b c h w -> b c () ()', 'mean')
+#'
 reduce <- function(x, expr, func, ...) {
     UseMethod("reduce")
 }
-
-#' Reduce operation for arrays
-#'
-#' @rdname reduce
-#' @export
-reduce.array <- function(x, expr, func, ...) {
-  # Validate that func is a character string
-  if (!is.character(func) || length(func) != 1) {
-    stop("func must be a character string naming a function")
-  }
-  
-  # Get the function object
-  func_obj <- match.fun(func)
-  
-  # Parse the einops expression
-  ast <- parse_einops(expr)
-  
-  # Get the dimensions of the input array
-  input_dims <- dim(x)
-  if (is.null(input_dims)) {
-    input_dims <- length(x)
-  }
-  
-  # Validate and resolve the pattern against input dimensions
-  resolved_pattern <- resolve_array_pattern(ast, input_dims)
-  
-  # Determine which dimensions to reduce and which to keep
-  reduction_plan <- create_reduction_plan(resolved_pattern)
-  
-  # Apply the reduction
-  result <- execute_reduction(x, reduction_plan, func_obj, ...)
-  
-  # Reshape result according to output pattern
-  final_result <- reshape_result(result, reduction_plan)
-  
-  return(final_result)
-}
-

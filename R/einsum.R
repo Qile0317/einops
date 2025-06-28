@@ -1,3 +1,3 @@
-einsum <- function(x, y, expr) {
+einsum <- function(x, y, expr, ...) {
     UseMethod("einsum")
 }

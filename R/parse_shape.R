@@ -26,8 +26,7 @@
 #' # `parse_shape` output can be used to specify axes_lengths for other operations:
 #' y <- array(0, dim = 700)
 #' shape_info <- parse_shape(x, 'b _ h w')
-#' # rearrange(y, '(b c h w) -> b c h w', **shape_info) would give shape (2, 10, 5, 7)
-#' # note that **shape_info refers to putting the list arguments as named arguments
+#' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape (2, 10, 5, 7)
 #'
 parse_shape <- function(x, expr, ...) {
     UseMethod("parse_shape", x)
