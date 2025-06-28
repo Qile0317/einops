@@ -79,7 +79,7 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
                         src = list(start = 6)
                     ),
                     ConstantAstNode(
-                        count = "2",
+                        count = 2L,
                         src = list(start = 9)
                     )
                 ),
@@ -92,7 +92,7 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
                         src = list(start = 13)
                     ),
                     ConstantAstNode(
-                        count = "2",
+                        count = 2L,
                         src = list(start = 16)
                     )
                 ),

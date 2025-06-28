@@ -29,13 +29,44 @@
 #' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape (2, 10, 5, 7)
 #'
 parse_shape <- function(x, expr, ...) {
+
     backend <- get_backend(x)
     shape <- backend$shape(x)
     tokens <- lex(expr)
     onesided_ast <- parse_onesided_ast(tokens) %>%
         validate_shape_ast(shape) %>%
         preprocess_shape_ast(onesided_ast)
-    # TODO
+    
+    result <- list()
+    for (i in seq_along(shape)) {
+
+        axes_node <- onesided_ast[[i]]
+
+        if (inherits(axes_node, "UnderscoreAstNode")) next
+
+        axis_length <- shape[i]
+
+        if (inherits(axes_node, "NamedAxisAstNode")) {
+            axis_name <- axes_node$name
+            result[[axis_name]] <- axis_length
+            next
+        }
+
+        if (inherits(axes_node, "ConstantAstNode")) {
+            if (axes_node$count != axis_length) {
+                stop(glue(
+                    "Length of anonymous axis does not match: {pattern} {shape}"
+                ))
+            }
+        }
+
+        stop(glue(
+            "Unexpected node type in shape AST: {class(axes_node)}",
+            " for expression: {expr} and shape: {shape}.",
+            "Please report this as a bug.",
+        ))
+
+    }
 }
 
 validate_shape_ast <- function(onesided_ast, shape) {

@@ -28,15 +28,15 @@ to_tokens.NamedAxisAstNode <- function(x, ...) {
 #' @keywords internal
 ConstantAstNode <- function(count, src) {
     structure(list(
-        count = count,
+        count = as.integer(count),
         src = src
     ), class = c("ConstantAstNode", "AstNode"))
 }
-    
+
 #' @export
 #' @keywords internal
 to_tokens.ConstantAstNode <- function(x, ...) {
-    EinopsTokenSequence(IntToken(x$count, x$src$start))
+    EinopsTokenSequence(IntToken(as.character(x$count), x$src$start))
 }
 
 #' @title Create an EllipsisAstNode
