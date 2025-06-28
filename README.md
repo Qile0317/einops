@@ -32,11 +32,12 @@ library(einops)
 - [ ] EinopsAst -> EinopsSemanticAst Semantic Analyzer & validator for different task contexts
 - [ ] Intermediate Representation Generator (planner)
 - [ ] Executor (this should handles all backends, starting with `base::array`)
+- [ ] `einops:::repeat.array()`
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`
-- [ ] `einops:::repeat.array()`
 - [ ] Publish 0.1.0 on CRAN
 - [ ] `einops:::parse_shape.torch_tensor()`
+- [ ] `einops:::repeat.torch_tensor()`
 - [ ] `einops:::rearrange.torch_tensor()`
 - [ ] `einops:::torchRearrange()`
 - [ ] `einops:::reduce.torch_tensor()`
