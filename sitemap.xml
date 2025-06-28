@@ -14,7 +14,6 @@
 <url><loc>https://qile0317.github.io/einops/reference/EinopsRearrangeConstraint.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EinopsReduceConstraint.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EinopsRepeatConstraint.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/EinopsShapeSemanticAst.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EinopsTokenSequence.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/EllipsisAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/GroupAstNode.html</loc></url>
@@ -22,6 +21,7 @@
 <url><loc>https://qile0317.github.io/einops/reference/NothingAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/OneSidedAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/UnderscoreAstNode.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/append.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/check_einops_constraints.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/dot-next_token.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops-package.html</loc></url>
@@ -30,16 +30,13 @@
 <url><loc>https://qile0317.github.io/einops/reference/get_backend.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/lex.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/match_dimensions.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_axes_iter.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_einops_ast.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_onesided_ast.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_shape.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/parse_shape_tokens.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/pipe.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/rearrange.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/reduce.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/tail.GroupAstNode.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/validate_dimension_count.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/validate_syntax.html</loc></url>
 </urlset>
 
