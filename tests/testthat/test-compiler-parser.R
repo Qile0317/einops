@@ -383,4 +383,22 @@ test_that("parse_onesided_ast handles simple axis names", {
     )
     expect_identical(parse_onesided_ast(tokens), ast)
     expect_identical(to_tokens(ast), tokens)
+
+    tokens <- EinopsTokenSequence(
+        LParenToken(1),
+        RParenToken(2),
+        NameToken("a", 4)
+    )
+    ast <- OneSidedAstNode(
+        GroupAstNode(
+            children = list(),
+            src = list(start = 1)
+        ),
+        NamedAxisAstNode(
+            name = "a",
+            src = list(start = 4)
+        )
+    )
+    expect_identical(parse_onesided_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
 })

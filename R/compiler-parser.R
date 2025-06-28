@@ -78,37 +78,37 @@ parse_axes_iter <- function(tokens) {
     while (i <= length(tokens)) {
         token <- tokens[[i]]
         
-        if (token$type == "NAME") {
+        # nolint start: indentation_linter.
+        switch(token$type,
+        NAME = { 
             src <- list(start = token$start)
             node <- NamedAxisAstNode(token$value, src)
             result <- append(result, list(node))
-            
-        } else if (token$type == "INT") {
+        },
+        INT = {
             src <- list(start = token$start)
             node <- ConstantAstNode(token$value, src)
             result <- append(result, list(node))
-            
-        } else if (token$type == "ELLIPSIS") {
+        },
+        ELLIPSIS = {
             if (has_ellipsis) {
                 stop("Multiple ellipses found in axis pattern at position ", token$start)
             }
             has_ellipsis <- TRUE
-            
             src <- list(start = token$start)
             node <- EllipsisAstNode(src)
             result <- append(result, list(node))
-        
-        } else if (token$type == "UNDERSCORE") {
+        },
+        UNDERSCORE = {
             src <- list(start = token$start)
             node <- UnderscoreAstNode(src)
             result <- append(result, list(node))
-        
-        } else if (token$type == "LPAREN") {
+        },
+        LPAREN = {
             # Find matching closing paren
             paren_depth <- 1
             group_start <- i + 1
             group_end <- i + 1
-            
             while (group_end <= length(tokens) && paren_depth > 0) {
                 if (tokens[[group_end]]$type == "LPAREN") {
                     paren_depth <- paren_depth + 1
@@ -123,11 +123,9 @@ parse_axes_iter <- function(tokens) {
                     group_end <- group_end + 1
                 }
             }
-            
             if (paren_depth > 0) {
                 stop("Unmatched opening parenthesis '(' at position ", token$start)
             }
-            
             # Parse group contents
             if (group_start > group_end - 1) {
                 # Empty group
@@ -136,26 +134,22 @@ parse_axes_iter <- function(tokens) {
                 group_tokens <- tokens[group_start:(group_end - 1)]
                 group_children <- parse_axes_iter(group_tokens)
             }
-            
             # Use opening paren position as group source
             src <- list(start = token$start)
-            
             group_node <- GroupAstNode(group_children, src)
             result <- append(result, list(group_node))
-            
             # Skip to after the closing paren
             i <- group_end
-            
-        } else if (token$type == "RPAREN") {
+        },
+        RPAREN = {
             stop("Unmatched closing parenthesis ')' at position ", token$start)
-            
-        } else {
-            stop("Unexpected token type '", token$type, "' at position ", token$start)
-        }
+        },
+        stop("Unexpected token type '", token$type, "' at position ", token$start)
+        )
+        # nolint end: indentation_linter.
         
         i <- i + 1
     }
     
     result
 }
-
