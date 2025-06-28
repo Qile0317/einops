@@ -90,16 +90,29 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     if (length(shape) != length(onesided_ast)) {
         if (contains_node(onesided_ast, "EllipsisAstNode")) {
             if (length(shape) < length(onesided_ast) - 1) {
-                throw_cannot_parse()
+                stop(glue(
+                    "Shape length {length(shape)} is < the number of axes ",
+                    "in the expression {length(onesided_ast)}. ",
+                    "Please check your expression: {expr}."
+                ))
             }
             ellipsis_index <- find_node_types_indices(
                 onesided_ast, "EllipsisAstNode"
             )
-            if (ellipsis_index != 1L && ellipsis_index != length(shape)) {
-                throw_cannot_parse()
+            if (ellipsis_index != 1L && ellipsis_index != length(onesided_ast)) {
+                stop(glue(
+                    "Ellipsis must be at the beginning or end of the expression. ",
+                    "Found at index {ellipsis_index} in {length(onesided_ast)}. ",
+                    "Please check your expression: {expr}."
+                ))
             }
+        } else {
+            stop(glue(
+                "Shape length {length(shape)} does not match the number of ",
+                "axes in the expression {length(onesided_ast)}. ",
+                "Please check your expression: {expr}."
+            ))
         }
-        throw_cannot_parse()
     }
     onesided_ast
 }
