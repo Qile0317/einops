@@ -1,4 +1,88 @@
-test_that("Basic shape parsing works for base::array", {
+test_that("preprocess_shape_ast expands ellipsis correctly", {
+
+    shape <- c(1, 2, 3, 4)
+    ast <- OneSidedAstNode(
+        ConstantAstNode(
+            count = 3,
+            src = list(start = 1)
+        ),
+        NamedAxisAstNode(
+            name = "c",
+            src = list(start = 3)
+        ),
+        EllipsisAstNode(
+            src = list(start = 5)
+        )
+    )
+    expect_identical(
+        preprocess_shape_ast(ast, shape),
+        OneSidedAstNode(
+            ConstantAstNode(
+                count = 3,
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 3)
+            ),
+            UnderscoreAstNode(src = list()),
+            UnderscoreAstNode(src = list())
+        )
+    )
+
+    shape <- 1:8
+    ast <- OneSidedAstNode(
+        NamedAxisAstNode(
+            name = "a",
+            src = list(start = 1)
+        ),
+        NamedAxisAstNode(
+            name = "b",
+            src = list(start = 3)
+        ),
+        NamedAxisAstNode(
+            name = "c",
+            src = list(start = 5)
+        ),
+        UnderscoreAstNode(
+            src = list(start = 7)
+        ),
+        UnderscoreAstNode(
+            src = list(start = 9)
+        ),
+        EllipsisAstNode(
+            src = list(start = 11)
+        )
+    )
+    expect_identical(
+        preprocess_shape_ast(ast, shape),
+        OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 3)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 5)
+            ),
+            UnderscoreAstNode(
+                src = list(start = 7)
+            ),
+            UnderscoreAstNode(
+                src = list(start = 9)
+            ),
+            UnderscoreAstNode(src = list()),
+            UnderscoreAstNode(src = list()),
+            UnderscoreAstNode(src = list())
+        )
+    )
+})
+
+test_that("parse_shape works for base::array", {
     expect_identical(
         parse_shape(array(1:16, dim = c(4, 4)), "height width"),
         list(height = 4L, width = 4L)

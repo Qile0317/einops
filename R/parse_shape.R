@@ -104,7 +104,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     onesided_ast
 }
 
-preprocess_shape_ast <- function(onesided_ast, shape = NULL) {
+preprocess_shape_ast <- function(onesided_ast, shape) {
     if (!contains_node(onesided_ast, "EllipsisAstNode")) return(onesided_ast)
 
     ellipsis_index <- find_node_types_indices(onesided_ast, "EllipsisAstNode")
@@ -117,7 +117,7 @@ preprocess_shape_ast <- function(onesided_ast, shape = NULL) {
     if (missing_dim_count < 0) {
         stop("Too many axes in expression for the shape.")
     }
-    new_underscore_nodes <- replicate(missing_dim_count, UnderscoreAstNode(list(start=NULL)), simplify = FALSE)
+    new_underscore_nodes <- replicate(missing_dim_count, UnderscoreAstNode(list()), simplify = FALSE)
     if (ellipsis_index == 1L) {
         onesided_ast <- append(new_underscore_nodes, onesided_ast[-ellipsis_index])
     } else {
