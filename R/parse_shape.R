@@ -35,7 +35,14 @@ parse_shape <- function(x, expr, ...) {
 
 #' @export
 parse_shape.array <- function(x, expr, ...) {
+
     tokens <- lex(expr)
+
+    if (all(sapply(tokens, function(t) t$type == "UNDERSCORE"))) {
+        warning("Expression contains only underscores. Returning empty list.")
+        return(list())
+    }
+
     semantic_ast <- parse_shape_tokens(tokens, dim(x))
     shape_ir_then_execute(semantic_ast)
 }
