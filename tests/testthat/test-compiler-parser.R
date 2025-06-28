@@ -316,41 +316,6 @@ test_that("b h w c -> (b h w c)", {
 
 })
 
-test_that("a b c ->", {
-
-    tokens <- EinopsTokenSequence(
-        NameToken("a", 1),
-        NameToken("b", 3),
-        NameToken("c", 5),
-        ArrowToken(7)
-    )
-
-    ast <- EinopsAst(
-        input_axes = OneSidedAstNode(
-            NamedAxisAstNode(
-                name = "a",
-                src = list(start = 1)
-            ),
-            NamedAxisAstNode(
-                name = "b",
-                src = list(start = 3)
-            ),
-            NamedAxisAstNode(
-                name = "c",
-                src = list(start = 5)
-            )
-        ),
-        output_axes = OneSidedAstNode(
-            NothingAstNode()
-        ),
-        src = list(start = 1)
-    )
-
-    expect_identical(parse_einops_ast(tokens), ast)
-    expect_identical(to_tokens(ast), tokens)
-
-})
-
 test_that("parse_onesided_ast handles simple axis names", {
     tokens <- EinopsTokenSequence(
         NameToken("a", 1),
@@ -401,4 +366,55 @@ test_that("parse_onesided_ast handles simple axis names", {
     )
     expect_identical(parse_onesided_ast(tokens), ast)
     expect_identical(to_tokens(ast), tokens)
+
+    tokens <- EinopsTokenSequence(
+        IntToken("3", 1),
+        NameToken("c", 3),
+        EllipsisToken(5)
+    )
+    ast <- OneSidedAstNode(
+        ConstantAstNode(
+            count = 3,
+            src = list(start = 1)
+        ),
+        NamedAxisAstNode(
+            name = "c",
+            src = list(start = 3)
+        ),
+        EllipsisAstNode(
+            src = list(start = 5)
+        )
+    )
+    expect_identical(parse_onesided_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+
+    tokens <- EinopsTokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        NameToken("c", 5),
+        ArrowToken(7)
+    )
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 3)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 5)
+            )
+        ),
+        output_axes = OneSidedAstNode(
+            NothingAstNode()
+        ),
+        src = list(start = 1)
+    )
+    expect_identical(parse_einops_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+
 })

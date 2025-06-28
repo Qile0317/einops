@@ -23,10 +23,12 @@
 #' # $w
 #' # [1] 7
 #'
-#' # `parse_shape` output can be used to specify axes_lengths for other operations:
+#' # `parse_shape` output can be used to specify axes_lengths for other
+#' # operations:
 #' y <- array(0, dim = 700)
 #' shape_info <- parse_shape(x, 'b _ h w')
-#' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape (2, 10, 5, 7)
+#' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape
+#' # (2, 10, 5, 7)
 #'
 parse_shape <- function(x, expr, ...) {
 
@@ -34,7 +36,7 @@ parse_shape <- function(x, expr, ...) {
     shape <- backend$shape(x)
     tokens <- lex(expr)
     onesided_ast <- parse_onesided_ast(tokens) %>%
-        validate_shape_ast(shape) %>%
+        validate_shape_ast(shape, expr) %>%
         preprocess_shape_ast(shape)
     
     result <- list()
@@ -55,14 +57,18 @@ parse_shape <- function(x, expr, ...) {
         if (inherits(axes_node, "ConstantAstNode")) {
             if (axes_node$count != axis_length) {
                 stop(glue(
-                    "Length of anonymous axis does not match: {pattern} {shape}"
+                    "Length of anonymous axis does not match: '{expr}' ",
+                    "{capture.output(print(shape))}"
                 ))
             }
+            next
         }
 
         stop(glue(
-            "Unexpected node type in shape AST: {class(axes_node)}",
-            " for expression: {expr} and shape: {shape}.",
+            "Unexpected node type in shape AST: ",
+            "{capture.output(print(class(axes_node)))} ",
+            "for expression: {expr} and shape: ",
+            "{capture.output(print(shape))}. ",
             "Please report this as a bug.",
         ))
 
@@ -70,9 +76,12 @@ parse_shape <- function(x, expr, ...) {
     return(result)
 }
 
-validate_shape_ast <- function(onesided_ast, shape) {
+validate_shape_ast <- function(onesided_ast, shape, expr) {
     throw_cannot_parse <- function() {
-        stop(glue("can't parse expression with composite axes: {expr} {shape}"))
+        stop(glue(
+            "can't parse expression with composite axes: {expr} ",
+            "{capture.output(print(shape))}"
+        ))
     }
     if (length(onesided_ast) == 0) {
         stop("Parsed AST is empty. Please check your expression.")
@@ -108,115 +117,11 @@ preprocess_shape_ast <- function(onesided_ast, shape = NULL) {
     if (missing_dim_count < 0) {
         stop("Too many axes in expression for the shape.")
     }
-    new_underscore_nodes <- replicate(missing_dim_count, UnderscoreAstNode(NULL), simplify = FALSE)
+    new_underscore_nodes <- replicate(missing_dim_count, UnderscoreAstNode(list(start=NULL)), simplify = FALSE)
     if (ellipsis_index == 1L) {
         onesided_ast <- append(new_underscore_nodes, onesided_ast[-ellipsis_index])
     } else {
         onesided_ast <- append(onesided_ast[-ellipsis_index], new_underscore_nodes)
     }
     onesided_ast
-}
-
-#' @title Parse shape tokens into AST, then does semantic Analysis
-#' @param ast OneSidedAstNode
-#' @param dimensions numeric vector
-#' @return EinopsShapeSemanticAst object
-#' @keywords internal
-parse_shape_tokens <- function(ast, dimensions) {
-    EinopsShapeSemanticAst(ast, dimensions)
-}
-
-#' @title EinopsShapeSemanticAst constructor
-#' @param ast OneSidedAstNode
-#' @param dimensions numeric vector of array dimensions
-#' @return EinopsShapeSemanticAst object
-#' @keywords internal
-EinopsShapeSemanticAst <- function(ast, dimensions) {
-    tokens <- unlist(lapply(ast, to_tokens), recursive = FALSE)
-    validate_syntax(tokens)
-    validate_dimension_count(tokens, dimensions)
-    dimension_map <- match_dimensions(tokens, dimensions)
-    structure(
-        list(
-            tokens = tokens,
-            dimensions = dimensions,
-            dimension_map = dimension_map
-        ),
-        class = "EinopsShapeSemanticAst"
-    )
-}
-
-#' @title Validate token syntax
-#' @param tokens EinopsTokenSequence
-#' @keywords internal
-validate_syntax <- function(tokens) {
-    allowed_types <- c("NAME", "UNDERSCORE")
-    for (i in seq_along(tokens)) {
-        token <- tokens[[i]]
-        if (!token$type %in% allowed_types) {
-            stop(glue("Invalid token type '{token$type}' at position {i}. Only Name and Underscore tokens are allowed."))
-        }
-    }
-}
-
-#' @title Validate dimension count matches token count
-#' @param tokens EinopsTokenSequence
-#' @param dimensions numeric vector
-#' @keywords internal
-validate_dimension_count <- function(tokens, dimensions) {
-    n_tokens <- length(tokens)
-    n_dims <- length(dimensions)
-    
-    if (n_tokens != n_dims) {
-        stop(glue("Number of tokens ({n_tokens}) does not match number of dimensions ({n_dims})"))
-    }
-}
-
-#' @title Match tokens to their dimensional values
-#' @param tokens EinopsTokenSequence
-#' @param dimensions numeric vector
-#' @return named list mapping dimension names to values
-#' @keywords internal
-match_dimensions <- function(tokens, dimensions) {
-    dimension_map <- list()
-    
-    for (i in seq_along(tokens)) {
-        token <- tokens[[i]]
-        
-        # Skip underscore tokens
-        if (token$type == "UNDERSCORE") {
-            next
-        }
-        
-        dim_name <- token$value
-        dim_value <- dimensions[i]
-        
-        # Check if we've seen this dimension name before
-        if (dim_name %in% names(dimension_map)) {
-            # Verify the dimension value matches
-            expected_value <- dimension_map[[dim_name]]
-            if (dim_value != expected_value) {
-                stop(glue("Dimension mismatch for '{dim_name}': expected {expected_value}, got {dim_value}"))
-            }
-        } else {
-            # First time seeing this dimension name
-            dimension_map[[dim_name]] <- dim_value
-        }
-    }
-    
-    dimension_map
-}
-
-#' @export
-print.EinopsShapeSemanticAst <- function(x, ...) {
-    cat(glue("EinopsShapeSemanticAst for: {to_expression(x$tokens)}\n"))
-    cat("Dimension mapping:\n")
-    for (name in names(x$dimension_map)) {
-        cat(glue("  {name}: {x$dimension_map[[name]]}\n"))
-    }
-    invisible(x)
-}
-
-shape_ir_then_execute <- function(shape_semantic_ast) {
-    shape_semantic_ast$dimension_map
 }
