@@ -124,3 +124,64 @@ test_that("b c (h1 2) (w1 2) -> b c h1 w1", {
     expect_identical(to_tokens(ast), tokens)
 
 })
+
+test_that("b c h w -> b c () ()", {
+
+    tokens <- EinopsTokenSequence(
+        NameToken("b", 1),
+        NameToken("c", 3),
+        NameToken("h", 5),
+        NameToken("w", 7),
+        ArrowToken(9),
+        NameToken("b", 12),
+        NameToken("c", 14),
+        LParenToken(16),
+        RParenToken(17),
+        LParenToken(19),
+        RParenToken(20)
+    )
+
+    ast <- EinopsAst(
+        input_axes = list(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 3)
+            ),
+            NamedAxisAstNode(
+                name = "h",
+                src = list(start = 5)
+            ),
+            NamedAxisAstNode(
+                name = "w",
+                src = list(start = 7)
+            )
+        ),
+        output_axes = list(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 12)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 14)
+            ),
+            GroupAstNode(
+                children = list(),
+                src = list(start = 16)
+            ),
+            GroupAstNode(
+                children = list(),
+                src = list(start = 19)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expect_identical(parse_einops_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+
+})

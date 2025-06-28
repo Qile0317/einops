@@ -115,12 +115,13 @@ parse_axes_iter <- function(tokens) {
             }
             
             # Parse group contents
-            group_tokens <- tokens[group_start:(group_end - 1)]
-            if (length(group_tokens) == 0) {
-                stop("Empty group '()' at position ", token$start)
+            if (group_start > group_end - 1) {
+                # Empty group
+                group_children <- list()
+            } else {
+                group_tokens <- tokens[group_start:(group_end - 1)]
+                group_children <- parse_axes_iter(group_tokens)
             }
-            
-            group_children <- parse_axes_iter(group_tokens)
             
             # Use opening paren position as group source
             src <- list(start = token$start)

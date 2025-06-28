@@ -56,7 +56,7 @@ to_tokens.EllipsisAstNode <- function(x, ...) {
 }
 
 #' @title Create a GroupAstNode
-#' @param children List of axis nodes contained in this group
+#' @param children List of axis nodes contained in this group, potentially empty
 #' @param src List with start position
 #' @return GroupAstNode object
 #' @keywords internal
@@ -81,6 +81,13 @@ tail.GroupAstNode <- function(x, n = 1) {
 #' @keywords internal
 to_tokens.GroupAstNode <- function(x, ...) {
     lparen_token <- LParenToken(x$src$start)
+    
+    # Handle empty groups
+    if (length(x$children) == 0) {
+        rparen_token <- RParenToken(x$src$start + 1)
+        return(EinopsTokenSequence(lparen_token, rparen_token))
+    }
+    
     last_child_astnode <- tail(x, 1)[[1]]
     last_child_tokens <- to_tokens(last_child_astnode)
     last_token <- tail(last_child_tokens, 1)[[1]]
