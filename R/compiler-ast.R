@@ -112,6 +112,25 @@ OneSidedAstNode <- function(...) {
 }
 
 #' @export
+print.OneSidedAstNode <- function(x, ...) {
+    cat("OneSidedAstNode(")
+
+    if (length(x) == 0) {
+        cat(")\n")
+        return(invisible(x))
+    }
+
+    for (i in seq_along(x)) {
+        child_lines <- capture.output(print(x[[i]], ...))
+        cat("\n    ", paste(child_lines, collapse = "\n    "), sep = "")
+        if (i < length(x)) cat(",")
+    }
+
+    cat("\n)\n")
+    invisible(x)
+}
+
+#' @export
 #' @keywords internal
 to_tokens.OneSidedAstNode <- function(x, ...) {
     tokens <- unlist(lapply(x, to_tokens), recursive = FALSE)
@@ -160,55 +179,71 @@ to_tokens.NothingAstNode <- function(x, ...) {
 
 #' @export
 print.AstNode <- function(x, ...) {
-    format_value <- function(value, indent = 0) {
-        indent_str <- paste(rep("    ", indent), collapse = "")
-        
-        if (is.character(value)) {
-            return(paste0('"', value, '"'))
-        } else if (is.numeric(value)) {
-            return(as.character(value))
-        } else if (is.list(value)) {
-            if (inherits(value, "AstNode")) {
-                # Recursively format nested AST nodes
-                class_name <- class(value)[1]
-                if (length(value) == 0) {
-                    return(paste0(class_name, "()"))
-                }
-                
-                params <- sapply(names(value), function(name) {
-                    paste0("\n", indent_str, "    ", name, " = ", format_value(value[[name]], indent + 1))
-                })
-                return(paste0(class_name, "(", paste(params, collapse = ","), "\n", indent_str, ")"))
-            } else if (length(value) == 0) {
-                return("list()")
-            } else if (all(sapply(value, function(x) inherits(x, "AstNode")))) {
-                # List of AST nodes
-                formatted_items <- sapply(value, function(item) {
-                    paste0("\n", indent_str, "    ", format_value(item, indent + 1))
-                })
-                return(paste0("list(", paste(formatted_items, collapse = ","), "\n", indent_str, ")"))
-            } else {
-                # Regular list
-                formatted_items <- sapply(names(value), function(name) {
-                    paste0(name, " = ", format_value(value[[name]], indent))
-                })
-                return(paste0("list(", paste(formatted_items, collapse = ", "), ")"))
+
+    format_value <- function(val, indent = 0) {
+        ind <- paste(rep("    ", indent), collapse = "")
+
+        if (is.character(val)) return(paste0('"', val, '"'))
+        if (is.numeric(val))   return(as.character(val))
+
+        if (is.list(val)) {
+
+            if (inherits(val, "OneSidedAstNode")) {
+                raw <- capture.output(print(val, ...))
+                if (length(raw) == 0) return("")
+
+                first <- raw[1]
+                if (length(raw) == 1) return(first)
+
+                rest  <- paste(raw[-1], collapse = paste0("\n", ind))
+                return(paste0(first, "\n", ind, rest))
             }
-        } else {
-            return(as.character(value))
+
+            if (inherits(val, "AstNode")) {
+                cls <- class(val)[1]
+                if (length(val) == 0) return(paste0(cls, "()"))
+
+                nms <- names(val)
+                parts <- mapply(
+                    function(el, nm, idx) {
+                        lbl <- if (!is.null(nm) && nzchar(nm)) nm else paste0("[[", idx, "]]")
+                        paste0("\n", ind, "    ", lbl, " = ", format_value(el, indent + 1))
+                    },
+                    val, nms, seq_along(val), SIMPLIFY = FALSE
+                )
+                return(paste0(cls, "(", paste(parts, collapse = ","), "\n", ind, ")"))
+            }
+
+            if (length(val) == 0) return("list()")
+
+            nms <- names(val)
+            parts <- mapply(
+                function(el, nm) {
+                    lbl <- if (!is.null(nm) && nzchar(nm)) paste0(nm, " = ") else ""
+                    paste0(lbl, format_value(el, indent))
+                },
+                val, nms, SIMPLIFY = FALSE
+            )
+            return(paste0("list(", paste(parts, collapse = ", "), ")"))
         }
+        as.character(val)  # fallback
     }
-    
-    class_name <- class(x)[1]
+
+    cls <- class(x)[1]
     if (length(x) == 0) {
-        cat(class_name, "()\n", sep = "")
+        cat(cls, "()\n", sep = "")
     } else {
-        params <- sapply(names(x), function(name) {
-            paste0("\n    ", name, " = ", format_value(x[[name]], 1))
-        })
-        cat(class_name, "(", paste(params, collapse = ","), "\n)\n", sep = "")
+        nms <- names(x)
+        items <- mapply(
+            function(el, nm, idx) {
+                lbl <- if (!is.null(nm) && nzchar(nm)) nm else paste0("[[", idx, "]]")
+                paste0("\n    ", lbl, " = ", format_value(el, 1))
+            },
+            x, nms, seq_along(x), SIMPLIFY = FALSE
+        )
+        cat(cls, "(", paste(items, collapse = ","), "\n)\n", sep = "")
     }
-    
+
     invisible(x)
 }
 
