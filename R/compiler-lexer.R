@@ -17,6 +17,14 @@ lex <- function(pattern) {
     pattern_chars <- strsplit(pattern, "")[[1]]
     n <- length(pattern_chars)
 
+    # Define simple token mappings
+    simple_tokens <- list(
+        "(" = list(constructor = LParenToken, standalone = FALSE),
+        ")" = list(constructor = RParenToken, standalone = FALSE),
+        "_" = list(constructor = UnderscoreToken, standalone = TRUE),
+        "*" = list(constructor = AsteriskToken, standalone = TRUE)
+    )
+
     while (pos <= n) {
         char <- pattern_chars[pos]
 
@@ -45,19 +53,13 @@ lex <- function(pattern) {
             next
         }
 
-        # Left parenthesis
-        if (char == "(") {
-            paren_stack <- paren_stack + 1
-            tokens <- append(tokens, list(LParenToken(start_pos)))
-            pos <- pos + 1
-            next
-        }
-
-        # Right parenthesis
-        if (char == ")") {
-            paren_stack <- paren_stack - 1
-            tokens <- append(tokens, list(RParenToken(start_pos)))
-            pos <- pos + 1
+        # Handle simple tokens
+        simple_result <- handle_simple_token(char, pos, pattern_chars, n, simple_tokens)
+        if (!is.null(simple_result)) {
+            if (char == "(") paren_stack <- paren_stack + 1
+            if (char == ")") paren_stack <- paren_stack - 1
+            tokens <- append(tokens, list(simple_result$token))
+            pos <- pos + simple_result$advance
             next
         }
 
@@ -71,16 +73,6 @@ lex <- function(pattern) {
             tokens <- append(tokens, list(IntToken(value, start_pos)))
             pos <- end_pos
             next
-        }
-
-        # Underscore (standalone)
-        if (char == "_") {
-            if ((pos == 1 || !pattern_chars[pos-1] %in% c(letters, LETTERS, "_", as.character(0:9))) &&
-                (pos == n || !pattern_chars[pos+1] %in% c(letters, LETTERS, "_", as.character(0:9)))) {
-                tokens <- append(tokens, list(UnderscoreToken(start_pos)))
-                pos <- pos + 1
-                next
-            }
         }
 
         # Names (letters and underscores)
@@ -100,6 +92,27 @@ lex <- function(pattern) {
     }
 
     asEinopsTokenSequence(tokens)
+}
+
+# Helper function to check if a character is a standalone token
+# (not part of an identifier or number)
+is_standalone_char <- function(char, pos, pattern_chars, n) {
+    alphanumeric <- c(letters, LETTERS, "_", as.character(0:9))
+    prev_is_alnum <- pos > 1 && pattern_chars[pos-1] %in% alphanumeric
+    next_is_alnum <- pos < n && pattern_chars[pos+1] %in% alphanumeric
+    !prev_is_alnum && !next_is_alnum
+}
+
+# Helper function to handle simple character tokens
+handle_simple_token <- function(char, pos, pattern_chars, n, token_mapping) {
+    if (char %in% names(token_mapping)) {
+        token_info <- token_mapping[[char]]
+        if (token_info$standalone && !is_standalone_char(char, pos, pattern_chars, n)) {
+            return(NULL)
+        }
+        return(list(token = token_info$constructor(pos), advance = 1))
+    }
+    NULL
 }
 
 #' @title .next_token

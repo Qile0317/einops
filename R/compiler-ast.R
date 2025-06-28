@@ -106,19 +106,11 @@ EinopsAst <- function(input_axes, output_axes, src) {
 #' @export
 #' @keywords internal
 to_tokens.EinopsAst <- function(x, ...) {
-
     input_tokens <- unlist(lapply(x$input_axes, to_tokens), recursive = FALSE)
     output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
-
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
-    # print("=========================")
-    # print(last_input_astnode)
     last_input_tokens <- to_tokens(last_input_astnode)
-    # print("=========================")
-    # print(last_input_tokens)
     last_token <- tail(last_input_tokens, 1)[[1]]
-    # print("=========================")
-    # print(last_token)
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
 }

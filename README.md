@@ -55,3 +55,4 @@ library(einops)
 - [ ] R-universe upload
 - [ ] Much better README
 - [ ] Rcpp Acceleration for `base::array` operations
+- [ ] Copy the existing einops docs pages as vignettes
