@@ -6,6 +6,19 @@ validate_reduction_operation <- function(operation, einops_ast) {
     left <- einops_ast$input_axes
     rght <- einops_ast$output_axes
 
+    # check for nested brackets
+    for (axes in list(left, rght)) {
+        group_nodes <- axes[find_node_types_indices(axes, "GroupAstNode")]
+        for (grp_node in group_nodes) {
+            if (contains_node(grp_node$children, "GroupAstNode")) {
+                stop(glue(
+                    "Nested brackets are not allowed in the expression: ",
+                    "{to_expression(einops_ast)}"
+                ))
+            }
+        }
+    }
+
     if (!has_ellipsis(left) && has_ellipsis(rght)) {
         stop(glue(
             "Ellipsis found in right side, but not left side of a ",
@@ -28,6 +41,31 @@ validate_reduction_operation <- function(operation, einops_ast) {
             )
         }
     }
+
+    # TODO translate python code:
+    
+    #     if operation == "rearrange":
+    #         if left.has_non_unitary_anonymous_axes or rght.has_non_unitary_anonymous_axes:
+    #             raise EinopsError("Non-unitary anonymous axes are not supported in rearrange (exception is length 1)")
+    #         difference = set.symmetric_difference(left.identifiers, rght.identifiers)
+    #         if len(difference) > 0:
+    #             raise EinopsError(f"Identifiers only on one side of expression (should be on both): {difference}")
+    #     elif operation == "repeat":
+    #         difference = set.difference(left.identifiers, rght.identifiers)
+    #         if len(difference) > 0:
+    #             raise EinopsError(f"Unexpected identifiers on the left side of repeat: {difference}")
+    #         axes_without_size = set.difference(
+    #             {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},
+    #             {*left.identifiers, *axes_names},
+    #         )
+    #         if len(axes_without_size) > 0:
+    #             raise EinopsError(f"Specify sizes for new axes in repeat: {axes_without_size}")
+    #     elif operation in _reductions or callable(operation):
+    #         difference = set.difference(rght.identifiers, left.identifiers)
+    #         if len(difference) > 0:
+    #             raise EinopsError(f"Unexpected identifiers on the right side of reduce {operation}: {difference}")
+    #     else:
+    #         raise EinopsError(f"Unknown reduction {operation}. Expect one of {_reductions}.")
 
 }
 
@@ -115,26 +153,3 @@ identifiers.OneSidedAstNode <- function(x, ...) {
 
     }
 }
-
-#     if operation == "rearrange":
-#         if left.has_non_unitary_anonymous_axes or rght.has_non_unitary_anonymous_axes:
-#             raise EinopsError("Non-unitary anonymous axes are not supported in rearrange (exception is length 1)")
-#         difference = set.symmetric_difference(left.identifiers, rght.identifiers)
-#         if len(difference) > 0:
-#             raise EinopsError(f"Identifiers only on one side of expression (should be on both): {difference}")
-#     elif operation == "repeat":
-#         difference = set.difference(left.identifiers, rght.identifiers)
-#         if len(difference) > 0:
-#             raise EinopsError(f"Unexpected identifiers on the left side of repeat: {difference}")
-#         axes_without_size = set.difference(
-#             {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},
-#             {*left.identifiers, *axes_names},
-#         )
-#         if len(axes_without_size) > 0:
-#             raise EinopsError(f"Specify sizes for new axes in repeat: {axes_without_size}")
-#     elif operation in _reductions or callable(operation):
-#         difference = set.difference(rght.identifiers, left.identifiers)
-#         if len(difference) > 0:
-#             raise EinopsError(f"Unexpected identifiers on the right side of reduce {operation}: {difference}")
-#     else:
-#         raise EinopsError(f"Unknown reduction {operation}. Expect one of {_reductions}.")
