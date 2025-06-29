@@ -1,5 +1,9 @@
-#' Create a string representation of an object, as a vector of lines
-#'
+#' @title Python-like Representation of Objects as Strings
+#' @description
+#' This is an R implementation of python's `repr()` function.
+#' All objects will have a default repr that uses its print method.
+#' This is important because the [pprint()] function will always
+#' be able to give a repr-esque output of any object.
 #' @param x Object to represent
 #' @param indent Indentation level (number of spaces)
 #' @param ... Additional arguments passed to methods
@@ -19,6 +23,13 @@ print.repr_output <- function(x, ...) {
     cat(paste0(x, collapse = "\n"), "\n")
 }
 
+#' @title Pretty Print
+#' @description
+#' This is a convenience function that prints the [repr()] of an object.
+#' It is similar to python's `pprint.pprint()`.
+#' @param x Object to pretty print
+#' @param ... Additional arguments passed to `repr()`
+#' @keywords internal
 pprint <- function(x, ...) print(repr(x, ...))
 
 #' @export
@@ -78,11 +89,11 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
         class_names <- class(x)
         found <- FALSE
         for (class_name in class_names) {
-            if (is.function(get(class_name))) {
-                constructor_str <- class_name
-                found <- TRUE
-                break
-            }
+            if (!exists(class_name)) next
+            if (!is.function(get(class_name))) next
+            constructor_str <- class_name
+            found <- TRUE
+            break
         }
         if (!found) "list(" else paste0(constructor_str, "(")
     } else {

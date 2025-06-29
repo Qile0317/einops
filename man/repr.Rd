@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils-repr.R
 \name{repr}
 \alias{repr}
-\title{Create a string representation of an object, as a vector of lines}
+\title{Python-like Representation of Objects as Strings}
 \usage{
 repr(x, indent = 0L, ...)
 }
@@ -17,6 +17,9 @@ repr(x, indent = 0L, ...)
 A character vector of class c("repr_output", "character"), each element is a line
 }
 \description{
-Create a string representation of an object, as a vector of lines
+This is an R implementation of python's \code{repr()} function.
+All objects will have a default repr that uses its print method.
+This is important because the \code{\link[=pprint]{pprint()}} function will always
+be able to give a repr-esque output of any object.
 }
 \keyword{internal}
