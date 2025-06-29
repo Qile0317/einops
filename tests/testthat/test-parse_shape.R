@@ -147,4 +147,19 @@ test_that("parse_shape works for base::array", {
         parse_shape(array(1:360, dim = 3:6), "... h _ w"),
         list(h = 4L, w = 6L)
     )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "a ... w"),
+        list(a = 3L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:360, dim = 3:6), "a ... _ w"),
+        list(a = 3L, w = 6L)
+    )
+
+    expect_identical(
+        parse_shape(array(1:720, dim = 2:6), "a ... _ w _"),
+        list(a = 2L, w = 5L)
+    )
 })

@@ -96,16 +96,6 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
                     "Please check your expression: {expr}."
                 ))
             }
-            ellipsis_index <- find_node_types_indices(
-                onesided_ast, "EllipsisAstNode"
-            )
-            if (ellipsis_index != 1L && ellipsis_index != length(onesided_ast)) {
-                stop(glue(
-                    "Ellipsis must be at the beginning or end of the expression. ",
-                    "Found at index {ellipsis_index} in {length(onesided_ast)}. ",
-                    "Please check your expression: {expr}."
-                ))
-            }
         } else {
             stop(glue(
                 "Shape length {length(shape)} does not match the number of ",
@@ -117,6 +107,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     onesided_ast
 }
 
+# process OneSidedAstNode for parse_shape by replacing ellipses w/underscore(s)
 preprocess_shape_ast <- function(onesided_ast, shape) {
     if (!contains_node(onesided_ast, "EllipsisAstNode")) return(onesided_ast)
 
@@ -130,11 +121,11 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
     if (missing_dim_count < 0) {
         stop("Too many axes in expression for the shape.")
     }
-    new_underscore_nodes <- replicate(missing_dim_count, UnderscoreAstNode(list()), simplify = FALSE)
-    if (ellipsis_index == 1L) {
-        onesided_ast <- append(new_underscore_nodes, onesided_ast[-ellipsis_index])
-    } else {
-        onesided_ast <- append(onesided_ast[-ellipsis_index], new_underscore_nodes)
-    }
+    new_underscore_nodes <- replicate(
+        missing_dim_count, UnderscoreAstNode(list()), simplify = FALSE
+    )
+    before <- if (ellipsis_index > 1) onesided_ast[seq_len(ellipsis_index - 1)] else list()
+    after <- if (ellipsis_index < n_ast) onesided_ast[(ellipsis_index + 1):n_ast] else list()
+    onesided_ast <- OneSidedAstNode(c(before, new_underscore_nodes, after))
     onesided_ast
 }

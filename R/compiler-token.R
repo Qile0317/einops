@@ -143,8 +143,12 @@ print.EinopsTokenSequence <- function(x, ...) {
     invisible(x)
 }
 
-# convert EinopsTokenSequence to a string expression
 to_expression <- function(x, ...) {
+    UseMethod("to_expression", x)
+}
+
+#' @export
+to_expression.EinopsTokenSequence <- function(x, ...) {
     total_length <- 0
     for (token in x) {
         token_end <- token$start + nchar(token$value) - 1

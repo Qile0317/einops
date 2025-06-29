@@ -189,6 +189,17 @@ contains_node.OneSidedAstNode <- function(x, node_type, ...) {
     any(sapply(x, function(child) inherits(child, node_type)))
 }
 
+has_ellipsis <- function(onesided_ast) {
+    contains_node(onesided_ast, "EllipsisAstNode")
+}
+
+has_ellipsis_parenthesized <- function(onesided_ast) {
+    if (!contains_node(onesided_ast, "GroupAstNode")) return(FALSE)
+    any(sapply(
+        onesided_ast, function(child) inherits(child, "EllipsisAstNode")
+    ))
+}
+
 find_node_types_indices <- function(x, node_type, ...) {
     UseMethod("find_node_types_indices", x)
 }
@@ -226,6 +237,11 @@ to_tokens.EinopsAst <- function(x, ...) {
     last_token <- tail(last_input_tokens, 1)[[1]]
     arrow_token <- ArrowToken(last_token$start + nchar(last_token$value) + 1)
     asEinopsTokenSequence(c(input_tokens, list(arrow_token), output_tokens))
+}
+
+#' @export
+to_expression.EinopsAst <- function(x, ...) {
+    to_expression(to_tokens(x))
 }
 
 #' @export
