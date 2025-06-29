@@ -80,39 +80,33 @@ repr.list <- function(x, indent = 0L, ...) {
         }, character(1))
         return(as_repr(paste0("list(", paste(contents, collapse = ", "), ")")))
     }
-    
-    indent      <- as.integer(indent)
-    indent_str  <- strrep(" ", indent)          # current level
-    inner_str   <- strrep(" ", indent + 4L)     # one level deeper
-    nms         <- names(x)
-    
-    out <- c(paste0(indent_str, "list("))
-    
-    for (i in seq_along(x)) {
-        # build element representation without extra indent
-        elem_lines <- repr(x[[i]], indent = 0L, ...)
-        
-        # prefix first line (with optional name)
-        name_prefix <- if (!is.null(nms) && !(is.na(nms[i]) || nms[i] == "")) {
+
+    indent_str <- strrep(" ", indent)
+    nms <- names(x)
+
+    elems <- lapply(seq_along(x), function(i) {
+        # recurse to obtain the element's own repr
+        elem_lines <- as.character(repr(x[[i]], indent = indent, ...))
+
+        # attach name (if any) to the first line
+        name_part <- if (!is.null(nms) && !(is.na(nms[i]) || nms[i] == ""))
             paste0(nms[i], " = ")
-        } else {
-            ""
+        else ""
+
+        elem_lines[1] <- paste0(indent_str, name_part, elem_lines[1])
+        if (length(elem_lines) > 1)
+            elem_lines[-1] <- paste0(indent_str, elem_lines[-1])
+
+        elem_lines
+    })
+
+    if (length(elems) > 1) {
+        for (i in seq_len(length(elems) - 1L)) {
+            last <- length(elems[[i]])
+            elems[[i]][last] <- paste0(elems[[i]][last], ",")
         }
-        elem_lines[1] <- paste0(inner_str, name_prefix, elem_lines[1])
-        
-        # prefix any following lines
-        if (length(elem_lines) > 1L) {
-            elem_lines[-1] <- paste0(inner_str, elem_lines[-1])
-        }
-        
-        # comma after each element except the last
-        if (i < length(x)) {
-            elem_lines[length(elem_lines)] <- paste0(elem_lines[length(elem_lines)], ",")
-        }
-        
-        out <- c(out, elem_lines)
     }
-    
-    out <- c(out, paste0(indent_str, ")"))
+
+    out <- c("list(", unlist(elems, use.names = FALSE), ")")
     as_repr(out)
 }
