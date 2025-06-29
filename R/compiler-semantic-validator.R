@@ -1,6 +1,10 @@
 # for all core operations (reduce, rearrrange, repeat), they are all
 # implemented as different reduction operations
 
+valid_reduction_strings <- function() {
+    c("min", "max", "sum", "mean", "prod", "any", "all")
+}
+
 validate_reduction_operation <- function(operation, einops_ast) {
 
     left <- einops_ast$input_axes
@@ -33,6 +37,8 @@ validate_reduction_operation <- function(operation, einops_ast) {
         ))
     }
 
+    # TODO throw error on symmetric difference of unique identifier lengths
+
     if (operation == "rearrange") {
         if (has_non_unitary_anonymous_axes(einops_ast)) {
             stop(
@@ -51,12 +57,16 @@ validate_reduction_operation <- function(operation, einops_ast) {
         # TODO if (length(axes_without_size) > 0) return error
         return()
     }
-    if (is.function(operation) || assertthat::is.string(operation)) { # TODO: Or its a valid reduction func string
+    if (is.function(operation) ||
+        operation %in% valid_reduction_strings()) { # nolint
+        # TODO throw error on symmetric difference of unique identifier lengths
         return()
     }
 
-    stop(glue("Unknown reduction {capture.output(print(operation))}."))
-    # TODO add to stop msg: Expect one of {valid_reductions()}
+    stop(glue(
+        "Unknown reduction {capture.output(print(operation))}. ",
+        "Expect one of {valid_reduction_strings()} or a function."
+    ))
 
 }
 
