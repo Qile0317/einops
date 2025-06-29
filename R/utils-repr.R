@@ -22,6 +22,9 @@ print.repr_output <- function(x, ...) {
 pprint <- function(x, ...) print(repr(x, ...))
 
 #' @export
+repr.repr_output <- function(x, ...) x
+
+#' @export
 repr.default <- function(x, indent = 0L, ...) {
     if (is.null(x)) return(as_repr("NULL"))
     if (is.atomic(x)) {
@@ -69,32 +72,30 @@ repr.list <- function(x, indent = 0L, ...) {
     if (length(x) == 0) return(as_repr("list()"))
     
     indent      <- as.integer(indent)
-    indent_str  <- strrep(" ", indent)
-    inner_ind   <- indent + 4L
-    inner_str   <- strrep(" ", inner_ind)
+    indent_str  <- strrep(" ", indent)          # current level
+    inner_str   <- strrep(" ", indent + 4L)     # one level deeper
     nms         <- names(x)
     
-    out <- character()
-    out <- c(out, paste0(indent_str, "list("))
+    out <- c(paste0(indent_str, "list("))
     
     for (i in seq_along(x)) {
-        # --- generate representation for the element ----
-        elem_lines <- repr(x[[i]], indent = inner_ind, ...)
+        # build element representation without extra indent
+        elem_lines <- repr(x[[i]], indent = 0L, ...)
         
-        # add name if present
+        # prefix first line (with optional name)
         name_prefix <- if (!is.null(nms) && !(is.na(nms[i]) || nms[i] == "")) {
             paste0(nms[i], " = ")
         } else {
             ""
         }
-        
-        # prefix indentation (and name on the first line)
         elem_lines[1] <- paste0(inner_str, name_prefix, elem_lines[1])
+        
+        # prefix any following lines
         if (length(elem_lines) > 1L) {
             elem_lines[-1] <- paste0(inner_str, elem_lines[-1])
         }
         
-        # add a comma after the last line of the element, unless it’s the last element
+        # comma after each element except the last
         if (i < length(x)) {
             elem_lines[length(elem_lines)] <- paste0(elem_lines[length(elem_lines)], ",")
         }
