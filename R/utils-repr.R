@@ -73,8 +73,12 @@ repr.list <- function(x, indent = 0L, ...) {
     if (length(x) == 0) return(as_repr("list()"))
 
     if (indent == 0L) {
-        contents <- paste0(sapply(x, repr, ...), collapse = ", ")
-        return(as_repr(paste0("list(", contents, ")")))
+        nms <- names(x)
+        contents <- vapply(seq_along(x), function(i) {
+            name_part <- ifelse(!is.null(nms) && nms[i] != "", paste0(nms[i], " = "), "")
+            paste0(name_part, paste0(repr(x[[i]], indent = 0L, ...), collapse = ""))
+        }, character(1))
+        return(as_repr(paste0("list(", paste(contents, collapse = ", "), ")")))
     }
     
     indent      <- as.integer(indent)
