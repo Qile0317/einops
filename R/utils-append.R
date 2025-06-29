@@ -8,5 +8,5 @@ append <- function(x, values, after = length(x), ...) {
 
 #' @export
 append.default <- function(x, values, after = length(x), ...) {
-    base::append(x, values, after = length(x))
+    base::append(x = x, values = values, after = after)
 }

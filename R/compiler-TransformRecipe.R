@@ -97,19 +97,8 @@ expand_ellipsis <- function(einops_ast, ndim) {
         }),
         after = get_ellipsis_index(einops_ast$input_axes) - 1
     )
-    # TODO, simply replace the ellipsis with all the new axes by inserting a
-    # new node list into OneSidedAstNode
 
 }
-
-#         ell_axes = [_ellipsis + str(i) for i in range(ellipsis_ndim)]
-#         left_composition = []
-#         for composite_axis in left.composition:
-#             if composite_axis == _ellipsis:
-#                 for axis in ell_axes:
-#                     left_composition.append([axis])
-#             else:
-#                 left_composition.append(composite_axis)
 
 #         rght_composition = []
 #         for composite_axis in rght.composition:
