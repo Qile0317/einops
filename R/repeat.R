@@ -9,6 +9,12 @@
 #' @inherit reduce return
 #' @export
 #'
+#' @section Why can't the function be called as `repeat()`?:
+#' `repeat` is a reserved keyword in R that acts the same as
+#' `while(TRUE)`, and has no way of being overridden. Hence,
+#' this function can only be called as `einops.repeat()` or
+#' using backticks as \code{`repeat`()}.
+#'
 #' @examples
 #' # a grayscale image (of shape height x width)
 #' image <- array(rnorm(30*40), dim = c(30, 40))
@@ -28,6 +34,10 @@
 #' # 'pixelate' an image first by downsampling by 2x, then upsampling
 #' # downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
 #' # einops_repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
-einops_repeat <- function(x, expr, ...) {
+einops.repeat <- function(x, expr, ...) {
     reduce(x, expr, "repeat", ...)
 }
+
+#' @rdname einops.repeat
+#' @export
+`repeat` <- einops.repeat

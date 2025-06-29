@@ -1,5 +1,5 @@
 #' @title
-#' Rearrangement and reduction in one step (einops.reduce)
+#' Rearrangement and reduction in one step
 #'
 #' @description
 #' [einops::reduce()] combines rearrangement and reduction using
@@ -57,6 +57,10 @@
 reduce <- function(x, expr, func, ...) {
     UseMethod("reduce")
 }
+
+#' @rdname reduce
+#' @export
+einops.reduce <- reduce
 
 #' @export
 reduce.list <- function(x, expr, func, ...) {

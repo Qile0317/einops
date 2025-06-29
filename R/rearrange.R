@@ -17,9 +17,6 @@
 #' # suppose we have a set of 32 images in "h w c" format (height-width-channel)
 #' images <- lapply(1:32, function(i) array(rnorm(30*40*3), dim = c(30, 40, 3)))
 #'
-#' # stack along first (batch) axis, output is a single array
-#' rearrange(images, 'b h w c -> b h w c')
-#'
 #' # stacked and reordered axes to "b c h w" format
 #' rearrange(images, 'b h w c -> b c h w')
 #'
@@ -40,3 +37,7 @@
 rearrange <- function(x, expr, ...) {
     reduce(x, expr, "rearrange", ...)
 }
+
+#' @rdname rearrange
+#' @export
+einops.rearrange <- rearrange

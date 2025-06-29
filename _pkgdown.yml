@@ -10,7 +10,7 @@ reference:
 - contents:
   - reduce
   - rearrange
-  - einops_repeat
+  - einops.repeat
 - title: Utilities
 - contents:
   - parse_shape
