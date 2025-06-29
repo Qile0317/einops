@@ -292,18 +292,21 @@ print.EinopsAst <- function(x, ...) {
 #' @export
 print.GroupAstNode <- function(x, ...) {
     cat("GroupAstNode(")
+    # Print children
+    cat("\n    children = list(")
     if (length(x$children) == 0) {
-        cat("children = list(), ")
+        # nothing
     } else {
-        cat("children = list(")
         for (i in seq_along(x$children)) {
             child_lines <- capture.output(print(x$children[[i]], ...))
             cat("\n        ", paste(child_lines, collapse = "\n        "), sep = "")
             if (i < length(x$children)) cat(",")
         }
-        cat("\n    ), ")
+        cat("\n    ")
     }
-    cat("src = ", paste0("list(start = ", x$src$start, ")"))
+    cat(")")
+    # Print src
+    cat(",\n    src = ", paste0("list(start = ", x$src$start, ")"))
     cat("\n)\n")
     invisible(x)
 }
