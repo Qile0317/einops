@@ -86,7 +86,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     if (length(onesided_ast) == 0) {
         stop("Parsed AST is empty. Please check your expression.")
     }
-    if (contains_node(onesided_ast, "GroupAstNode")) throw_cannot_parse()
+    if (has_composed_axes(onesided_ast)) throw_cannot_parse()
     if (length(shape) != length(onesided_ast)) {
         if (has_ellipsis(onesided_ast)) {
             if (length(shape) < length(onesided_ast) - 1) {

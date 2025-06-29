@@ -83,6 +83,24 @@ find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
     indices
 }
 
+#' Determine whether any composed axes are present in
+#' the AST, IGNORING any 1's within brackets
+#' @noRd
+has_composed_axes <- function(x, ...) {
+    UseMethod("has_composed_axes", x)
+}
+
+#' @export
+has_composed_axes.OneSidedAstNode <- function(x, ...) {
+    if (!contains_node(x, "GroupAstNode")) return(FALSE)
+    group_indices <- find_node_types_indices(x, "GroupAstNode")
+    any(sapply(group_indices, function(grp_node) {
+        any(sapply(grp_node$children, function(node) {
+            inherits(node, "ConstantAstNode") && node$count > 1L
+        }))
+    }))
+}
+
 #' Get unique identifier set (axes and ellipses, excluding 1 and _)
 #' as a list of AstNode objects.
 #' @noRd
@@ -93,8 +111,8 @@ identifiers <- function(x, ...) {
 #' @export
 identifiers.OneSidedAstNode <- function(x, ...) {
     ast_node_set <- list()
-    for (child in x) {
-        
+    for (child_node in x) {
+
     }
 }
 
