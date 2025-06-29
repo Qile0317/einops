@@ -181,8 +181,8 @@ append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
 }
 
 #' @title Create an EinopsAst root node
-#' @param input_axes List of axis nodes for the input pattern
-#' @param output_axes List of axis nodes for the output pattern
+#' @param input_axes List of axis nodes for the input pattern, or a NothingAstNode, or OneSidedAstNode
+#' @param output_axes List of axis nodes for the input pattern, or a NothingAstNode, or OneSidedAstNode
 #' @param src List with start position covering the full pattern
 #' @return EinopsAst object
 #' @keywords internal
