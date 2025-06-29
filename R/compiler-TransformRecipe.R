@@ -39,4 +39,29 @@ TransformRecipe <- function(
         output_composite_axes = output_composite_axes
     ), class = "TransformRecipe")
 }
-#
+
+#' @title
+#' Create the Transformation Recipe for an einops call
+#'
+#' @description
+#' This function does the following parts of the einops 'compilation' pipeline:
+#' 1. Lexing: tokenizing the input expression string
+#' 2. Parsing: converting the tokens into an Abstract Syntax Tree (AST)
+#' 3. Syntactic Analysis:
+#'     - [IN PROGRESS] operation-based AST validation pass
+#'     - [TODO] Compile syntactic info for intermediate representation (IR).
+#' 4. [TODO] IR generation: return the [TransformRecipe()] object, acting as
+#'    the IR for the einops.
+#'
+#' @param expr The input einops expression string
+#' @param func The string/function indicating the reduction operation
+#' @param axes_names the user defined keyword args for dims as a [list()]
+#' @param ndim count for the number of dimensions of the input tensor
+#' @return a populated [TransformRecipe()] object
+#' @keywords internal
+prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+    tokens <- lex(expr)
+    ast <- parse_einops_ast(tokens)
+    validate_reduction_operation(func, ast)
+    # TODO
+}

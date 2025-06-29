@@ -73,9 +73,9 @@ reduce.default <- function(x, expr, func, ...) {
     backend <- get_backend(x)
     hashable_axes_lengths <- unlist(unname(axes_lengths))
     shape <- backend$shape(x)
-    # recipe <- prepare_transformation_recipe(
-    #     expr, func, axes_names = axes_lengths, ndim = length(shape)
-    # )
+    recipe <- prepare_transformation_recipe(
+        expr, func, axes_names = axes_lengths, ndim = length(shape)
+    )
     # apply_recipe(
     #     backend,
     #     recipe,
