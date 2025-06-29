@@ -180,39 +180,6 @@ append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
     structure(new_x, class = class(x))
 }
 
-contains_node <- function(x, node_type, ...) {
-    UseMethod("contains_node", x)
-}
-
-#' @export
-contains_node.OneSidedAstNode <- function(x, node_type, ...) {
-    any(sapply(x, function(child) inherits(child, node_type)))
-}
-
-has_ellipsis <- function(onesided_ast) {
-    contains_node(onesided_ast, "EllipsisAstNode")
-}
-
-has_ellipsis_parenthesized <- function(onesided_ast) {
-    if (!contains_node(onesided_ast, "GroupAstNode")) return(FALSE)
-    any(sapply(
-        onesided_ast, function(child) inherits(child, "EllipsisAstNode")
-    ))
-}
-
-find_node_types_indices <- function(x, node_type, ...) {
-    UseMethod("find_node_types_indices", x)
-}
-
-#' @export
-find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
-    indices <- which(sapply(x, function(child) inherits(child, node_type)))
-    if (length(indices) == 0) {
-        return(integer(0))
-    }
-    indices
-}
-
 #' @title Create an EinopsAst root node
 #' @param input_axes List of axis nodes for the input pattern
 #' @param output_axes List of axis nodes for the output pattern

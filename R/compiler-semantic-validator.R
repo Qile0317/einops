@@ -21,9 +21,66 @@ validate_reduction_operation <- function(operation, einops_ast) {
     }
 
     if (operation == "rearrange") {
-        
+        if (has_non_unitary_anonymous_axes(einops_ast)) {
+            stop(
+                "Non-unitary anonymous axes are not supported in rearrange ",
+                "(exception is length 1)"
+            )
+        }
     }
 
+}
+
+contains_node <- function(x, node_type, ...) {
+    UseMethod("contains_node", x)
+}
+
+#' @export
+contains_node.OneSidedAstNode <- function(x, node_type, ...) {
+    any(sapply(x, function(child) inherits(child, node_type)))
+}
+
+has_ellipsis <- function(onesided_ast) {
+    contains_node(onesided_ast, "EllipsisAstNode")
+}
+
+has_ellipsis_parenthesized <- function(onesided_ast) {
+    if (!contains_node(onesided_ast, "GroupAstNode")) return(FALSE)
+    any(sapply(
+        onesided_ast, function(child) inherits(child, "EllipsisAstNode")
+    ))
+}
+
+has_non_unitary_anonymous_axes <- function(x, ...) {
+    UseMethod("has_non_unitary_anonymous_axes", x)
+}
+
+#' @export
+has_non_unitary_anonymous_axes.OneSidedAstNode <- function(x, ...) {
+    any(sapply(x, function(child) {
+        if (inherits(child, "ConstantAstNode")) {
+            child$count > 1L
+        }
+    }))
+}
+
+#' @export
+has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
+    has_non_unitary_anonymous_axes(x$input_axes) ||
+        has_non_unitary_anonymous_axes(x$output_axes)
+}
+
+find_node_types_indices <- function(x, node_type, ...) {
+    UseMethod("find_node_types_indices", x)
+}
+
+#' @export
+find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
+    indices <- which(sapply(x, function(child) inherits(child, node_type)))
+    if (length(indices) == 0) {
+        return(integer(0))
+    }
+    indices
 }
 
 #     if operation == "rearrange":
