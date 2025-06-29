@@ -88,7 +88,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     }
     if (contains_node(onesided_ast, "GroupAstNode")) throw_cannot_parse()
     if (length(shape) != length(onesided_ast)) {
-        if (contains_node(onesided_ast, "EllipsisAstNode")) {
+        if (has_ellipsis(onesided_ast)) {
             if (length(shape) < length(onesided_ast) - 1) {
                 stop(glue(
                     "Shape length {length(shape)} is < the number of axes ",
