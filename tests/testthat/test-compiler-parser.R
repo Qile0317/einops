@@ -364,6 +364,71 @@ test_that("a b c -> b 1 ()", {
     expect_identical(to_tokens(ast), tokens)
 })
 
+test_that("a b c d -> (a c) b ...", {
+
+    tokens <- EinopsTokenSequence(
+        NameToken("a", 1),
+        NameToken("b", 3),
+        NameToken("c", 5),
+        NameToken("d", 7),
+        ArrowToken(9),
+        LParenToken(12),
+        NameToken("a", 13),
+        NameToken("c", 15),
+        RParenToken(16),
+        NameToken("b", 18),
+        EllipsisToken(21)
+    )
+    
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 3)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 5)
+            ),
+            NamedAxisAstNode(
+                name = "d",
+                src = list(start = 7)
+            )
+        ),
+        output_axes = OneSidedAstNode(
+            GroupAstNode(
+                children = list(
+                    NamedAxisAstNode(
+                        name = "a",
+                        src = list(start = 13)
+                    ),
+                    NamedAxisAstNode(
+                        name = "c",
+                        src = list(start = 15)
+                    )
+                ),
+                src = list(start = 12)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 18)
+            ),
+            EllipsisAstNode(
+                src = list(start = 21)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expect_identical(parse_einops_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+
+})
+
 test_that("parse_onesided_ast handles simple axis names", {
     tokens <- EinopsTokenSequence(
         NameToken("a", 1),

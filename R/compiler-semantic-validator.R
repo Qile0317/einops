@@ -83,6 +83,21 @@ find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
     indices
 }
 
+#' Get unique identifier set (axes and ellipses, excluding 1 and _)
+#' as a list of AstNode objects.
+#' @noRd
+identifiers <- function(x, ...) {
+    UseMethod("identifiers", x)
+}
+
+#' @export
+identifiers.OneSidedAstNode <- function(x, ...) {
+    ast_node_set <- list()
+    for (child in x) {
+        
+    }
+}
+
 #     if operation == "rearrange":
 #         if left.has_non_unitary_anonymous_axes or rght.has_non_unitary_anonymous_axes:
 #             raise EinopsError("Non-unitary anonymous axes are not supported in rearrange (exception is length 1)")

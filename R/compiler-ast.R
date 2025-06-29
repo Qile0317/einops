@@ -197,8 +197,8 @@ EinopsAst <- function(input_axes, output_axes, src) {
 #' @export
 #' @keywords internal
 to_tokens.EinopsAst <- function(x, ...) {
-    input_tokens <- unlist(lapply(x$input_axes, to_tokens), recursive = FALSE)
-    output_tokens <- unlist(lapply(x$output_axes, to_tokens), recursive = FALSE)
+    input_tokens <- to_tokens(x$input_axes)
+    output_tokens <- to_tokens(x$output_axes)
     last_input_astnode <- tail(x$input_axes, 1)[[1]]
     last_input_tokens <- to_tokens(last_input_astnode)
     last_token <- tail(last_input_tokens, 1)[[1]]
@@ -287,4 +287,23 @@ print.EinopsAst <- function(x, ...) {
         "Einops Abstract Syntax Tree for '{to_expression(to_tokens(x))}':\n\n"
     ))
     print.AstNode(x, ...)
+}
+
+#' @export
+print.GroupAstNode <- function(x, ...) {
+    cat("GroupAstNode(")
+    if (length(x$children) == 0) {
+        cat("children = list(), ")
+    } else {
+        cat("children = list(")
+        for (i in seq_along(x$children)) {
+            child_lines <- capture.output(print(x$children[[i]], ...))
+            cat("\n        ", paste(child_lines, collapse = "\n        "), sep = "")
+            if (i < length(x$children)) cat(",")
+        }
+        cat("\n    ), ")
+    }
+    cat("src = ", paste0("list(start = ", x$src$start, ")"))
+    cat("\n)\n")
+    invisible(x)
 }
