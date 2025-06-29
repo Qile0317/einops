@@ -69,7 +69,13 @@ repr.character <- function(
 
 #' @export
 repr.list <- function(x, indent = 0L, ...) {
+
     if (length(x) == 0) return(as_repr("list()"))
+
+    if (indent == 0L) {
+        contents <- paste0(sapply(x, repr, ...), collapse = ", ")
+        return(as_repr(paste0("list(", contents, ")")))
+    }
     
     indent      <- as.integer(indent)
     indent_str  <- strrep(" ", indent)          # current level
