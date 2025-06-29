@@ -1,4 +1,11 @@
-#' @title Parse einops pattern into AST
+#' @title
+#' Parse einops pattern into AST
+#'
+#' @description
+#' In the python implementation, they preprocess all 1's
+#' into () and then parse it into the equivalent of a
+#' GroupAstNode. Here, we won't do that
+#'
 #' @param tokens EinopsTokenSequence object from the lexer
 #' @return EinopsAst object
 #' @keywords internal

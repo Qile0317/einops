@@ -13,6 +13,8 @@ parse_einops_ast(tokens)
 EinopsAst object
 }
 \description{
-Parse einops pattern into AST
+In the python implementation, they preprocess all 1's
+into () and then parse it into the equivalent of a
+GroupAstNode. Here, we won't do that
 }
 \keyword{internal}
