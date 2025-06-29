@@ -98,6 +98,10 @@ expand_ellipsis <- function(einops_ast, ndim) {
         after = get_ellipsis_index(einops_ast$input_axes) - 1
     )
 
+    # expand the output ellipsis
+
+    
+
 }
 
 #         rght_composition = []

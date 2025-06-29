@@ -429,6 +429,49 @@ test_that("a b c d -> (a c) b ...", {
 
 })
 
+test_that("... c -> (c ...)", {
+    
+    tokens <- EinopsTokenSequence(
+        EllipsisToken(1),
+        NameToken("c", 5),
+        ArrowToken(7),
+        LParenToken(10),
+        NameToken("c", 11),
+        EllipsisToken(13),
+        RParenToken(16)
+    )
+
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            EllipsisAstNode(
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "c",
+                src = list(start = 5)
+            )
+        ),
+        output_axes = OneSidedAstNode(
+            GroupAstNode(
+                children = list(
+                    NamedAxisAstNode(
+                        name = "c",
+                        src = list(start = 11)
+                    ),
+                    EllipsisAstNode(
+                        src = list(start = 13)
+                    )
+                ),
+                src =  list(start = 10)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expect_identical(parse_einops_ast(tokens), ast)
+    expect_identical(to_tokens(ast), tokens)
+})
+
 test_that("parse_onesided_ast handles simple axis names", {
     tokens <- EinopsTokenSequence(
         NameToken("a", 1),
