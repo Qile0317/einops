@@ -100,7 +100,8 @@ expand_ellipsis <- function(einops_ast, ndim) {
 
     # expand the output ellipsis
 
-    
+    expanded_output_ast <- OneSidedAstNode()
+
 
 }
 
@@ -117,9 +118,3 @@ expand_ellipsis <- function(einops_ast, ndim) {
 #                     else:
 #                         group.append(axis)
 #                 rght_composition.append(group)
-
-#         left.identifiers.update(ell_axes)
-#         left.identifiers.remove(_ellipsis)
-#         if rght.has_ellipsis:
-#             rght.identifiers.update(ell_axes)
-#             rght.identifiers.remove(_ellipsis)
