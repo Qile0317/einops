@@ -121,15 +121,9 @@ print.ParameterizedEinopsToken <- function(x, ...) {
 
 #' @export
 print.EinopsTokenSequence <- function(x, ...) {
-
-    if (length(x) == 0) {
-        cat("EinopsTokenSequence()\n")
-        return(invisible(x))
-    }
-
-    cat(glue("Einops Lexed Token Sequence for '{to_expression(x)}':\n\n"))
+    if (length(x) > 0)
+        cat(glue("Einops Lexed Token Sequence for '{to_expression(x)}':\n\n"))
     pprint(x, indent = 4L, s3_cons = TRUE)
-    invisible(x)
 }
 
 to_expression <- function(x, ...) {

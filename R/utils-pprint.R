@@ -1,3 +1,18 @@
+#' @title Pretty Print
+#' @description
+#' This is a convenience function that prints the [repr()] of an object.
+#' It is similar to python's `pprint.pprint()`. Usually, to ensure that
+#' an object is displayed in the terminal using its pprint format, just
+#' define a `print.that_object_class` method that calls `pprint()`.
+#' @param x Object to pretty print
+#' @param ... Additional arguments passed to `repr()`
+#' @return The input object, invisibly
+#' @keywords internal
+pprint <- function(x, ...) {
+    print(repr(x, ...))
+    invisible(x)
+}
+
 #' @title Python-like Representation of Objects as Strings
 #' @description
 #' This is an R implementation of python's `repr()` function.
@@ -22,15 +37,6 @@ as_repr <- function(x) {
 print.repr_output <- function(x, ...) {
     cat(paste0(x, collapse = "\n"), "\n")
 }
-
-#' @title Pretty Print
-#' @description
-#' This is a convenience function that prints the [repr()] of an object.
-#' It is similar to python's `pprint.pprint()`.
-#' @param x Object to pretty print
-#' @param ... Additional arguments passed to `repr()`
-#' @keywords internal
-pprint <- function(x, ...) print(repr(x, ...))
 
 #' @export
 repr.repr_output <- function(x, ...) x

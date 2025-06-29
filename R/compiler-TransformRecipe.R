@@ -28,15 +28,12 @@ TransformRecipe <- function(
         is.list(axis_name2elementary_axis) || is.integer(axis_name2elementary_axis) || is.numeric(axis_name2elementary_axis)
     )
 
-    structure(list(
-        elementary_axes_lengths = elementary_axes_lengths,
-        axis_name2elementary_axis = axis_name2elementary_axis,
-        input_composition_known_unknown = input_composition_known_unknown,
-        axes_permutation = axes_permutation,
-        first_reduced_axis = first_reduced_axis,
-        added_axes = added_axes,
-        output_composite_axes = output_composite_axes
-    ), class = "TransformRecipe")
+    structure(as.list(match.call()), class = c("TransformRecipe", "list"))
+}
+
+#' @export
+print.TransformRecipe <- function(x, ...) {
+    pprint(x, indent = 4L, s3_cons = TRUE, ...)
 }
 
 #' @title
