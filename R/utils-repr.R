@@ -32,7 +32,7 @@ repr.default <- function(x, indent = 0L, ...) {
         return(repr.character(x, indent = indent, quote = FALSE, ...))
     }
     # fallback
-    as_repr(capture.output(print(x, ...)))
+    as_repr(trimws(capture.output(print(x, ...))))
 }
 
 # Helper for named/unnamed contents
@@ -67,18 +67,37 @@ repr.character <- function(
     as_repr(strsplit(out, "\n")[[1]])
 }
 
+#' @param incl_nm Whether to include names in the representation
+#' @param s3_cons If there's an S3 class, and a constructor is found, use
+#' `constructor()` instead of `list(`
+#' @noRd
 #' @export
-repr.list <- function(x, indent = 0L, ...) {
+repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 
-    if (length(x) == 0) return(as_repr("list()"))
+    constructor_str <- if (s3_cons) {
+        class_names <- class(x)
+        found <- FALSE
+        for (class_name in class_names) {
+            if (is.function(get(class_name))) {
+                constructor_str <- class_name
+                found <- TRUE
+                break
+            }
+        }
+        if (!found) "list(" else paste0(constructor_str, "(")
+    } else {
+        "list("
+    }
+
+    if (length(x) == 0) return(as_repr(paste0(constructor_str, ")")))
 
     if (indent == 0L) {
         nms <- names(x)
         contents <- vapply(seq_along(x), function(i) {
-            name_part <- ifelse(!is.null(nms) && nms[i] != "", paste0(nms[i], " = "), "")
+            name_part <- ifelse(!is.null(nms) && nms[i] != "" && incl_nm, paste0(nms[i], " = "), "")
             paste0(name_part, paste0(repr(x[[i]], indent = 0L, ...), collapse = ""))
         }, character(1))
-        return(as_repr(paste0("list(", paste(contents, collapse = ", "), ")")))
+        return(as_repr(paste0(constructor_str, paste(contents, collapse = ", "), ")")))
     }
 
     indent_str <- strrep(" ", indent)
@@ -89,7 +108,7 @@ repr.list <- function(x, indent = 0L, ...) {
         elem_lines <- as.character(repr(x[[i]], indent = indent, ...))
 
         # attach name (if any) to the first line
-        name_part <- if (!is.null(nms) && !(is.na(nms[i]) || nms[i] == ""))
+        name_part <- if (!is.null(nms) && incl_nm && nms[i] != "")
             paste0(nms[i], " = ")
         else ""
 
@@ -107,6 +126,6 @@ repr.list <- function(x, indent = 0L, ...) {
         }
     }
 
-    out <- c("list(", unlist(elems, use.names = FALSE), ")")
+    out <- c(constructor_str, unlist(elems, use.names = FALSE), ")")
     as_repr(out)
 }
