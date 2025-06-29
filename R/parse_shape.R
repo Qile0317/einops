@@ -122,7 +122,7 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
         stop("Too many axes in expression for the shape.")
     }
     new_underscore_nodes <- replicate(
-        missing_dim_count, UnderscoreAstNode(list()), simplify = FALSE
+        missing_dim_count, UnderscoreAstNode(), simplify = FALSE
     )
     before <- if (ellipsis_index > 1) onesided_ast[seq_len(ellipsis_index - 1)] else list()
     after <- if (ellipsis_index < n_ast) onesided_ast[(ellipsis_index + 1):n_ast] else list()

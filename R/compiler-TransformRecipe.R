@@ -57,7 +57,76 @@ print.TransformRecipe <- function(x, ...) {
 #' @keywords internal
 prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     tokens <- lex(expr)
-    ast <- parse_einops_ast(tokens)
-    validate_reduction_operation(func, ast)
+    ast <- parse_einops_ast(tokens) %>%
+        validate_reduction_operation(func) %>%
+        expand_ellipsis(ndim)
     # TODO
 }
+
+#' Expand ellipses of an EinopsAst
+#' @param einops_ast an EinopsAst
+#' @param ndim integer. Number of dimensions in the input tensor
+#' @return an expanded EinopsAst with ellipses expanded
+#' @noRd
+expand_ellipsis <- function(einops_ast, ndim) {
+
+    if (!has_ellipsis(einops_ast$input_axes)) {
+        if (ndim != length(einops_ast$input_axes)) {
+            stop(glue(
+                "Wrong shape: expected {length(einops_ast$input_axes)} dims. ",
+                "Received {ndim}-dim tensor."
+            ))
+        }
+        return(einops_ast)
+    }
+
+    # expand the input ellipsis
+
+    n_other_dims <- length(einops_ast$input_axes) - 1
+    if (ndim < n_other_dims) {
+        stop(glue(
+            "Wrong shape: expected >={n_other_dims} dims. Received {ndim}-dim ",
+            "tensor."
+        ))
+    }
+
+    expanded_input_ast <- append(
+        x = einops_ast$input_axes[-get_ellipsis_index(einops_ast$input_axes)],
+        values = lapply(seq_len(ndim - n_other_dims), function(i) {
+            NamedAxisAstNode(paste0("...", i))
+        }),
+        after = get_ellipsis_index(einops_ast$input_axes) - 1
+    )
+    # TODO, simply replace the ellipsis with all the new axes by inserting a
+    # new node list into OneSidedAstNode
+
+}
+
+#         ell_axes = [_ellipsis + str(i) for i in range(ellipsis_ndim)]
+#         left_composition = []
+#         for composite_axis in left.composition:
+#             if composite_axis == _ellipsis:
+#                 for axis in ell_axes:
+#                     left_composition.append([axis])
+#             else:
+#                 left_composition.append(composite_axis)
+
+#         rght_composition = []
+#         for composite_axis in rght.composition:
+#             if composite_axis == _ellipsis:
+#                 for axis in ell_axes:
+#                     rght_composition.append([axis])
+#             else:
+#                 group = []
+#                 for axis in composite_axis:
+#                     if axis == _ellipsis:
+#                         group.extend(ell_axes)
+#                     else:
+#                         group.append(axis)
+#                 rght_composition.append(group)
+
+#         left.identifiers.update(ell_axes)
+#         left.identifiers.remove(_ellipsis)
+#         if rght.has_ellipsis:
+#             rght.identifiers.update(ell_axes)
+#             rght.identifiers.remove(_ellipsis)

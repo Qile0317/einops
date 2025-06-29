@@ -8,7 +8,7 @@ to_tokens <- function(x, ...) {
 #' @param src List with start position
 #' @return NamedAxisAstNode object
 #' @keywords internal
-NamedAxisAstNode <- function(name, src) {
+NamedAxisAstNode <- function(name, src = list()) {
     structure(list(
         name = name,
         src = src
@@ -26,7 +26,7 @@ to_tokens.NamedAxisAstNode <- function(x, ...) {
 #' @param src List with start position
 #' @return ConstantAstNode object
 #' @keywords internal
-ConstantAstNode <- function(count, src) {
+ConstantAstNode <- function(count, src = list()) {
     structure(list(
         count = as.integer(count),
         src = src
@@ -73,7 +73,7 @@ to_tokens.NothingAstNode <- function(x, ...) {
 #' @param src List with start position
 #' @return UnderscoreAstNode object
 #' @keywords internal
-UnderscoreAstNode <- function(src) {
+UnderscoreAstNode <- function(src = list()) {
     structure(list(
         src = src
     ), class = c("UnderscoreAstNode", "AstNode"))
@@ -90,7 +90,7 @@ to_tokens.UnderscoreAstNode <- function(x, ...) {
 #' @param src List with start position
 #' @return GroupAstNode object
 #' @keywords internal
-GroupAstNode <- function(children, src) {
+GroupAstNode <- function(children, src = list()) {
     structure(list(
         children = children,
         src = src
@@ -139,6 +139,23 @@ OneSidedAstNode <- function(...) {
         axes <- args
     }
     structure(axes, class = c("OneSidedAstNode", "AstNode"))
+}
+
+find_node_types_indices <- function(x, node_type, ...) {
+    UseMethod("find_node_types_indices", x)
+}
+
+#' @export
+find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
+    indices <- which(sapply(x, function(child) inherits(child, node_type)))
+    if (length(indices) == 0) {
+        return(integer(0))
+    }
+    indices
+}
+
+get_ellipsis_index <- function(onesided_ast) {
+    find_node_types_indices(onesided_ast, "EllipsisAstNode")
 }
 
 #' @export

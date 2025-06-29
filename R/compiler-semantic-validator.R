@@ -5,7 +5,14 @@ valid_reduction_strings <- function() {
     c("min", "max", "sum", "mean", "prod", "any", "all")
 }
 
-validate_reduction_operation <- function(operation, einops_ast) {
+#' Syntactically Validate the reduction operation in the einops
+#' expression
+#' @param operation the reduction operation, either a string or a function
+#' @param einops_ast the parsed Abstract Syntax Tree (AST) of the einops
+#' expression
+#' @return the input einops_ast (invisibly) if the validation passes
+#' @keywords internal
+validate_reduction_operation <- function(einops_ast, operation) {
 
     left <- einops_ast$input_axes
     rght <- einops_ast$output_axes
@@ -47,7 +54,7 @@ validate_reduction_operation <- function(operation, einops_ast) {
             )
         }
         # TODO throw error on symmetric difference of unique identifier lengths
-        return()
+        return(invisible(einops_ast))
     }
     if (operation == "repeat") {
         # TODO throw error on symmetric difference of unique identifier lengths
@@ -55,12 +62,12 @@ validate_reduction_operation <- function(operation, einops_ast) {
         #   {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},
         #   {*left.identifiers, *axes_names}
         # TODO if (length(axes_without_size) > 0) return error
-        return()
+        return(invisible(einops_ast))
     }
     if (is.function(operation) ||
         operation %in% valid_reduction_strings()) { # nolint
         # TODO throw error on symmetric difference of unique identifier lengths
-        return()
+        return(invisible(einops_ast))
     }
 
     stop(glue(
@@ -107,19 +114,6 @@ has_non_unitary_anonymous_axes.OneSidedAstNode <- function(x, ...) {
 has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
     has_non_unitary_anonymous_axes(x$input_axes) ||
         has_non_unitary_anonymous_axes(x$output_axes)
-}
-
-find_node_types_indices <- function(x, node_type, ...) {
-    UseMethod("find_node_types_indices", x)
-}
-
-#' @export
-find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
-    indices <- which(sapply(x, function(child) inherits(child, node_type)))
-    if (length(indices) == 0) {
-        return(integer(0))
-    }
-    indices
 }
 
 #' Determine whether any composed axes are present in
