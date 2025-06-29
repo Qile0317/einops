@@ -1,6 +1,7 @@
-# nolint start: indentation_linter.
-
 #' Main function to detect and return backend
+#' @param tensor any support tensor-like class
+#' @return An instance of a `BackendRegistry` class
+#' @keywords internal
 get_backend <- function(tensor) {
     BackendRegistry$new()$get_backend(tensor)
 }
@@ -8,6 +9,8 @@ get_backend <- function(tensor) {
 register_backend <- function(backend_class) {
     BackendRegistry$new()$register_backend(backend_class)
 }
+
+# nolint start: indentation_linter.
 
 #' @title
 #' Singleton Backend Registry, managing all available backends.

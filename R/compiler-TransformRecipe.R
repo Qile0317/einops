@@ -8,8 +8,7 @@
 #' @param added_axes Named integer vector. Axis position -> axis index.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they appear in result.
 #' @return An object of class 'TransformRecipe'.
-#' @export
-#' @importFrom assertthat assert_that is.string is.count is.flag
+#' @keywords internal
 TransformRecipe <- function(
     elementary_axes_lengths,
     axis_name2elementary_axis,

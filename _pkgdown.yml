@@ -4,3 +4,13 @@ template:
 
 development:
   mode: auto
+
+reference:
+- title: Core Einops Operations
+- contents:
+  - reduce
+  - rearrange
+  - einops_repeat
+- title: Utilities
+- contents:
+  - parse_shape
