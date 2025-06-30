@@ -62,7 +62,7 @@ public = list(
     },
     keys_in_order = function() {
         all_keys <- r2r::keys(private$key2index)
-        all_keys[order(private$key2index[all_keys])]
+        all_keys[order(as.integer(private$key2index[all_keys]))]
     },
     size = function() {
         length(r2r::keys(private$key2index))
