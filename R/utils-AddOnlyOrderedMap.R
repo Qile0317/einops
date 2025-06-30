@@ -23,7 +23,7 @@ AddOnlyOrderedMap <- function() {
 }
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
-private = list(
+private = list( # nolint start: indentation_linter
     key2value = NULL,
     key2index = NULL,
     highest_index = NA
@@ -36,10 +36,12 @@ public = list(
     },
     print = function() {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
-        for (key in self$keys_in_order()) {
-            value <- self$query(key)
-            cat(sprintf("  %s: %s\n", key, ifelse(is.null(value), "NULL", value)))
-        }
+        if (self$size() == 0) return(invisible(self))
+        keys <- self$keys_in_order()
+        values <- self$query(keys, vectorize = TRUE)
+        key_str_reprsentations <- sapply(keys, repr)
+        names(values) <- key_str_reprsentations
+        pprint(values, indent = 2L, s3_cons = TRUE)
         invisible(self)
     },
     insert = function(key, value, vectorize = FALSE) {
@@ -48,7 +50,7 @@ public = list(
             private$key2value[key] <- value
             private$highest_index <- private$highest_index + length(key)
             private$key2index[key] <-
-                (private$highest_index - length(key)):private$highest_index
+                (private$highest_index - length(key) + 1):private$highest_index
         } else {
             private$key2value[[key]] <- value
             private$key2index[[key]] <- private$highest_index + 1
