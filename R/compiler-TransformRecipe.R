@@ -74,11 +74,21 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     )
 }
 
+#' @title
 #' Expand ellipses of an EinopsAst
+#'
+#' @description
+#' Helper for [prepare_transformation_recipe()].
+#'
+#' This function expands each relevant ellipsis ast node inplace into a
+#' sequence of `NamedAxisAstNode` nodes, where each node will have
+#' a name like `"...1"`, `"...2"`, etc. and an empty `src` list.
+#'
+#' Also does some further validation of the ellipses syntax using `ndim`.
+#'
 #' @param einops_ast an EinopsAst
 #' @param ndim integer. Number of dimensions in the input tensor
 #' @return an expanded EinopsAst with ellipses expanded
-#' @noRd
 expand_ellipsis <- function(einops_ast, ndim) {
 
     if (!has_ellipsis(einops_ast$input_axes)) {

@@ -1,4 +1,4 @@
-test_that("expand_ellipsis works", {
+test_that("expand_ellipsis works", { # TODO: these tests are not comprehensive
 
     # check that having no ellipsis does not cause problems
 
