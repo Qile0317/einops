@@ -131,12 +131,10 @@ to_tokens.GroupAstNode <- function(x, ...) {
 #' @return OneSidedAstNode object
 #' @keywords internal
 OneSidedAstNode <- function(...) {
-    args <- list(...)
-    # If a single argument and it's a list, treat as list of nodes
-    if (length(args) == 1 && is.list(args[[1]]) && !inherits(args[[1]], "AstNode")) {
-        axes <- args[[1]]
+    if (nargs() == 1 && is.list(..1) && !inherits(..1, "AstNode")) {
+        axes <- ..1
     } else {
-        axes <- args
+        axes <- list(...)
     }
     structure(axes, class = c("OneSidedAstNode", "AstNode"))
 }
@@ -215,15 +213,25 @@ append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
 }
 
 #' @title Create an EinopsAst root node
-#' @param input_axes List of axis nodes for the input pattern, or a NothingAstNode, or OneSidedAstNode
-#' @param output_axes List of axis nodes for the input pattern, or a NothingAstNode, or OneSidedAstNode
+#' @param input_axes List of axis nodes for the input pattern, or a
+#' NothingAstNode, or OneSidedAstNode
+#' @param output_axes List of axis nodes for the input pattern, or a
+#' NothingAstNode, or OneSidedAstNode
 #' @param src List with start position covering the full pattern
 #' @return EinopsAst object
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
+
+    if (!inherits(input_axes, "OneSidedAstNode")) {
+        input_axes <- OneSidedAstNode(input_axes)
+    }
+    if (!inherits(output_axes, "OneSidedAstNode")) {
+        output_axes <- OneSidedAstNode(output_axes)
+    }
+
     structure(list(
-        input_axes = if (!inherits(input_axes, "OneSidedAstNode")) OneSidedAstNode(input_axes) else input_axes,
-        output_axes = if (!inherits(output_axes, "OneSidedAstNode")) OneSidedAstNode(output_axes) else output_axes,
+        input_axes = input_axes,
+        output_axes = output_axes,
         src = src
     ), class = c("EinopsAst", "AstNode"))
 }
@@ -252,49 +260,54 @@ print.AstNode <- function(x, ...) {
         ind <- paste(rep("    ", indent), collapse = "")
 
         if (is.character(val)) return(paste0('"', val, '"'))
-        if (is.numeric(val))   return(as.character(val))
+        if (is.numeric(val)) return(as.character(val))
+        if (!is.list(val)) return(as.character(val))
 
-        if (is.list(val)) {
+        if (inherits(val, "OneSidedAstNode")) {
+            raw <- capture.output(print(val, ...))
+            if (length(raw) == 0) return("")
 
-            if (inherits(val, "OneSidedAstNode")) {
-                raw <- capture.output(print(val, ...))
-                if (length(raw) == 0) return("")
+            first <- raw[1]
+            if (length(raw) == 1) return(first)
 
-                first <- raw[1]
-                if (length(raw) == 1) return(first)
+            rest  <- paste(raw[-1], collapse = paste0("\n", ind))
+            return(paste0(first, "\n", ind, rest))
+        }
 
-                rest  <- paste(raw[-1], collapse = paste0("\n", ind))
-                return(paste0(first, "\n", ind, rest))
-            }
-
-            if (inherits(val, "AstNode")) {
-                cls <- class(val)[1]
-                if (length(val) == 0) return(paste0(cls, "()"))
-
-                nms <- names(val)
-                parts <- mapply(
-                    function(el, nm, idx) {
-                        lbl <- if (!is.null(nm) && nzchar(nm)) nm else paste0("[[", idx, "]]")
-                        paste0("\n", ind, "    ", lbl, " = ", format_value(el, indent + 1))
-                    },
-                    val, nms, seq_along(val), SIMPLIFY = FALSE
-                )
-                return(paste0(cls, "(", paste(parts, collapse = ","), "\n", ind, ")"))
-            }
-
-            if (length(val) == 0) return("list()")
+        if (inherits(val, "AstNode")) {
+            cls <- class(val)[1]
+            if (length(val) == 0) return(paste0(cls, "()"))
 
             nms <- names(val)
             parts <- mapply(
-                function(el, nm) {
-                    lbl <- if (!is.null(nm) && nzchar(nm)) paste0(nm, " = ") else ""
-                    paste0(lbl, format_value(el, indent))
+                function(el, nm, idx) {
+                    lbl <- if (!is.null(nm) && nzchar(nm))
+                        nm
+                    else
+                        paste0("[[", idx, "]]")
+                    paste0(
+                        "\n", ind, "    ", lbl, " = ",
+                        format_value(el, indent + 1)
+                    )
                 },
-                val, nms, SIMPLIFY = FALSE
+                val, nms, seq_along(val), SIMPLIFY = FALSE
             )
-            return(paste0("list(", paste(parts, collapse = ", "), ")"))
+            return(
+                paste0(cls, "(", paste(parts, collapse = ","), "\n", ind, ")")
+            )
         }
-        as.character(val)  # fallback
+
+        if (length(val) == 0) return("list()")
+
+        nms <- names(val)
+        parts <- mapply(
+            function(el, nm) {
+                lbl <- if (!is.null(nm) && nzchar(nm)) paste0(nm, " = ") else ""
+                paste0(lbl, format_value(el, indent))
+            },
+            val, nms, SIMPLIFY = FALSE
+        )
+        return(paste0("list(", paste(parts, collapse = ", "), ")"))
     }
 
     cls <- class(x)[1]
@@ -304,7 +317,10 @@ print.AstNode <- function(x, ...) {
         nms <- names(x)
         items <- mapply(
             function(el, nm, idx) {
-                lbl <- if (!is.null(nm) && nzchar(nm)) nm else paste0("[[", idx, "]]")
+                lbl <- if (!is.null(nm) && nzchar(nm))
+                    nm
+                else
+                    paste0("[[", idx, "]]")
                 paste0("\n    ", lbl, " = ", format_value(el, 1))
             },
             x, nms, seq_along(x), SIMPLIFY = FALSE
@@ -333,7 +349,11 @@ print.GroupAstNode <- function(x, ...) {
     } else {
         for (i in seq_along(x$children)) {
             child_lines <- capture.output(print(x$children[[i]], ...))
-            cat("\n        ", paste(child_lines, collapse = "\n        "), sep = "")
+            cat(
+                "\n        ",
+                paste(child_lines, collapse = "\n        "),
+                sep = ""
+            )
             if (i < length(x$children)) cat(",")
         }
         cat("\n    ")

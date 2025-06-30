@@ -111,9 +111,11 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
 preprocess_shape_ast <- function(onesided_ast, shape) {
     if (!contains_node(onesided_ast, "EllipsisAstNode")) return(onesided_ast)
 
-    ellipsis_index <- find_node_types_indices(onesided_ast, "EllipsisAstNode")
+    ellipsis_idx <- find_node_types_indices(onesided_ast, "EllipsisAstNode")
     if (is.null(shape)) {
-        stop("Shape must be provided when ellipsis is present in the expression.")
+        stop(
+            "Shape must be provided when ellipsis is present in the expression."
+        )
     }
     n_ast <- length(onesided_ast)
     n_shape <- length(shape)
@@ -124,8 +126,9 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
     new_underscore_nodes <- replicate(
         missing_dim_count, UnderscoreAstNode(), simplify = FALSE
     )
-    before <- if (ellipsis_index > 1) onesided_ast[seq_len(ellipsis_index - 1)] else list()
-    after <- if (ellipsis_index < n_ast) onesided_ast[(ellipsis_index + 1):n_ast] else list()
+    before <- after <- list()
+    if (ellipsis_idx > 1) before <- onesided_ast[seq_len(ellipsis_idx - 1)]
+    if (ellipsis_idx < n_ast) after <- onesided_ast[(ellipsis_idx + 1):n_ast]
     onesided_ast <- OneSidedAstNode(c(before, new_underscore_nodes, after))
     onesided_ast
 }
