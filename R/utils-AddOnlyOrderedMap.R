@@ -35,13 +35,16 @@ public = list(
         private$highest_index <- 0L
     },
     print = function() {
+        # FIXME: all names are quoted which is not ideal for cases
+        # like when there are keys "1" and 1.
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))
         keys <- self$keys_in_order()
         values <- self$query(keys, vectorize = TRUE)
         key_str_reprsentations <- sapply(keys, repr)
         names(values) <- key_str_reprsentations
-        pprint(values, indent = 2L, s3_cons = TRUE)
+        repr_lines <- repr(values, indent = 2L, s3_cons = TRUE)
+        cat(repr_lines[c(-1, -length(repr_lines))], sep = "\n")
         invisible(self)
     },
     insert = function(key, value, vectorize = FALSE) {
