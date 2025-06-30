@@ -86,19 +86,36 @@ contains_node.OneSidedAstNode <- function(x, node_type, ...) {
     any(sapply(x, function(child) inherits(child, node_type)))
 }
 
-has_ellipsis <- function(onesided_ast) {
-    contains_node(onesided_ast, "EllipsisAstNode")
+#' @export
+contains_node.GroupAstNode <- function(x, node_type, ...) {
+    any(sapply(x$children, function(child) inherits(child, node_type)))
 }
 
+# TODO: check correctness
+# in the original implementation, acutally unsure if this returns
+# true or not if theres aa parenthesized ellipsis
+# currently, has_ellipsis does not check for parenthesized ellipsis,
+# and has_ellipsis_parenthesized does not check for non-parenthesized ellipsis
+
+has_ellipsis <- function(ast) contains_node(ast, "EllipsisAstNode")
+
 has_ellipsis_parenthesized <- function(onesided_ast) {
-    if (!contains_node(onesided_ast, "GroupAstNode")) return(FALSE)
-    any(sapply(
-        onesided_ast, function(child) inherits(child, "EllipsisAstNode")
-    ))
+    assert_that(inherits(onesided_ast, "OneSidedAstNode") == TRUE)
+    group_indices <- find_node_types_indices(onesided_ast, "GroupAstNode")
+    if (length(group_indices) == 0L) return(FALSE)
+    any(sapply(onesided_ast[group_indices], function(child) {
+        inherits(child, "EllipsisAstNode")
+    }))
 }
 
 has_non_unitary_anonymous_axes <- function(x, ...) {
     UseMethod("has_non_unitary_anonymous_axes", x)
+}
+
+#' @export
+has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
+    has_non_unitary_anonymous_axes(x$input_axes) ||
+        has_non_unitary_anonymous_axes(x$output_axes)
 }
 
 #' @export
@@ -108,12 +125,6 @@ has_non_unitary_anonymous_axes.OneSidedAstNode <- function(x, ...) {
             child$count > 1L
         }
     }))
-}
-
-#' @export
-has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
-    has_non_unitary_anonymous_axes(x$input_axes) ||
-        has_non_unitary_anonymous_axes(x$output_axes)
 }
 
 #' Determine whether any composed axes are present in
