@@ -71,9 +71,14 @@ repr.character <- function(
     x, indent = 0L, quote = TRUE, wrap_single = FALSE, ...
 ) {
     assert_that(is.flag(quote), is.flag(wrap_single))
+
     if (length(x) == 0) return(as_repr(glue("{class(x)[1]}()")))
-    if (!wrap_single && length(x) == 1L) return(as_repr(as.character(x[1])))
-    quote_char <- if (quote || inherits(x, "character")) '"' else ""
+
+    if (!wrap_single && length(x) == 1L) {
+        return(as_repr(paste0("\"", x, "\"", collapse = "")))
+    }
+
+    quote_char <- if (quote) '"' else ""
     collapse <- if (indent > 0L) paste0(",\n", strrep(" ", indent)) else ", "
     contents <- .repr_named_contents(
         x,
