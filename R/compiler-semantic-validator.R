@@ -91,14 +91,10 @@ contains_node.GroupAstNode <- function(x, node_type, ...) {
     any(sapply(x$children, function(child) inherits(child, node_type)))
 }
 
-# TODO: check correctness
-# in the original implementation, acutally unsure if this returns
-# true or not if theres aa parenthesized ellipsis
-# currently, has_ellipsis does not check for parenthesized ellipsis,
-# and has_ellipsis_parenthesized does not check for non-parenthesized ellipsis
-
+# strictly check if there is a level 0 ellipsis in the AST
 has_ellipsis <- function(ast) contains_node(ast, "EllipsisAstNode")
 
+# strictly check if there is aan ellipsis in a parenthesized group
 has_ellipsis_parenthesized <- function(onesided_ast) {
     assert_that(inherits(onesided_ast, "OneSidedAstNode") == TRUE)
     group_indices <- find_node_types_indices(onesided_ast, "GroupAstNode")

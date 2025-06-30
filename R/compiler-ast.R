@@ -189,6 +189,14 @@ to_tokens.OneSidedAstNode <- function(x, ...) {
 }
 
 #' @export
+"[[<-.OneSidedAstNode" <- function(x, i, value) {
+    assert_that((inherits(value, "AstNode") || is.null(value)) == TRUE)
+    tmp <- unclass(x)
+    tmp[[i]] <- value
+    structure(tmp, class = class(x))
+}
+
+#' @export
 append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
     if (!is.list(values) || inherits(values, "AstNode")) {
         values <- list(values)
