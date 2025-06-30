@@ -73,7 +73,7 @@ repr.character <- function(
     assert_that(is.flag(quote), is.flag(wrap_single))
     if (length(x) == 0) return(as_repr(glue("{class(x)[1]}()")))
     if (!wrap_single && length(x) == 1L) return(as_repr(as.character(x[1])))
-    quote_char <- if (quote) '"' else ""
+    quote_char <- if (quote || inherits(x, "character")) '"' else ""
     collapse <- if (indent > 0L) paste0(",\n", strrep(" ", indent)) else ", "
     contents <- .repr_named_contents(
         x,
@@ -112,7 +112,7 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
         nms <- names(x)
         contents <- vapply(seq_along(x), function(i) {
             name_part <- ifelse(!is.null(nms) && nms[i] != "" && incl_nm, paste0(nms[i], " = "), "")
-            paste0(name_part, paste0(repr(x[[i]], indent = 0L, ...), collapse = ""))
+            paste0(name_part, paste0(repr(x[[i]], indent = 0L, incl_nm = incl_nm, s3_cons = s3_cons, ...), collapse = ""))
         }, character(1))
         return(as_repr(paste0(constructor_str, paste(contents, collapse = ", "), ")")))
     }
@@ -122,7 +122,7 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 
     elems <- lapply(seq_along(x), function(i) {
         # recurse to obtain the element's own repr
-        elem_lines <- as.character(repr(x[[i]], indent = indent, ...))
+        elem_lines <- as.character(repr(x[[i]], indent = indent, incl_nm = incl_nm, s3_cons = s3_cons, ...))
 
         # attach name (if any) to the first line
         name_part <- if (!is.null(nms) && incl_nm && nms[i] != "")
