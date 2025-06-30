@@ -7,6 +7,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom R6P Singleton
 #' @importFrom glue glue
+#' @importFrom magrittr %<>%
 #' @useDynLib einops, .registration = TRUE
 ## usethis namespace: end
 NULL

@@ -91,19 +91,6 @@ expand_ellipsis <- function(einops_ast, ndim) {
         return(einops_ast)
     }
 
-    replace_ellipsis <- function(ast, dims_to_fill) {
-        ellipsis_index <- get_ellipsis_index(ast)
-        append(
-            x = ast[-ellipsis_index],
-            values = lapply(seq_len(dims_to_fill), function(i) {
-                NamedAxisAstNode(paste0("...", i))
-            }),
-            after = ellipsis_index - 1
-        )
-    }
-
-    # expand the input ellipsis
-
     n_other_dims <- length(einops_ast$input_axes) - 1
     if (ndim < n_other_dims) {
         stop(glue(
@@ -112,30 +99,37 @@ expand_ellipsis <- function(einops_ast, ndim) {
         ))
     }
 
-    einops_ast$input_axes <- replace_ellipsis(
-        onesided_ast = einops_ast$input_axes,
-        dims_to_fill = ndim - n_other_dims
-    )
+    replace_ellipsis <- function(ast) {
+        ellipsis_index <- get_ellipsis_index(ast)
+        append(
+            x = ast[-ellipsis_index],
+            values = lapply(seq_len(n_other_dims), function(i) {
+                NamedAxisAstNode(paste0("...", i))
+            }),
+            after = ellipsis_index - 1
+        )
+    }
+
+    einops_ast$input_axes %<>% replace_ellipsis()
 
     # expand the output ellipsis
 
-    einops_ast$output_axes <- if (has_ellipsis(einops_ast$output_axes)) {
-        replace_ellipsis(
-            onesided_ast = einops_ast$output_axes,
-            dims_to_fill = ndim - n_other_dims
-        )
-    } else {
-        for (i in seq_len(einops_ast$output_axes)) {
-            if (!inherits(einops_ast$output_axes[[i]], "GroupAstNode")) next
-            ellipsis_index <- get_ellipsis_index(einops_ast$output_axes[[i]])
-            if (length(ellipsis_index) == 0) next
-            einops_ast$output_axes[[i]] <- replace_ellipsis(
-                onesided_ast = einops_ast$output_axes[[i]],
-                dims_to_fill = ndim - n_other_dims
-            )
-            break
-        }
+    if (has_ellipsis(einops_ast$output_axes)) {
+        einops_ast$output_axes %<>% replace_ellipsis()
+        return(einops_ast)
     }
 
-    einops_ast
+    for (i in seq_len(einops_ast$output_axes)) {
+        if (!inherits(einops_ast$output_axes[[i]], "GroupAstNode")) next
+        ellipsis_index <- get_ellipsis_index(einops_ast$output_axes[[i]])
+        if (length(ellipsis_index) == 0) next
+        einops_ast$output_axes[[i]] %<>% replace_ellipsis()
+        return(einops_ast)
+    }
+
+    stop(
+        "No ellipsis found in the output axes. ",
+        "This is a bug in the einops parser. Please report as issue.",
+    )
+
 }
