@@ -93,7 +93,7 @@ contains_node.GroupAstNode <- function(x, node_type, ...) {
 
 # strictly check if there is a level 0 ellipsis in the AST
 has_ellipsis <- function(ast) {
-    assert_that(inherits(onesided_ast, "OneSidedAstNode") == TRUE)
+    assert_that(inherits(ast, "OneSidedAstNode") == TRUE)
     contains_node(ast, "EllipsisAstNode")
 }
 
