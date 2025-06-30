@@ -1,12 +1,18 @@
 #' @title TransformRecipe S3 constructor
-#' @description Recipe describes actual computation pathway. Can be applied to a tensor or variable.
-#' @param elementary_axes_lengths Integer vector. List of sizes for elementary axes as they appear in left expression.
-#' @param axis_name2elementary_axis Named integer vector. Mapping from name to position.
-#' @param input_composition_known_unknown List of list(present, unknown) integer vectors. Each element is a tuple of known and unknown indices.
-#' @param axes_permutation Integer vector. Permutation applied to elementary axes.
+#' @description Recipe describes actual computation pathway. Can be applied to a
+#' tensor or variable.
+#' @param elementary_axes_lengths Integer vector. List of sizes for elementary
+#' axes as they appear in left expression.
+#' @param axis_name2elementary_axis Named integer vector. Mapping from name to
+#' position.
+#' @param input_composition_known_unknown List of list(present, unknown) integer
+#' vectors. Each element is a tuple of known and unknown indices.
+#' @param axes_permutation Integer vector. Permutation applied to elementary
+#' axes.
 #' @param first_reduced_axis Integer. First position of reduced axes.
 #' @param added_axes Named integer vector. Axis position -> axis index.
-#' @param output_composite_axes List of integer vectors. Ids of axes as they appear in result.
+#' @param output_composite_axes List of integer vectors. Ids of axes as they
+#' appear in result.
 #' @return An object of class 'TransformRecipe'.
 #' @keywords internal
 TransformRecipe <- function(
@@ -62,7 +68,10 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
-    # TODO
+    # TODO -> more processing
+    TransformRecipe(
+        # TODO
+    )
 }
 
 #' Expand ellipses of an EinopsAst
@@ -83,12 +92,13 @@ expand_ellipsis <- function(einops_ast, ndim) {
     }
 
     replace_ellipsis <- function(ast, dims_to_fill) {
+        ellipsis_index <- get_ellipsis_index(ast)
         append(
-            x = ast[-get_ellipsis_index(ast)],
+            x = ast[-ellipsis_index],
             values = lapply(seq_len(dims_to_fill), function(i) {
                 NamedAxisAstNode(paste0("...", i))
             }),
-            after = get_ellipsis_index(ast) - 1
+            after = ellipsis_index - 1
         )
     }
 
