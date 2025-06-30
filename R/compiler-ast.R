@@ -145,6 +145,8 @@ find_node_types_indices <- function(x, node_type, ...) {
     UseMethod("find_node_types_indices", x)
 }
 
+#' If no matching nodes are found, returns an empty integer vector.
+#' @noRd
 #' @export
 find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
     indices <- which(sapply(x, function(child) inherits(child, node_type)))
@@ -154,6 +156,13 @@ find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
     indices
 }
 
+#' @export
+find_node_types_indices.GroupAstNode <- function(x, node_type, ...) {
+    find_node_types_indices.OneSidedAstNode(x$children, node_type, ...)
+}
+
+#' If no matching ellipsis nodes are found, returns an empty integer vector.
+#' @noRd
 get_ellipsis_index <- function(onesided_ast) {
     find_node_types_indices(onesided_ast, "EllipsisAstNode")
 }
