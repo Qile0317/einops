@@ -64,10 +64,23 @@ print.TransformRecipe <- function(x, ...) {
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
 prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+
     tokens <- lex(expr)
+
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
+    
+    #axis_name2known_length <- # use get_ungrouped_nodes(ast$input_axes)
+
+    # axis_name2known_length: Dict[Union[str, AnonymousAxis], int] = OrderedDict()
+    # for composite_axis in left_composition:
+    #     for axis_name in composite_axis:
+    #         if isinstance(axis_name, AnonymousAxis):
+    #             axis_name2known_length[axis_name] = axis_name.value
+    #         else:
+    #             axis_name2known_length[axis_name] = _unknown_axis_length
+
     # TODO -> more processing
     TransformRecipe(
         # TODO
@@ -89,6 +102,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 #' @param einops_ast an EinopsAst
 #' @param ndim integer. Number of dimensions in the input tensor
 #' @return an expanded EinopsAst with ellipses expanded
+#' @keywords internal
 expand_ellipsis <- function(einops_ast, ndim) {
 
     if (!has_ellipsis(einops_ast$input_axes)) {

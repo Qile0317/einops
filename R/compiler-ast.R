@@ -212,6 +212,29 @@ append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
     structure(new_x, class = class(x))
 }
 
+#' get flat list of all AstNodes in order, including children of
+#' GroupAstNodes.
+#' @param ast An AstNode object
+#' @return A flat `list` of AstNodes
+#' @keywords internal
+get_ungrouped_nodes <- function(ast, ...) {
+    UseMethod("get_ungrouped_nodes", ast)
+}
+
+#' @export
+get_ungrouped_nodes.OneSidedAstNode <- function(ast, ...) {
+    # this is O(n^2) due to immutability, but expressions are usually tiny
+    ungrouped_node_list <- list()
+    for (node in ast) {
+        if (!inherits(node, "GroupAstNode")) {
+            ungrouped_node_list %<>% append(list(node))
+            next
+        }
+        ungrouped_node_list %<>% append(node$children)
+    }
+    ungrouped_node_list
+}
+
 #' @title Create an EinopsAst root node
 #' @param input_axes List of axis nodes for the input pattern, or a
 #' NothingAstNode, or OneSidedAstNode
