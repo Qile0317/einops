@@ -7,7 +7,9 @@
 #'
 #' @param x tensor: array, matrix, or list of arrays of the same shape and type
 #' @param expr string: reduction pattern
-#' @param func string or function: one of available reductions ('min', 'max', 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean, prod, etc.)
+#' @param func string or function: one of available reductions ('min', 'max',
+#' 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
+#' prod, etc.)
 #' @param ... either corresponding axes lengths or a single list of them.
 #'
 #' @return tensor of the same type as input, with dimensions according to output pattern
@@ -72,6 +74,16 @@ reduce.list <- function(x, expr, func, ...) {
 }
 
 #' @export
+reduce.numeric <- function(x, expr, func, ...) {
+    if (length(x) == 0) {
+        stop("Rearrange/Reduce/Repeat can't be applied to an empty numeric")
+    }
+    output <- reduce(as.array(x), expr, func, ...)
+    if (length(dim(output)) == 1) return(as.numeric(output))
+    output
+}
+
+#' @export
 reduce.default <- function(x, expr, func, ...) {
     axes_lengths <- if (nargs() == 1 && is.list(..1)) ..1 else list(...)
     backend <- get_backend(x)
@@ -80,11 +92,11 @@ reduce.default <- function(x, expr, func, ...) {
     recipe <- prepare_transformation_recipe(
         expr, func, axes_names = axes_lengths, ndim = length(shape)
     )
-    # apply_recipe(
-    #     backend,
-    #     recipe,
-    #     x,
-    #     reduction_type = func,
-    #     axes_lengths = hashable_axes_lengths
-    # )
+    apply_recipe(
+        backend,
+        recipe,
+        x,
+        reduction_type = func,
+        axes_lengths = hashable_axes_lengths
+    )
 }
