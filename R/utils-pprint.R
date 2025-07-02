@@ -1,17 +1,27 @@
 #' @title Pretty Print
+#'
 #' @description
 #' This is a convenience function that prints the [repr()] of an object.
 #' It is similar to python's `pprint.pprint()`. Usually, to ensure that
 #' an object is displayed in the terminal using its pprint format, just
 #' define a `print.that_object_class` method that calls `pprint()`.
+#'
 #' @param x Object to pretty print
 #' @param ... Additional arguments passed to `repr()`
 #' @return The input object, invisibly
 #' @keywords internal
 pprint <- function(x, ...) {
-    print(repr(x, ...))
+    content_to_print <- if (inherits(x, "s3list")) {
+        repr.list(x, s3_cons = TRUE, indent = 4L, ...)
+    } else {
+        repr(x, ...)
+    }
+    print(content_to_print)
     invisible(x)
 }
+
+#' @export
+print.s3list <- pprint
 
 #' @title Python-like Representation of Objects as Strings
 #' @description

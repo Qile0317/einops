@@ -24,24 +24,7 @@ TransformRecipe <- function(
     added_axes,
     output_composite_axes
 ) {
-    assert_that(
-        is.numeric(elementary_axes_lengths),
-        is.integer(first_reduced_axis) || is.numeric(first_reduced_axis),
-        is.list(input_composition_known_unknown),
-        is.numeric(axes_permutation),
-        is.list(output_composite_axes),
-        is.list(added_axes) || is.numeric(added_axes) || is.integer(added_axes),
-        is.list(axis_name2elementary_axis) ||
-            is.integer(axis_name2elementary_axis) ||
-            is.numeric(axis_name2elementary_axis)
-    )
-
-    structure(as.list(match.call()), class = c("TransformRecipe", "list"))
-}
-
-#' @export
-print.TransformRecipe <- function(x, ...) {
-    pprint(x, indent = 4L, s3_cons = TRUE, ...)
+    structure(as.list(match.call())[-1], class = c("TransformRecipe", "s3list"))
 }
 
 #' @title
