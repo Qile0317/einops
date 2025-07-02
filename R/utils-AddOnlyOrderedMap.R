@@ -1,5 +1,5 @@
-AddOnlyOrderedMap <- function() {
-    .AddOnlyOrderedMap$new()
+AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
+    .AddOnlyOrderedMap$new(keys, values)
 }
 
 #' @export
@@ -35,20 +35,27 @@ private = list( # nolint start: indentation_linter
 ),
 public = list(
 
-    initialize = function() {
-        private$key2value <- r2r::hashmap()
-        private$key2index <- r2r::hashmap()
-        private$highest_index <- 0L
+    initialize = function(keys = NULL, values = NULL) {
+        if (!is.null(keys) && !is.null(values)) {
+            assert_that(length(keys) == length(values) || length(values) == 1L)
+            private$key2value <- do.call(r2r::hashmap, FastUtils::zipit(keys, values))
+            private$key2index <- do.call(r2r::hashmap, FastUtils::zipit(keys, seq_along(keys)))
+            private$highest_index <- length(keys)
+        } else {
+            private$key2value <- r2r::hashmap()
+            private$key2index <- r2r::hashmap()
+            private$highest_index <- 0L
+        }
     },
 
-    print = function() {
+    print = function(...) {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))
         keys <- self$keys_in_order()
         values <- self$query(keys, vectorize = TRUE)
         key_str_reprsentations <- sapply(keys, repr)
         names(values) <- key_str_reprsentations
-        repr_lines <- repr(values, indent = 2L, s3_cons = TRUE)
+        repr_lines <- repr(values, indent = 2L, s3_cons = TRUE, ...)
         cat(repr_lines[c(-1, -length(repr_lines))], sep = "\n")
         invisible(self)
     },
