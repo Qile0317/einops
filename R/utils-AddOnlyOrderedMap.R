@@ -35,6 +35,12 @@
 #' map <- AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2))
 #'
 AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
+    assert_that(
+        is.null(keys) && is.null(values) || (
+            !is.null(keys) && !is.null(values) &&
+                (length(keys) == length(values) || length(values) == 1L)
+        )
+    )
     .AddOnlyOrderedMap$new(keys, values)
 }
 
