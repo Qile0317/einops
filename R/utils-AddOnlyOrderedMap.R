@@ -14,7 +14,8 @@
 #'
 #' The [keys()] generic is defined for this class, which will return a list
 #' of the keys in their insertion order. The [has_key()] generic is also defined
-#' for this class, returning TRUE/FALSE if a key exists.
+#' for this class, returning TRUE/FALSE if a key exists. Lastly, the [values()]
+#' generic is defined to get all values in insertion order.
 #'
 #' @param keys Optional list. A vector of keys to initialize the map with. Can
 #' be any R object. It is assumed that all keys are unique, otherwise the
@@ -96,7 +97,7 @@ length.AddOnlyOrderedMap <- function(x) {
 keys <- function(x, ...) UseMethod("keys")
 
 #' @export
-keys.AddOnlyOrderedMap <- function(x, ...) x$keys_in_order()
+keys.AddOnlyOrderedMap <- function(x, ...) x$get_keys_in_order()
 
 #' @export
 keys.r2r_hashtable <- function(x, ...) r2r::keys(x)
@@ -108,6 +109,14 @@ has_key.r2r_hashtable <- function(x, key, ...) r2r::has_key(x, key)
 
 #' @export
 has_key.AddOnlyOrderedMap <- function(x, key, ...) x$has_key(key)
+
+values <- function(x, ...) UseMethod("values")
+
+#' @export
+values.r2r_hashtable <- function(x, ...) r2r::values(x)
+
+#' @export
+values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order(x)
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
@@ -133,7 +142,7 @@ public = list(
     print = function(...) {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))
-        keys <- self$keys_in_order()
+        keys <- self$get_keys_in_order()
         values <- self$query(keys, vectorize = TRUE)
         key_str_reprsentations <- sapply(keys, repr)
         names(values) <- key_str_reprsentations
@@ -162,13 +171,17 @@ public = list(
         private$key2value[[key]]
     },
 
-    keys_in_order = function() {
+    get_keys_in_order = function() {
         all_keys <- r2r::keys(private$key2index)
         all_keys[order(as.integer(private$key2index[all_keys]))]
     },
 
     has_key = function(key) {
         r2r::has_key(private$key2value, key)
+    },
+
+    get_values_in_order = function() {
+        public$query(private$get_keys_in_order, vectorize = TRUE)
     },
 
     size = function() {

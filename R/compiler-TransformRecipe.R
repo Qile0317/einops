@@ -59,7 +59,8 @@ print.TransformRecipe <- function(x, ...) {
 #'
 #' @param expr The input einops expression string
 #' @param func The string/function indicating the reduction operation
-#' @param axes_names the user defined keyword args for dims as a [list()]
+#' @param axes_names the user defined keyword args for dims as a [list()].
+#' Names correspond to axes variable names, and values are their dimension.
 #' @param ndim count for the number of dimensions of the input tensor
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
@@ -71,14 +72,15 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
     
-    # axis names are either pure strings for var names or a ConstantAstNode
-    # for anonymous axes. lengths are NA if unknown
+    UNKNOWN_AXIS_LENGTH = -999999
+    EXPECTED_AXIS_LENGTH = -99999
+
     axis_name2known_length <- AddOnlyOrderedMap()
     for (axis_node in ast$input_axes) {
         if (inherits(axis_node, "ConstantAstNode")) {
             axis_name2known_length[[axis_node]] <- axis_node$count
         } else {
-            axis_name2known_length[[axis_node$name]] <- NA
+            axis_name2known_length[[axis_node$name]] <- UNKNOWN_AXIS_LENGTH
         }
     }
 
@@ -93,7 +95,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         if (inherits(ast_key, "ConstantAstNode")) {
             axis_name2known_length[[ast_key]] <- ast_key$count
         } else {
-            axis_name2known_length[[ast_key]] <- NA
+            axis_name2known_length[[ast_key]] <- UNKNOWN_AXIS_LENGTH
         }
         repeat_axes_names %<>% append(list(ast_key))
     }
@@ -102,9 +104,55 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         FastUtils::enumerateit(axis_name2known_length), .reverse = TRUE
     )
 
-    # TODO -> more processing
+    for (elementary_axis in axes_names) {
+        # TODO check the axis name
+        if (!has_key(axis_name2known_length, elementary_axis)) {
+            stop(glue("Axis {elementary_axis} is not used in transform"))
+        }
+        axis_name2known_length[[elementary_axis]] <- EXPECTED_AXIS_LENGTH
+    }
+
+    input_axes_known_unknown <- list()
+
+    # # some shapes are inferred later - all information is prepared for faster inference
+    # for composite_axis in left_composition:
+    #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
+    #     unknown: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] == _unknown_axis_length}
+    #     if len(unknown) > 1:
+    #         raise EinopsError(f"Could not infer sizes for {unknown}")
+    #     assert len(unknown) + len(known) == len(composite_axis)
+    #     input_axes_known_unknown.append(
+    #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown])
+    #     )
+
+    # axis_position_after_reduction: Dict[str, int] = {}
+    # for axis_name in itertools.chain(*left_composition):
+    #     if axis_name in rght.identifiers:
+    #         axis_position_after_reduction[axis_name] = len(axis_position_after_reduction)
+
+    # result_axes_grouping: List[List[int]] = [
+    #     [axis_name2position[axis] for axis in composite_axis] for i, composite_axis in enumerate(rght_composition)
+    # ]
+
+    # ordered_axis_left = list(itertools.chain(*left_composition))
+    # ordered_axis_rght = list(itertools.chain(*rght_composition))
+    # reduced_axes = [axis for axis in ordered_axis_left if axis not in rght.identifiers]
+    # order_after_transposition = [axis for axis in ordered_axis_rght if axis in left.identifiers] + reduced_axes
+    # axes_permutation = [ordered_axis_left.index(axis) for axis in order_after_transposition]
+    # added_axes = {
+    #     i: axis_name2position[axis_name]
+    #     for i, axis_name in enumerate(ordered_axis_rght)
+    #     if axis_name not in left.identifiers
+    # }
+
     TransformRecipe(
-        # TODO
+        elementary_axes_lengths = as.integer(values(axis_name2known_length)),
+        # axis_name2elementary_axis = {axis: axis_name2position[axis] for axis in axes_names},
+        input_composition_known_unknown = input_axes_known_unknown,
+        axes_permutation = axes_permutation,
+        first_reduced_axis = length(order_after_transposition) - length(reduced_axes),
+        added_axes = added_axes,
+        output_composite_axes = result_axes_grouping,
     )
 }
 
