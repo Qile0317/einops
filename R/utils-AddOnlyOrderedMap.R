@@ -99,13 +99,7 @@ keys <- function(x, ...) UseMethod("keys")
 #' @export
 keys.AddOnlyOrderedMap <- function(x, ...) x$get_keys_in_order()
 
-#' @export
-keys.r2r_hashtable <- function(x, ...) r2r::keys(x)
-
 has_key <- function(x, key, ...) UseMethod("has_key")
-
-#' @export
-has_key.r2r_hashtable <- function(x, key, ...) r2r::has_key(x, key)
 
 #' @export
 has_key.AddOnlyOrderedMap <- function(x, key, ...) x$has_key(key)
@@ -113,10 +107,12 @@ has_key.AddOnlyOrderedMap <- function(x, key, ...) x$has_key(key)
 values <- function(x, ...) UseMethod("values")
 
 #' @export
-values.r2r_hashtable <- function(x, ...) r2r::values(x)
+values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order(x)
 
 #' @export
-values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order(x)
+as.list.AddOnlyOrderedMap <- function(x, ...) {
+    FastUtils::setNames(values(x), sapply(keys(x), repr, indent = 0L))
+}
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
@@ -185,6 +181,6 @@ public = list(
     },
 
     size = function() {
-        length(r2r::keys(private$key2index))
+        length(private$key2index)
     }
 )) # nolint end: indentation_linter

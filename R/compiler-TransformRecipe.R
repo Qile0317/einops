@@ -113,7 +113,6 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     }
 
     input_axes_known_unknown <- list()
-
     # # some shapes are inferred later - all information is prepared for faster inference
     # for composite_axis in left_composition:
     #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
@@ -147,7 +146,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     TransformRecipe(
         elementary_axes_lengths = as.integer(values(axis_name2known_length)),
-        # axis_name2elementary_axis = {axis: axis_name2position[axis] for axis in axes_names},
+        axis_name2elementary_axis = AddOnlyOrderedMap(axes_names, axis_name2position[axes_names]),
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
         first_reduced_axis = length(order_after_transposition) - length(reduced_axes),
