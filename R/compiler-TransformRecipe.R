@@ -71,10 +71,12 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
     
-    #axis_name2known_length <- # use get_ungrouped_nodes(ast$input_axes)
-    # need to produce a mapping axis names (including anonymous ones) to known/unknown lengths
+    # axis names are either pure strings for var names or a ConstantAstNode
+    # for anonymous axes. lengths are NA if unknown
+    axis_name2known_length <- AddOnlyOrderedMap(
+        get_ungrouped_nodes(ast$input_axes), NA
+    )
 
-    # axis_name2known_length: Dict[Union[str, AnonymousAxis], int] = OrderedDict()
     # for composite_axis in left_composition:
     #     for axis_name in composite_axis:
     #         if isinstance(axis_name, AnonymousAxis):

@@ -1,3 +1,34 @@
+#' @title
+#' Create an `AddOnlyOrderedMap` instance
+#'
+#' @description
+#' This function initializes a new list-like object using the
+#' specified keys and values if provided. The resulting map preserves the
+#' order of insertion and does not allow modification or removal of existing
+#' entries.
+#'
+#' The `AddOnlyOrderedMap` can be interacted with exactly like a regular
+#' list, possessing methods for `[`, `[[`, `[<-`, and `[[<-` with the same
+#' behaviour, except that NULL cannot be passed in since removal is not
+#' permitted.
+#'
+#' @param keys Optional list. A vector of keys to initialize the map with. Can
+#' be any R object. It is assumed that all keys are unique, otherwise the
+#' behaviour is undefined.
+#' @param values Optional list. A vector of values corresponding to the keys. If
+#' length of values is one, all inserted keys will have that value.
+#'
+#' @return An `AddOnlyOrderedMap` instance
+#' @keywords internal
+#'
+#' @details
+#' The average time complexity of all operations are linear with respect to
+#' the number of insertion/query inputs, in contrast to R lists which has
+#' quadratic time complexity for the same operations.
+#'
+#' @examples
+#' map <- AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2))
+#'
 AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
     .AddOnlyOrderedMap$new(keys, values)
 }
