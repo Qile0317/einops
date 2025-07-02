@@ -22,6 +22,11 @@ AddOnlyOrderedMap <- function() {
     x$insert(i, value, vectorize = FALSE)
 }
 
+#' @export
+length.AddOnlyOrderedMap <- function(x) {
+    x$size()
+}
+
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
     key2value = NULL,
@@ -29,14 +34,14 @@ private = list( # nolint start: indentation_linter
     highest_index = NA
 ),
 public = list(
+
     initialize = function() {
         private$key2value <- r2r::hashmap()
         private$key2index <- r2r::hashmap()
         private$highest_index <- 0L
     },
+
     print = function() {
-        # FIXME: all names are quoted which is not ideal for cases
-        # like when there are keys "1" and 1.
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))
         keys <- self$keys_in_order()
@@ -47,6 +52,7 @@ public = list(
         cat(repr_lines[c(-1, -length(repr_lines))], sep = "\n")
         invisible(self)
     },
+
     insert = function(key, value, vectorize = FALSE) {
         assert_that(!is.null(value))
         if (vectorize) {
@@ -61,14 +67,17 @@ public = list(
         }
         invisible(self)
     },
+
     query = function(key, vectorize = FALSE) {
         if (vectorize) return(private$key2value[key])
         private$key2value[[key]]
     },
+
     keys_in_order = function() {
         all_keys <- r2r::keys(private$key2index)
         all_keys[order(as.integer(private$key2index[all_keys]))]
     },
+
     size = function() {
         length(r2r::keys(private$key2index))
     }
