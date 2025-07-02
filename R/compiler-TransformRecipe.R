@@ -73,16 +73,30 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     
     # axis names are either pure strings for var names or a ConstantAstNode
     # for anonymous axes. lengths are NA if unknown
-    axis_name2known_length <- AddOnlyOrderedMap(
-        get_ungrouped_nodes(ast$input_axes), NA
-    )
+    axis_name2known_length <- AddOnlyOrderedMap()
+    for (axis_node in ast$input_axes) {
+        if (inherits(axis_node, "ConstantAstNode")) {
+            axis_name2known_length[[axis_node]] <- axis_node$count
+        } else {
+            axis_name2known_length[[axis_node$name]] <- NA
+        }
+    }
 
-    # for composite_axis in left_composition:
-    #     for axis_name in composite_axis:
-    #         if isinstance(axis_name, AnonymousAxis):
-    #             axis_name2known_length[axis_name] = axis_name.value
-    #         else:
-    #             axis_name2known_length[axis_name] = _unknown_axis_length
+    repeat_axes_names <- list()
+    for (ast_node in ast$output_axes) {
+        ast_key <- if (!inherits(ast_node, "ConstantAstNode")) {
+            ast_node$name
+        } else {
+            ast_node
+        }
+        if (has_key(axis_name2known_length, ast_key)) next
+        if (inherits(ast_key, "ConstantAstNode")) {
+            axis_name2known_length[[ast_key]] <- ast_key$count
+        } else {
+            axis_name2known_length[[ast_key]] <- NA
+        }
+        repeat_axes_names %<>% append(list(ast_key))
+    }
 
     # TODO -> more processing
     TransformRecipe(

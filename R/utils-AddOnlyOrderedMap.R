@@ -12,6 +12,10 @@
 #' behaviour, except that NULL cannot be passed in since removal is not
 #' permitted.
 #'
+#' The [keys()] generic is defined for this class, which will return a list
+#' of the keys in their insertion order. The [has_key()] generic is also defined
+#' for this class, returning TRUE/FALSE if a key exists.
+#'
 #' @param keys Optional list. A vector of keys to initialize the map with. Can
 #' be any R object. It is assumed that all keys are unique, otherwise the
 #' behaviour is undefined.
@@ -57,6 +61,22 @@ AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
 length.AddOnlyOrderedMap <- function(x) {
     x$size()
 }
+
+keys <- function(x, ...) UseMethod("keys")
+
+#' @export
+keys.AddOnlyOrderedMap <- function(x, ...) x$keys_in_order()
+
+#' @export
+keys.r2r_hashtable <- function(x, ...) r2r::keys(x)
+
+has_key <- function(x, key, ...) UseMethod("has_key")
+
+#' @export
+has_key.r2r_hashtable <- function(x, key, ...) r2r::has_key(x, key)
+
+#' @export
+has_key.AddOnlyOrderedMap <- function(x, key, ...) x$has_key(key)
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
@@ -114,6 +134,10 @@ public = list(
     keys_in_order = function() {
         all_keys <- r2r::keys(private$key2index)
         all_keys[order(as.integer(private$key2index[all_keys]))]
+    },
+
+    has_key = function(key) {
+        r2r::has_key(private$key2value, key)
     },
 
     size = function() {
