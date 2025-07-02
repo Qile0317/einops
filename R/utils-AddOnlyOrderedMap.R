@@ -37,6 +37,37 @@ AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
     .AddOnlyOrderedMap$new(keys, values)
 }
 
+#' make an [AddOnlyOrderedMap()] by using key value pairs
+#' @param ... either lists of length 2, or a single list containing lists of
+#' length 2
+#' @param .reverse if TRUE, will treat the second element as the key
+#' @noRd
+make_addonlyorderedmap_bypairs <- function(..., .reverse = FALSE) {
+
+    if (nargs() == 1 && is.list(..1)) {
+        pairs <- ..1
+    } else {
+        pairs <- list(...)
+    }
+
+    if (length(pairs) == 0) {
+        return(AddOnlyOrderedMap())
+    }
+    keys <- values <- FastUtils::initList(length(pairs))
+    for (i in seq_along(pairs)) {
+        pair <- pairs[[i]]
+        if (length(pair) != 2) stop("Each argument must be a pair (length 2)")
+        if (.reverse) {
+            keys[[i]] <- pair[[2]]
+            values[[i]] <- pair[[1]]
+        } else {
+            keys[[i]] <- pair[[1]]
+            values[[i]] <- pair[[2]]
+        }
+    }
+    AddOnlyOrderedMap(keys = keys, values = values)
+}
+
 #' @export
 "[.AddOnlyOrderedMap" <- function(x, i) {
     x$query(i, vectorize = TRUE)

@@ -98,6 +98,10 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         repeat_axes_names %<>% append(list(ast_key))
     }
 
+    axis_name2position <- make_addonlyorderedmap_bypairs(
+        FastUtils::enumerateit(axis_name2known_length), .reverse = TRUE
+    )
+
     # TODO -> more processing
     TransformRecipe(
         # TODO
