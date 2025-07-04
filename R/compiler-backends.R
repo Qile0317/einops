@@ -200,7 +200,7 @@ public = list(
 
     reshape = function(x, shape) array(x, dim = shape),
 
-    transpose = function(x) aperm(x, perm = axes),
+    transpose = function(x, axes) aperm(x, perm = axes),
 
     reduce = function(x, operation, axes) {
         op_fun <- switch(operation,
