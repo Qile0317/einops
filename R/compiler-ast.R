@@ -272,7 +272,7 @@ to_tokens.EinopsAst <- function(x, ...) {
 }
 
 #' @export
-to_expression.EinopsAst <- function(x, ...) {
+to_expression.AstNode <- function(x, ...) {
     to_expression(to_tokens(x))
 }
 

@@ -24,7 +24,26 @@ TransformRecipe <- function(
     added_axes,
     output_composite_axes
 ) {
-    structure(as.list(match.call())[-1], class = c("TransformRecipe", "s3list"))
+    structure(
+        as.list(match.call())[-1],
+        class = c("TransformRecipe", "s3list", "list")
+    )
+}
+
+#' @title
+#' Construct an instance of an `AxisNames` class
+#' @description
+#' This is a wrapper for a [list()], but the elements may only be singular
+#' [character()] or [ConstantAstNode()] objects.
+#' @param ... a list of elements or arbitrary number of elements
+AxisNames <- function(...) {
+    input <-
+        if (nargs() == 1 && is.list(..1) && !inherits(..1, "ConstantAstNode"))
+            ..1
+        else
+            list(...)
+    # TODO type check element
+    structure(input, class = c("AxisNames", "s3list", "list"))
 }
 
 #' @title
@@ -101,11 +120,18 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     input_axes_known_unknown <- list()
     for (composite_axis_node in ast$input_axes) {
+        known <- r2r::hashset()
+        unknown <- r2r::hashset()
+        # note that in the logic below, it handles assuming 1's are translated to []
     #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
     #     unknown: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] == _unknown_axis_length}
-    #     if len(unknown) > 1:
-    #         raise EinopsError(f"Could not infer sizes for {unknown}")
-    #     assert len(unknown) + len(known) == len(composite_axis)
+        if (length(unknown) > 1) stop(glue("Could not infer sizes for {to_expression(unknown)}")) # to_expression here isnt implemented
+        if (length(unknown) + length(known) != length(composite_axis_node)) {
+            stop(glue(
+                "The input axes {to_expression(composite_axis_node)} ",
+                "do not match the expected axes {to_expression(axes_names)}."
+            ))
+        }
     #     input_axes_known_unknown.append(
     #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown]))
     }
