@@ -58,6 +58,10 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     UNKNOWN_AXIS_LENGTH = -999999
     EXPECTED_AXIS_LENGTH = -99999
 
+    # the keys represent unique axes, where named axes are just their
+    # names, but constant axes are represented by the ConstantAstNode
+    # the values are the known lengths of the axes, if unknown, then
+    # the value is UNKNOWN_AXIS_LENGTH
     axis_name2known_length <- AddOnlyOrderedMap()
     for (axis_node in ast$input_axes) {
         if (inherits(axis_node, "ConstantAstNode")) {
@@ -96,16 +100,15 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     }
 
     input_axes_known_unknown <- list()
-    # # some shapes are inferred later - all information is prepared for faster inference
-    # for composite_axis in left_composition:
+    for (composite_axis_node in ast$input_axes) {
     #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
     #     unknown: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] == _unknown_axis_length}
     #     if len(unknown) > 1:
     #         raise EinopsError(f"Could not infer sizes for {unknown}")
     #     assert len(unknown) + len(known) == len(composite_axis)
     #     input_axes_known_unknown.append(
-    #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown])
-    #     )
+    #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown]))
+    }
 
     # axis_position_after_reduction: Dict[str, int] = {}
     # for axis_name in itertools.chain(*left_composition):
