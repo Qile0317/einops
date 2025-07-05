@@ -5,8 +5,7 @@
 #' axes as they appear in left expression.
 #' @param axis_name2elementary_axis Named integer vector. Mapping from name to
 #' position.
-#' @param input_composition_known_unknown List of list(present, unknown) integer
-#' vectors. Each element is a tuple of known and unknown indices.
+#' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
 #' @param axes_permutation Integer vector. Permutation applied to elementary
 #' axes.
 #' @param first_reduced_axis Integer. First position of reduced axes.
@@ -24,6 +23,21 @@ TransformRecipe <- function(
     added_axes,
     output_composite_axes
 ) {
+    assert_that(
+        is.integer(elementary_axes_lengths),
+        # TODO axisname2elementary_axis
+        all(sapply(input_composition_known_unknown, function(x) {
+            is.list(x) &&
+                length(x) == 2L &&
+                identical(names(x), c("known", "unknown")) &&
+                inherits(x$known, "AxisNames") &&
+                inherits(x$unknown, "AxisNames")
+        })),
+        # TODO axes_permutation
+        is.count(first_reduced_axis)
+        # TODO added_axes
+        # TODO output_composite_axes
+    )
     structure(
         as.list(match.call())[-1],
         class = c("TransformRecipe", "s3list", "list")
@@ -100,7 +114,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         axis_name2known_length[[elementary_axis]] <- EXPECTED_AXIS_LENGTH
     }
 
-    input_axes_known_unknown <- AxisNames()
+    input_axes_known_unknown <- list()
     for (composite_axis in as_iterables(as_axis_names(ast$input_axes))) {
 
         known <- r2r::hashset()
@@ -122,10 +136,10 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             ))
         }
 
-        input_axes_known_unknown %<>% c(
-            AxisNames(lapply(known, function(x) axis_name2position[[x]])),
-            AxisNames(lapply(unknown, function(x) axis_name2position[[x]]))
-        )
+        input_axes_known_unknown %<>% append(list(list(
+            known = AxisNames(lapply(known, function(x) axis_name2position[[x]])),
+            unknown = AxisNames(lapply(unknown, function(x) axis_name2position[[x]]))
+        )))
     }
 
     # axis_position_after_reduction: Dict[str, int] = {}
