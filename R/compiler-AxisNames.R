@@ -139,3 +139,39 @@ get_ordered_axis_names <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
     AxisNames(unlist(as_iterables(as_axis_names(ast)), recursive = FALSE))
 }
+
+#' Get reduced axis names by removing axes present in y from x
+#' @param x AxisNames object to reduce
+#' @param y AxisNames object containing axes to remove
+#' @param ... additional arguments (not used)
+#' @return AxisNames object with axes from x that are not in y
+#' @keywords internal
+get_reduced_axis_names <- function(x, y, ...) {
+    assert_that(inherits(x, "AxisNames"))
+    assert_that(inherits(y, "AxisNames"))
+    
+    # Add relative_pos to ConstantAstNode src for proper comparison
+    add_relative_pos <- function(axes) {
+        const_positions <- list()
+        
+        for (i in seq_along(axes)) {
+            if (inherits(axes[[i]], "ConstantAstNode")) {
+                count <- axes[[i]]$count
+                if (is.null(const_positions[[as.character(count)]])) {
+                    const_positions[[as.character(count)]] <- 1
+                } else {
+                    const_positions[[as.character(count)]] <- const_positions[[as.character(count)]] + 1
+                }
+                axes[[i]]$src$relative_pos <- const_positions[[as.character(count)]]
+            }
+        }
+        axes
+    }
+    
+    x_axes <- add_relative_pos(x)
+    y_axes <- add_relative_pos(y)
+    y_identifiers <- do.call(r2r::hashset, y_axes)
+    
+    result_axes <- Filter(function(axis) !r2r::has_key(y_identifiers, axis), x_axes)
+    AxisNames(result_axes)
+}
