@@ -29,8 +29,16 @@
 #' shape_info <- parse_shape(x, 'b _ h w')
 #' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape
 #' # (2, 10, 5, 7)
-#'
 parse_shape <- function(x, expr, ...) {
+    tryCatch(
+        .parse_shape(x, expr, ...),
+        error = function(e) {
+            stop("in parse_shape - ", conditionMessage(e), call. = FALSE)
+        }
+    )
+}
+
+.parse_shape <- function(x, expr, ...) {
 
     backend <- get_backend(x)
     shape <- backend$shape(x)
@@ -66,7 +74,7 @@ parse_shape <- function(x, expr, ...) {
 
         stop(glue(
             "Unexpected node type in shape AST: {repr(axes_node, indent = 0L)}",
-            "for expression: {expr} and shape: {repr(shape, indent = 0L)}. ",
+            " for expression: '{expr}' and shape: {repr(shape, indent = 0L)}. ",
             "Please report this as a bug.",
         ))
 
@@ -75,33 +83,31 @@ parse_shape <- function(x, expr, ...) {
 }
 
 validate_shape_ast <- function(onesided_ast, shape, expr) {
-    throw_cannot_parse <- function() {
-        stop(glue(
-            "can't parse expression with composite axes: {expr} ",
-            "{repr(shape, indent = 0L)}"
-        ))
-    }
+
     if (length(onesided_ast) == 0) {
         stop("Parsed AST is empty. Please check your expression.")
     }
-    if (has_composed_axes(onesided_ast)) throw_cannot_parse()
-    if (length(shape) != length(onesided_ast)) {
-        if (has_ellipsis(onesided_ast)) {
-            if (length(shape) < length(onesided_ast) - 1) {
-                stop(glue(
-                    "Shape length {length(shape)} is < the number of axes ",
-                    "in the expression {length(onesided_ast)}. ",
-                    "Please check your expression: {expr}."
-                ))
-            }
-        } else {
-            stop(glue(
-                "Shape length {length(shape)} does not match the number of ",
-                "axes in the expression {length(onesided_ast)}. ",
-                "Please check your expression: {expr}."
-            ))
-        }
+
+    if (has_composed_axes(onesided_ast)) {
+        stop(glue(
+            "can't parse expression with composite axes: '{expr}' ",
+            "{repr(shape, indent = 0L)}"
+        ))
     }
+
+    throw_length_error <- function() {
+        stop(glue(
+            "Shape length {length(shape)} does not match the number of ",
+            "axes in the expression {length(onesided_ast)}. ",
+            "Please check your expression: '{expr}'."
+        ))
+    }
+
+    if (length(shape) != length(onesided_ast)) {
+        if (!has_ellipsis(onesided_ast)) throw_length_error()
+        if (length(shape) < length(onesided_ast) - 1) throw_length_error()
+    }
+
     onesided_ast
 }
 
