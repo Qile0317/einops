@@ -112,92 +112,108 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     )
 })
 
-test_that("parse_shape works for simple cases of base::array", {
-    expect_identical(
-        parse_shape(array(1:16, dim = c(4, 4)), "height width"),
-        list(height = 4L, width = 4L)
-    )
+tensor_types <- c("base::array", "torch_tensor")
 
-    expect_identical(
-        parse_shape(array(1:12, dim = c(3, 4)), "height width"),
-        list(height = 3L, width = 4L)
+create_tensor <- function(type, values, dims) {
+    switch(type,
+        "base::array" = array(values, dim = dims),
+        "torch_tensor" = {
+            if (!requireNamespace("torch", quietly = TRUE)) {
+                testthat::skip("torch package not available")
+            }
+            torch::torch_tensor(array(values, dim = dims))
+        }
     )
+}
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "b c h w"),
-        list(b = 3L, c = 4L, h = 5L, w = 6L)
-    )
+for (tensor_type in tensor_types) {
+    test_that(paste("parse_shape works for simple cases of ", tensor_type), {
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:16, c(4, 4)), "height width"),
+            list(height = 4L, width = 4L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "... c h w"),
-        list(c = 4L, h = 5L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:12, c(3, 4)), "height width"),
+            list(height = 3L, width = 4L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "3 c h w"),
-        list(c = 4L, h = 5L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "b c h w"),
+            list(b = 3L, c = 4L, h = 5L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "3 c 5 w"),
-        list(c = 4L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "... c h w"),
+            list(c = 4L, h = 5L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "3 c ..."),
-        list(c = 4L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "3 c h w"),
+            list(c = 4L, h = 5L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "c h w1 w2"),
-        list(c = 3L, h = 4L, w1 = 5L, w2 = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "3 c 5 w"),
+            list(c = 4L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "b _ h w"),
-        list(b = 3L, h = 5L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "3 c ..."),
+            list(c = 4L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "b _ _ w"),
-        list(b = 3L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "c h w1 w2"),
+            list(c = 3L, h = 4L, w1 = 5L, w2 = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "b _ _ _"),
-        list(b = 3L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "b _ h w"),
+            list(b = 3L, h = 5L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "b ..."),
-        list(b = 3L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "b _ _ w"),
+            list(b = 3L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "... h _ w"),
-        list(h = 4L, w = 6L)
-    )
-})
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "b _ _ _"),
+            list(b = 3L)
+        )
 
-test_that("parse_shape works on centered ellipsis for base::array", {
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "b ..."),
+            list(b = 3L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "a ... w"),
-        list(a = 3L, w = 6L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "... h _ w"),
+            list(h = 4L, w = 6L)
+        )
+    })
 
-    expect_identical(
-        parse_shape(array(1:360, dim = 3:6), "a ... _ w"),
-        list(a = 3L, w = 6L)
-    )
+    test_that(paste("parse_shape works on centered ellipsis for", tensor_type), {
 
-    expect_identical(
-        parse_shape(array(1:720, dim = 2:6), "a ... _ w _"),
-        list(a = 2L, w = 5L)
-    )
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "a ... w"),
+            list(a = 3L, w = 6L)
+        )
 
-    expect_identical(
-        parse_shape(array(1:720, dim = 2:6), "a ... _ 5 _"),
-        list(a = 2L)
-    )
-})
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:360, 3:6), "a ... _ w"),
+            list(a = 3L, w = 6L)
+        )
+
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:720, 2:6), "a ... _ w _"),
+            list(a = 2L, w = 5L)
+        )
+
+        expect_identical(
+            parse_shape(create_tensor(tensor_type, 1:720, 2:6), "a ... _ 5 _"),
+            list(a = 2L)
+        )
+    })
+}
