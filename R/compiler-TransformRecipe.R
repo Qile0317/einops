@@ -163,16 +163,15 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    ordered_axis_left <- get_ordered_axis_names(ast$input_axes)
-    ordered_axis_rght <- get_ordered_axis_names(ast$output_axes)
+    ordered_axis_left <- add_relative_pos(get_ordered_axis_names(ast$input_axes))
+    ordered_axis_rght <- add_relative_pos(get_ordered_axis_names(ast$output_axes))
+    reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
 
-    # TODO: reduced_axes is constructed from axes that are in the left,
-    # but not in the right. However, we need to be careful when inferring them,
-    # because ConstantAstNode objects may have the same count, and differ by their
-    # src = list(start) value. However, two should only be considered different
-    # if they are not in the same *RELATIVE* position in the left and right.
+    order_after_transposition <- c(
+        sapply(ordered_axis_right, function(axis) r2r::has_key(get_identifiers_hashset(ast$output_axes, add_relative_pos = TRUE)), axis),
+        reduced_axes
+    )
 
-    # reduced_axes = [axis for axis in ordered_axis_left if axis not in rght.identifiers]
     # order_after_transposition = [axis for axis in ordered_axis_rght if axis in left.identifiers] + reduced_axes
     # axes_permutation = [ordered_axis_left.index(axis) for axis in order_after_transposition]
     # added_axes = {
