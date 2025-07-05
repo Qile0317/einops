@@ -34,9 +34,10 @@ TransformRecipe <- function(
                 inherits(x$unknown, "AxisNames")
         })),
         # TODO axes_permutation
-        is.count(first_reduced_axis)
+        is.count(first_reduced_axis),
         # TODO added_axes
-        # TODO output_composite_axes
+        is.list(output_composite_axes) &&
+            all(sapply(output_composite_axes, is.integer))
     )
     structure(
         as.list(match.call())[-1],
@@ -52,7 +53,7 @@ TransformRecipe <- function(
 #' 1. Lexing: tokenizing the input expression string
 #' 2. Parsing: converting the tokens into an Abstract Syntax Tree (AST)
 #' 3. Syntactic Analysis:
-#'     - [IN PROGRESS] operation-based AST validation pass
+#'     - operation-based AST validation pass
 #'     - [TODO] Compile syntactic info for intermediate representation (IR).
 #' 4. [TODO] IR generation: return the [TransformRecipe()] object, acting as
 #'    the IR for the einops.
@@ -75,6 +76,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     UNKNOWN_AXIS_LENGTH = -999999
     EXPECTED_AXIS_LENGTH = -99999
 
+    # the keyset are unclassed [AxisNames()] objects.
     # the keys represent unique axes, where named axes are just their
     # names, but constant axes are represented by the ConstantAstNode
     # the values are the known lengths of the axes, if unknown, then
@@ -145,13 +147,20 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     axis_position_after_reduction <- r2r::hashmap()
     for (axis_name in unlist(as_iterables(as_axis_names(ast$output_axes)))) {
         if (r2r::has_key(get_identifiers_hashset(ast$output_axes), axis_name)) {
-            axis_position_after_reduction[[axis_name]] <- length(axis_position_after_reduction)
+            axis_position_after_reduction[[axis_name]] <- length(
+                axis_position_after_reduction
+            )
         }
     }
 
-    # result_axes_grouping: List[List[int]] = [
-    #     [axis_name2position[axis] for axis in composite_axis] for i, composite_axis in enumerate(rght_composition)
-    # ]
+    result_axes_grouping <- lapply(
+        as_iterables(as_axis_names(ast$output_axes)),
+        function(composite_axis) {
+            as.integer(sapply(
+                composite_axis, function(axis) axis_name2position[[axis]]
+            ))
+        }
+    )
 
     # ordered_axis_left = list(itertools.chain(*left_composition))
     # ordered_axis_rght = list(itertools.chain(*rght_composition))
