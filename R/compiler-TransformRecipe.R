@@ -114,7 +114,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             }
         }
 
-        # FIXME if (length(unknown) > 1) stop(glue("Could not infer sizes for {to_expression(unknown)}")) # to_expression here isnt implemented
+        if (length(unknown) > 1) stop(glue("Could not infer sizes"))
         if (length(unknown) + length(known) != length(composite_axis)) {
             stop(glue(
                 "The input axes {to_expression(composite_axis_node)} ",
@@ -122,14 +122,10 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             ))
         }
 
-        input_axes_known_unknown %<>% c(list(
-            list(
-                known = as.integer(values(known)),
-                unknown = as.integer(values(unknown))
-            )
-        ))
-    #     input_axes_known_unknown.append(
-    #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown]))
+        input_axes_known_unknown %<>% c(
+            AxisNames(lapply(known, function(x) axis_name2position[[x]])),
+            AxisNames(lapply(unknown, function(x) axis_name2position[[x]]))
+        )
     }
 
     # axis_position_after_reduction: Dict[str, int] = {}

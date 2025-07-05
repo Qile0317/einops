@@ -86,7 +86,10 @@ get_identifiers <- function(ast, ...) {
             r2r::insert(identifiers, node)
             next
         }
-        stop("Sourcecode bug: Unexpected node type in get_identifiers: ", class(node)[1])
+        stop(
+            "Sourcecode bug: Unexpected node type in get_identifiers: ",
+            class(node)[1]
+        )
     }
     AxisNames(r2r::keys(identifiers))
 }
