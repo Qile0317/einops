@@ -133,7 +133,7 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
         missing_dim_count, UnderscoreAstNode(), simplify = FALSE
     )
     
-    result <- list()
+    result <- OneSidedAstNode()
     
     # Add nodes before ellipsis
     if (ellipsis_idx > 1) {
@@ -150,5 +150,5 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
         )
     }
     
-    OneSidedAstNode(result)
+    result
 }
