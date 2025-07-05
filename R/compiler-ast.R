@@ -33,6 +33,10 @@ ConstantAstNode <- function(count, src = list()) {
     ), class = c("ConstantAstNode", "AstNode", "s3list"))
 }
 
+is_a_one_node <- function(x) {
+    inherits(x, "ConstantAstNode") && (x$count == 1L)
+}
+
 #' @export
 #' @keywords internal
 to_tokens.ConstantAstNode <- function(x, ...) {

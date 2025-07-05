@@ -93,16 +93,25 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     for (elementary_axis in axes_names) {
         # TODO check the axis name
         if (!has_key(axis_name2known_length, elementary_axis)) {
-            stop(glue("Axis {elementary_axis} is not used in transform"))
+            stop(glue(
+                "Axis {repr(elementary_axis, indent = 0L)} is not used in transform"
+            ))
         }
         axis_name2known_length[[elementary_axis]] <- EXPECTED_AXIS_LENGTH
     }
 
-    input_axes_known_unknown <- list()
+    input_axes_known_unknown <- AxisNames()
     for (composite_axis_node in ast$input_axes) {
+
+        if (is_a_one_node(composite_axis_node)) next
+
         known <- r2r::hashset()
         unknown <- r2r::hashset()
-        # note that in the logic below, it handles assuming 1's are translated to []
+
+        if (!inherits(composite_axis_node, "GroupAstNode")) {
+            # assume it is a NameAstNode
+            # if (axis_name2known_length[[axis]] != UNKNOWN_AXIS_LENGTH)
+        }
     #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
     #     unknown: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] == _unknown_axis_length}
         if (length(unknown) > 1) stop(glue("Could not infer sizes for {to_expression(unknown)}")) # to_expression here isnt implemented
