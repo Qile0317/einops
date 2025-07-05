@@ -12,7 +12,7 @@ NamedAxisAstNode <- function(name, src = list()) {
     structure(list(
         name = name,
         src = src
-    ), class = c("NamedAxisAstNode", "AstNode"))
+    ), class = c("NamedAxisAstNode", "AstNode", "s3list"))
 }
 
 #' @export
@@ -30,7 +30,7 @@ ConstantAstNode <- function(count, src = list()) {
     structure(list(
         count = as.integer(count),
         src = src
-    ), class = c("ConstantAstNode", "AstNode"))
+    ), class = c("ConstantAstNode", "AstNode", "s3list"))
 }
 
 #' @export
@@ -46,7 +46,7 @@ to_tokens.ConstantAstNode <- function(x, ...) {
 EllipsisAstNode <- function(src) {
     structure(list(
         src = src
-    ), class = c("EllipsisAstNode", "AstNode"))
+    ), class = c("EllipsisAstNode", "AstNode", "s3list"))
 }
 
 #' @export
@@ -60,7 +60,7 @@ to_tokens.EllipsisAstNode <- function(x, ...) {
 #' @return NothingAstNode object
 #' @keywords internal
 NothingAstNode <- function() {
-    structure(list(), class = c("NothingAstNode", "AstNode"))
+    structure(list(), class = c("NothingAstNode", "AstNode", "s3list"))
 }
 
 #' @export
@@ -76,7 +76,7 @@ to_tokens.NothingAstNode <- function(x, ...) {
 UnderscoreAstNode <- function(src = list()) {
     structure(list(
         src = src
-    ), class = c("UnderscoreAstNode", "AstNode"))
+    ), class = c("UnderscoreAstNode", "AstNode", "s3list"))
 }
 
 #' @export
@@ -94,7 +94,7 @@ GroupAstNode <- function(children, src = list()) {
     structure(list(
         children = children,
         src = src
-    ), class = c("GroupAstNode", "AstNode"))
+    ), class = c("GroupAstNode", "AstNode", "s3list"))
 }
 
 #' Get the last n children of a GroupAstNode as a list of AstNodes.
@@ -136,7 +136,7 @@ OneSidedAstNode <- function(...) {
     } else {
         axes <- list(...)
     }
-    structure(axes, class = c("OneSidedAstNode", "AstNode"))
+    structure(axes, class = c("OneSidedAstNode", "AstNode", "s3list"))
 }
 
 find_node_types_indices <- function(x, node_type, ...) {
@@ -256,7 +256,7 @@ EinopsAst <- function(input_axes, output_axes, src) {
         input_axes = input_axes,
         output_axes = output_axes,
         src = src
-    ), class = c("EinopsAst", "AstNode"))
+    ), class = c("EinopsAst", "AstNode", "s3list"))
 }
 
 #' @export

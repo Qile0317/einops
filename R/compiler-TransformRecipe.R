@@ -31,22 +31,6 @@ TransformRecipe <- function(
 }
 
 #' @title
-#' Construct an instance of an `AxisNames` class
-#' @description
-#' This is a wrapper for a [list()], but the elements may only be singular
-#' [character()] or [ConstantAstNode()] objects.
-#' @param ... a list of elements or arbitrary number of elements
-AxisNames <- function(...) {
-    input <-
-        if (nargs() == 1 && is.list(..1) && !inherits(..1, "ConstantAstNode"))
-            ..1
-        else
-            list(...)
-    # TODO type check element
-    structure(input, class = c("AxisNames", "s3list", "list"))
-}
-
-#' @title
 #' Create the Transformation Recipe for an einops call
 #'
 #' @description
@@ -82,28 +66,24 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     # the values are the known lengths of the axes, if unknown, then
     # the value is UNKNOWN_AXIS_LENGTH
     axis_name2known_length <- AddOnlyOrderedMap()
-    for (axis_node in ast$input_axes) {
+    for (axis_node in get_ungrouped_nodes(ast$input_axes)) {
         if (inherits(axis_node, "ConstantAstNode")) {
+            if (axis_node$count == 1L) next
             axis_name2known_length[[axis_node]] <- axis_node$count
         } else {
             axis_name2known_length[[axis_node$name]] <- UNKNOWN_AXIS_LENGTH
         }
     }
 
-    repeat_axes_names <- list()
-    for (ast_node in ast$output_axes) {
-        ast_key <- if (!inherits(ast_node, "ConstantAstNode")) {
-            ast_node$name
-        } else {
-            ast_node
-        }
+    repeat_axes_names <- AxisNames()
+    for (ast_key in get_identifiers(ast$output_axes)) {
         if (has_key(axis_name2known_length, ast_key)) next
         if (inherits(ast_key, "ConstantAstNode")) {
             axis_name2known_length[[ast_key]] <- ast_key$count
         } else {
             axis_name2known_length[[ast_key]] <- UNKNOWN_AXIS_LENGTH
         }
-        repeat_axes_names %<>% append(list(ast_key))
+        repeat_axes_names %<>% c(ast_key)
     }
 
     axis_name2position <- make_addonlyorderedmap_bypairs(

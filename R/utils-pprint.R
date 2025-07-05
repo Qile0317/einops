@@ -20,9 +20,6 @@ pprint <- function(x, ...) {
     invisible(x)
 }
 
-#' @export
-print.s3list <- pprint
-
 #' @title Python-like Representation of Objects as Strings
 #' @description
 #' This is an R implementation of python's `repr()` function.

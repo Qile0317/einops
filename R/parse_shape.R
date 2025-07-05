@@ -65,10 +65,8 @@ parse_shape <- function(x, expr, ...) {
         }
 
         stop(glue(
-            "Unexpected node type in shape AST: ",
-            "{capture.output(print(class(axes_node)))} ",
-            "for expression: {expr} and shape: ",
-            "{capture.output(print(shape))}. ",
+            "Unexpected node type in shape AST: {repr(axes_node)}",
+            "for expression: {expr} and shape: {repr(shape)}. ",
             "Please report this as a bug.",
         ))
 
