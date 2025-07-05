@@ -107,7 +107,7 @@ public = list(
     #' shape should return a tuple with integers or "shape symbols"
     #' (which will evaluate to actual size)
     shape = function(x) {
-        stop("Not implemented")
+        tryCatch(dim(x), error = function(e) stop("Not implemented"))
     },
 
     reshape = function(x, shape) {
@@ -196,8 +196,6 @@ public = list(
 
     arange = function(start, stop) seq(from = start, to = stop),
 
-    shape = function(x) dim(x),
-
     reshape = function(x, shape) array(x, dim = shape),
 
     transpose = function(x, axes) aperm(x, perm = axes),
@@ -243,5 +241,19 @@ public = list(
 ))
 
 register_backend(BaseArrayBackend)
+
+TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
+public = list(
+
+    initialize = function() {
+        if (!requireNamespace("torch", quietly = TRUE)) {
+            stop("torch package required for TorchBackend")
+        }
+    },
+
+    tensor_type = function() "torch_tensor"
+))
+
+register_backend(TorchBackend)
 
 # nolint end: indentation_linter.

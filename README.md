@@ -95,7 +95,7 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [ ] `einops:::repeat.array()`
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`
-- [ ] `einops:::parse_shape.torch_tensor()`
+- [x] `einops:::parse_shape.torch_tensor()`
 - [ ] `einops:::repeat.torch_tensor()`
 - [ ] `einops:::rearrange.torch_tensor()`
 - [ ] `einops:::Rearrange.torch()`
