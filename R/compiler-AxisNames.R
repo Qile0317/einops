@@ -5,7 +5,14 @@
 #' [character()], [ConstantAstNode()] or other AstNode objects. (only 1 level
 #' of nesting allowed, as its essentially another representation of a
 #' [OneSidedAstNode()].
+#'
+#' Note that when using [c()] on an `AxisNames` object, when the other object is
+#' another [AxisNames()], the elements of that will simply be appended to the
+#' first object. To nest (in the case of a `GroupAstNode`), you must append
+#' a `list(AxisNames(...))` to the first object instead.
 #' @param ... a list of elements or arbitrary number of elements
+#' @return an `AxisNames` object, which is a list with a specific class
+#' @keywords internal
 AxisNames <- function(...) {
     input <-
         if (nargs() == 1 && is.list(..1) && !inherits(..1, "ConstantAstNode"))
@@ -14,6 +21,43 @@ AxisNames <- function(...) {
             list(...)
     # TODO type check element
     structure(input, class = c("AxisNames", "s3list", "list"))
+}
+
+#' @title
+#' Convert an object to a list of iterables (lists)
+#' @description
+#' This function converts an object into a list of iterables, where each
+#' iterable is a list of elements. The function is generic and can be
+#' extended for different classes.
+#' @param x the input object to be converted
+#' @param ... additional arguments (not used)
+#' @return a list of iterables, where each iterable is a list of elements
+#' @section AxisNames:
+#' This method converts an `AxisNames` object into a list of iterables.
+#' Each element in the `AxisNames` is processed to extract its name or
+#' constant value. If the element is a `ConstantAstNode` with a count of
+#' 1, it is converted to an empty list. Otherwise, it is wrapped in
+#' a list. If the element is a `NamedAxisAstNode`, its name is extracted.
+#' Regular AxisNames that are nested will be unclassed
+#' @keywords internal
+as_iterables <- function(x, ...) UseMethod("as_iterables")
+
+#' @export
+as_iterables.AxisNames <- function(x, ...) {
+    lapply(x, function(y) {
+        if (inherits(y, "AxisNames")) return(unclass(y))
+        if (inherits(y, "ConstantAstNode")) {
+            if (y$count == 1L) return(list())
+            return(list(y))
+        }
+        if (!inherits(y, "character")) {
+            stop(
+                "Sourcecode bug: Unexpected node type in as_iterables: ",
+                class(y)[1]
+            )
+        }
+        list(y)
+    })
 }
 
 #' @title

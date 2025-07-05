@@ -90,8 +90,7 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] `einops:::parse_shape.array()`
 - [x] Semantic validator for different task contexts
 - [ ] IR generation into a TransformRecipe()
-- [ ] Intermediate Representation Generator (planner)
-- [ ] Executor & Backends
+- [ ] Intermediate Representation Generator & Executor (planner)
 - [ ] `einops:::repeat.array()`
 - [ ] `einops:::rearrange.array()`
 - [ ] `einops:::reduce.array()`

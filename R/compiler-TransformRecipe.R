@@ -101,26 +101,33 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     }
 
     input_axes_known_unknown <- AxisNames()
-    for (composite_axis_node in ast$input_axes) {
-
-        if (is_a_one_node(composite_axis_node)) next
+    for (composite_axis in as_iterables(as_axis_names(ast$input_axes))) {
 
         known <- r2r::hashset()
         unknown <- r2r::hashset()
 
-        if (!inherits(composite_axis_node, "GroupAstNode")) {
-            # assume it is a NameAstNode
-            # if (axis_name2known_length[[axis]] != UNKNOWN_AXIS_LENGTH)
+        for (axis in composite_axis) {
+            if (axis_name2known_length[[axis]] == UNKNOWN_AXIS_LENGTH) {
+                r2r::insert(unknown, axis)
+            } else {
+                r2r::insert(known, axis)
+            }
         }
-    #     known: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] != _unknown_axis_length}
-    #     unknown: Set[str] = {axis for axis in composite_axis if axis_name2known_length[axis] == _unknown_axis_length}
-        if (length(unknown) > 1) stop(glue("Could not infer sizes for {to_expression(unknown)}")) # to_expression here isnt implemented
-        if (length(unknown) + length(known) != length(composite_axis_node)) {
+
+        # FIXME if (length(unknown) > 1) stop(glue("Could not infer sizes for {to_expression(unknown)}")) # to_expression here isnt implemented
+        if (length(unknown) + length(known) != length(composite_axis)) {
             stop(glue(
                 "The input axes {to_expression(composite_axis_node)} ",
                 "do not match the expected axes {to_expression(axes_names)}."
             ))
         }
+
+        input_axes_known_unknown %<>% c(list(
+            list(
+                known = as.integer(values(known)),
+                unknown = as.integer(values(unknown))
+            )
+        ))
     #     input_axes_known_unknown.append(
     #         ([axis_name2position[axis] for axis in known], [axis_name2position[axis] for axis in unknown]))
     }
