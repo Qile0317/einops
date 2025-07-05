@@ -125,13 +125,23 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
     new_underscore_nodes <- replicate(
         missing_dim_count, UnderscoreAstNode(), simplify = FALSE
     )
-
+    
+    result <- list()
+    
+    # Add nodes before ellipsis
     if (ellipsis_idx > 1) {
-        append(onesided_ast[seq_len(ellipsis_idx - 1)], new_underscore_nodes)
-    } else {
-        append(
-            new_underscore_nodes,
-            onesided_ast[(ellipsis_idx + 1):length(onesided_ast)]
+        result <- append(result, onesided_ast[seq_len(ellipsis_idx - 1)])
+    }
+    
+    # Add new underscore nodes
+    result <- append(result, new_underscore_nodes)
+    
+    # Add nodes after ellipsis
+    if (ellipsis_idx < length(onesided_ast)) {
+        result <- append(
+            result, onesided_ast[(ellipsis_idx + 1):length(onesided_ast)]
         )
     }
+    
+    OneSidedAstNode(result)
 }
