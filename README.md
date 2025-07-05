@@ -88,7 +88,7 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] Ast Datastructure
 - [x] Token -> Ast Parser
 - [x] `einops:::parse_shape.array()`
-- [ ] Semantic validator for different task contexts
+- [x] Semantic validator for different task contexts
 - [ ] IR generation into a TransformRecipe()
 - [ ] Intermediate Representation Generator (planner)
 - [ ] Executor & Backends
