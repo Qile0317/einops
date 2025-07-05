@@ -129,12 +129,16 @@ create_tensor <- function(type, values, dims) {
 for (tensor_type in tensor_types) {
     test_that(paste("parse_shape works for simple cases of ", tensor_type), {
         expect_identical(
-            parse_shape(create_tensor(tensor_type, 1:16, c(4, 4)), "height width"),
+            parse_shape(
+                create_tensor(tensor_type, 1:16, c(4, 4)), "height width"
+            ),
             list(height = 4L, width = 4L)
         )
 
         expect_identical(
-            parse_shape(create_tensor(tensor_type, 1:12, c(3, 4)), "height width"),
+            parse_shape(
+                create_tensor(tensor_type, 1:12, c(3, 4)), "height width"
+            ),
             list(height = 3L, width = 4L)
         )
 
@@ -194,7 +198,7 @@ for (tensor_type in tensor_types) {
         )
     })
 
-    test_that(paste("parse_shape works on centered ellipsis for", tensor_type), {
+    test_that(glue("parse_shape works on central ellipsis for {tensor_type}"), {
 
         expect_identical(
             parse_shape(create_tensor(tensor_type, 1:360, 3:6), "a ... w"),
