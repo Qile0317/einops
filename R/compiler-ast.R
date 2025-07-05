@@ -147,6 +147,13 @@ OneSidedAstNode <- function(...) {
     structure(axes, class = c("OneSidedAstNode", "AstNode", "s3list"))
 }
 
+as_onesided_ast_node <- function(x) {
+    if (inherits(x, "OneSidedAstNode")) {
+        return(x)
+    }
+    structure(x, class = c("OneSidedAstNode", "AstNode", "s3list"))
+}
+
 find_node_types_indices <- function(x, node_type, ...) {
     UseMethod("find_node_types_indices", x)
 }
@@ -213,6 +220,13 @@ to_tokens.OneSidedAstNode <- function(x, ...) {
 
 #' @export
 append.OneSidedAstNode <- function(x, values, after = length(x), ...) {
+
+    if (inherits(values, "OneSidedAstNode")) {
+        return(as_onesided_ast_node(
+            append(unclass(x), unclass(values), after = after)
+        ))
+    }
+
     if (!is.list(values) || inherits(values, "AstNode")) {
         values <- list(values)
     }

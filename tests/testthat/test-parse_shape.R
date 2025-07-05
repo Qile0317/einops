@@ -80,6 +80,36 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
             UnderscoreAstNode(src = list())
         )
     )
+
+    shape <- 3:6
+    ast <- OneSidedAstNode(
+        NamedAxisAstNode(
+            name = "a",
+            src = list(start = 1)
+        ),
+        EllipsisAstNode(
+            src = list(start = 3)
+        ),
+        NamedAxisAstNode(
+            name = "w",
+            src = list(start = 7)
+        )
+    )
+    expect_identical(
+        preprocess_shape_ast(ast, shape),
+        OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            UnderscoreAstNode(src = list()),
+            UnderscoreAstNode(src = list()),
+            NamedAxisAstNode(
+                name = "w",
+                src = list(start = 7)
+            )
+        )
+    )
 })
 
 test_that("parse_shape works for simple cases of base::array", {
