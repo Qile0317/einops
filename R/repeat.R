@@ -2,7 +2,8 @@
 #' Allows reordering elements and repeating them in arbitrary combinations.
 #'
 #' @description
-#' This operation includes functionality of repeat, tile, and broadcast functions.
+#' This operation includes functionality of repeat, tile, and broadcast
+#' functions.
 #'
 #' @inherit rearrange details
 #' @inheritParams reduce

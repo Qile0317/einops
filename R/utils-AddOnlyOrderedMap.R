@@ -57,20 +57,14 @@ make_addonlyorderedmap_bypairs <- function(..., .reverse = FALSE) {
         pairs <- list(...)
     }
 
-    if (length(pairs) == 0) {
-        return(AddOnlyOrderedMap())
-    }
+    if (length(pairs) == 0) return(AddOnlyOrderedMap())
+
     keys <- values <- FastUtils::initList(length(pairs))
     for (i in seq_along(pairs)) {
         pair <- pairs[[i]]
         if (length(pair) != 2) stop("Each argument must be a pair (length 2)")
-        if (.reverse) {
-            keys[[i]] <- pair[[2]]
-            values[[i]] <- pair[[1]]
-        } else {
-            keys[[i]] <- pair[[1]]
-            values[[i]] <- pair[[2]]
-        }
+        keys[[i]] <- pair[[1 + .reverse]]
+        values[[i]] <- pair[[2 - .reverse]]
     }
     AddOnlyOrderedMap(keys = keys, values = values)
 }
