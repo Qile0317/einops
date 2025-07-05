@@ -58,15 +58,15 @@ parse_shape <- function(x, expr, ...) {
             if (axes_node$count != axis_length) {
                 stop(glue(
                     "Length of anonymous axis does not match: '{expr}' ",
-                    "{capture.output(print(shape))}"
+                    "{repr(shape, indent = 0L)}"
                 ))
             }
             next
         }
 
         stop(glue(
-            "Unexpected node type in shape AST: {repr(axes_node)}",
-            "for expression: {expr} and shape: {repr(shape)}. ",
+            "Unexpected node type in shape AST: {repr(axes_node, indent = 0L)}",
+            "for expression: {expr} and shape: {repr(shape, indent = 0L)}. ",
             "Please report this as a bug.",
         ))
 
@@ -78,7 +78,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
     throw_cannot_parse <- function() {
         stop(glue(
             "can't parse expression with composite axes: {expr} ",
-            "{capture.output(print(shape))}"
+            "{repr(shape, indent = 0L)}"
         ))
     }
     if (length(onesided_ast) == 0) {
@@ -107,6 +107,7 @@ validate_shape_ast <- function(onesided_ast, shape, expr) {
 
 # process OneSidedAstNode for parse_shape by replacing ellipses w/underscore(s)
 preprocess_shape_ast <- function(onesided_ast, shape) {
+
     if (!contains_node(onesided_ast, "EllipsisAstNode")) return(onesided_ast)
 
     ellipsis_idx <- find_node_types_indices(onesided_ast, "EllipsisAstNode")
@@ -115,18 +116,22 @@ preprocess_shape_ast <- function(onesided_ast, shape) {
             "Shape must be provided when ellipsis is present in the expression."
         )
     }
-    n_ast <- length(onesided_ast)
+
     n_shape <- length(shape)
-    missing_dim_count <- n_shape - (n_ast - 1)
+    missing_dim_count <- n_shape - (length(onesided_ast) - 1)
     if (missing_dim_count < 0) {
         stop("Too many axes in expression for the shape.")
     }
     new_underscore_nodes <- replicate(
         missing_dim_count, UnderscoreAstNode(), simplify = FALSE
     )
-    before <- after <- list()
-    if (ellipsis_idx > 1) before <- onesided_ast[seq_len(ellipsis_idx - 1)]
-    if (ellipsis_idx < n_ast) after <- onesided_ast[(ellipsis_idx + 1):n_ast]
-    onesided_ast <- OneSidedAstNode(c(before, new_underscore_nodes, after))
-    onesided_ast
+
+    if (ellipsis_idx > 1) {
+        append(onesided_ast[seq_len(ellipsis_idx - 1)], new_underscore_nodes)
+    } else {
+        append(
+            new_underscore_nodes,
+            onesided_ast[(ellipsis_idx + 1):length(onesided_ast)]
+        )
+    }
 }
