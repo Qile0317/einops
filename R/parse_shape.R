@@ -73,8 +73,9 @@ parse_shape <- function(x, expr, ...) {
         }
 
         stop(glue(
-            "Unexpected node type in shape AST: {repr(axes_node, indent = 0L)}",
-            " for expression: '{expr}' and shape: {repr(shape, indent = 0L)}. ",
+            "Unexpected node type in shape AST: ",
+            "`{repr(axes_node, indent = 0L)}` ",
+            "for expression: '{expr}' and shape: {repr(shape, indent = 0L)}. ",
             "Please report this as a bug.",
         ))
 

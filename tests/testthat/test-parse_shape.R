@@ -82,7 +82,7 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     )
 })
 
-test_that("parse_shape works for base::array", {
+test_that("parse_shape works for simple cases of base::array", {
     expect_identical(
         parse_shape(array(1:16, dim = c(4, 4)), "height width"),
         list(height = 4L, width = 4L)
@@ -147,6 +147,9 @@ test_that("parse_shape works for base::array", {
         parse_shape(array(1:360, dim = 3:6), "... h _ w"),
         list(h = 4L, w = 6L)
     )
+})
+
+test_that("parse_shape works on centered ellipsis for base::array", {
 
     expect_identical(
         parse_shape(array(1:360, dim = 3:6), "a ... w"),
