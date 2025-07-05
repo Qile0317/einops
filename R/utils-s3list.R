@@ -13,7 +13,14 @@ c.s3list <- function(...) {
     current_class <- class(..1)
     
     output <- lapply(args, function(arg) {
-        processor <- if (inherits(arg, "s3list") && !(any(setdiff(current_class, "s3list") %in% setdiff(class(arg), "s3list")))) list else identity
+        if (!inherits(arg, "s3list")) return(arg)
+
+        # Check if classes are compatible for conversion
+        current_non_s3 <- setdiff(current_class, "s3list")
+        arg_non_s3 <- setdiff(class(arg), "s3list")
+        classes_overlap <- any(current_non_s3 %in% arg_non_s3)
+        
+        processor <- if (!classes_overlap) list else identity
         processor(arg)
     })
     output <- unlist(list(list(list()), output), recursive = FALSE)
