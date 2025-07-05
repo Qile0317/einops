@@ -142,10 +142,11 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         )))
     }
 
-    # axis_position_after_reduction: Dict[str, int] = {}
-    # for axis_name in itertools.chain(*left_composition):
+    axis_position_after_reduction <- r2r::hashmap()
+    for (axis_name in unlist(as_iterables(as_axis_names(ast$output_axes)))) {
     #     if axis_name in rght.identifiers:
     #         axis_position_after_reduction[axis_name] = len(axis_position_after_reduction)
+    }
 
     # result_axes_grouping: List[List[int]] = [
     #     [axis_name2position[axis] for axis in composite_axis] for i, composite_axis in enumerate(rght_composition)
