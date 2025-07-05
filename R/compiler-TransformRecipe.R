@@ -144,8 +144,9 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     axis_position_after_reduction <- r2r::hashmap()
     for (axis_name in unlist(as_iterables(as_axis_names(ast$output_axes)))) {
-    #     if axis_name in rght.identifiers:
-    #         axis_position_after_reduction[axis_name] = len(axis_position_after_reduction)
+        if (r2r::has_key(get_identifiers_hashset(ast$output_axes), axis_name)) {
+            axis_position_after_reduction[[axis_name]] <- length(axis_position_after_reduction)
+        }
     }
 
     # result_axes_grouping: List[List[int]] = [

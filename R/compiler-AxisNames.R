@@ -60,6 +60,8 @@ as_iterables.AxisNames <- function(x, ...) {
     })
 }
 
+
+
 #' @title
 #' Given a `OneSidedAstNode` object, get unique identifiers
 #' @description
@@ -92,6 +94,10 @@ get_identifiers <- function(ast, ...) {
         )
     }
     AxisNames(r2r::keys(identifiers))
+}
+
+get_identifiers_hashset <- function(ast, ...) {
+    do.call(r2r::hashset, get_identifiers(ast))
 }
 
 #' @title Convert an AstNode into an [AxisNames()] object
