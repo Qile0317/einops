@@ -131,10 +131,14 @@ to_tokens.GroupAstNode <- function(x, ...) {
 }
 
 #' @title Create a OneSidedAstNode (wrapper for input/output axes lists)
-#' @param ... Axis nodes (or a single list of axis nodes)
+#' @param ... Axis nodes (or a single list of axis nodes) If this is already
+#' a OneSidedAstNode, it is returned as is.
 #' @return OneSidedAstNode object
 #' @keywords internal
 OneSidedAstNode <- function(...) {
+    if (nargs() == 1 && inherits(..1, "OneSidedAstNode")) {
+        return(..1)
+    }
     if (nargs() == 1 && is.list(..1) && !inherits(..1, "AstNode")) {
         axes <- ..1
     } else {

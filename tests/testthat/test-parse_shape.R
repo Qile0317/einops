@@ -3,7 +3,7 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     shape <- c(1, 2, 3, 4)
     ast <- OneSidedAstNode(
         ConstantAstNode(
-            count = 3,
+            count = 1,
             src = list(start = 1)
         ),
         NamedAxisAstNode(
@@ -18,7 +18,7 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
         preprocess_shape_ast(ast, shape),
         OneSidedAstNode(
             ConstantAstNode(
-                count = 3,
+                count = 1,
                 src = list(start = 1)
             ),
             NamedAxisAstNode(
