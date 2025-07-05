@@ -145,8 +145,9 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     }
 
     axis_position_after_reduction <- r2r::hashmap()
-    for (axis_name in unlist(as_iterables(as_axis_names(ast$output_axes)))) {
-        if (r2r::has_key(get_identifiers_hashset(ast$output_axes), axis_name)) {
+    rght_identifiers_hashset <- get_identifiers_hashset(ast$output_axes)
+    for (axis_name in get_ordered_axis_names(ast$output_axes)) {
+        if (r2r::has_key(rght_identifiers_hashset, axis_name)) {
             axis_position_after_reduction[[axis_name]] <- length(
                 axis_position_after_reduction
             )
@@ -162,8 +163,15 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    # ordered_axis_left = list(itertools.chain(*left_composition))
-    # ordered_axis_rght = list(itertools.chain(*rght_composition))
+    ordered_axis_left <- get_ordered_axis_names(ast$input_axes)
+    ordered_axis_rght <- get_ordered_axis_names(ast$output_axes)
+
+    # TODO: reduced_axes is constructed from axes that are in the left,
+    # but not in the right. However, we need to be careful when inferring them,
+    # because ConstantAstNode objects may have the same count, and differ by their
+    # src = list(start) value. However, two should only be considered different
+    # if they are not in the same *RELATIVE* position in the left and right.
+
     # reduced_axes = [axis for axis in ordered_axis_left if axis not in rght.identifiers]
     # order_after_transposition = [axis for axis in ordered_axis_rght if axis in left.identifiers] + reduced_axes
     # axes_permutation = [ordered_axis_left.index(axis) for axis in order_after_transposition]

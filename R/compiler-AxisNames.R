@@ -128,3 +128,14 @@ as_axis_names.OneSidedAstNode <- function(ast, ...) {
         stop("Not supported")
     }))
 }
+
+#' Get the ordered axis names from a OneSidedAstNode, removing
+#' all nesting.
+#' @param ast OneSidedAstNode object
+#' @param ... additional arguments (not used)
+#' @return a [list()] of axis names
+#' @keywords internal
+get_ordered_axis_names <- function(ast, ...) {
+    assert_that(inherits(ast, "OneSidedAstNode"))
+    AxisNames(unlist(as_iterables(as_axis_names(ast)), recursive = FALSE))
+}
