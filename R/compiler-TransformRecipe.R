@@ -3,13 +3,13 @@
 #' tensor or variable.
 #' @param elementary_axes_lengths Integer vector. List of sizes for elementary
 #' axes as they appear in left expression.
-#' @param axis_name2elementary_axis Named integer vector. Mapping from name to
+#' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to
 #' position.
 #' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
 #' @param axes_permutation Integer vector. Permutation applied to elementary
-#' axes.
-#' @param first_reduced_axis Integer. First position of reduced axes.
-#' @param added_axes Named integer vector. Axis position -> axis index.
+#' axes. This is ONE INDEXED!
+#' @param first_reduced_axis Integer of length 1. First position of reduced axes.
+#' @param added_axes [r2r::hashmap()]. Axis position -> axis index.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they
 #' appear in result.
 #' @return An object of class 'TransformRecipe'.
@@ -25,7 +25,7 @@ TransformRecipe <- function(
 ) {
     assert_that(
         is.integer(elementary_axes_lengths),
-        # TODO axisname2elementary_axis
+        inherits(axis_name2elementary_axis, "r2r_hashmap"),
         all(sapply(input_composition_known_unknown, function(x) {
             is.list(x) &&
                 length(x) == 2L &&
@@ -33,9 +33,9 @@ TransformRecipe <- function(
                 inherits(x$known, "AxisNames") &&
                 inherits(x$unknown, "AxisNames")
         })),
-        # TODO axes_permutation
+        is.integer(axes_permutation),
         is.count(first_reduced_axis),
-        # TODO added_axes
+        inherits(added_axes, "r2r_hashmap"),
         is.list(output_composite_axes) &&
             all(sapply(output_composite_axes, is.integer))
     )
@@ -166,24 +166,35 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     ordered_axis_left <- add_relative_pos(get_ordered_axis_names(ast$input_axes))
     ordered_axis_rght <- add_relative_pos(get_ordered_axis_names(ast$output_axes))
     reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
-
+    relative_output_identifiers <- get_identifiers_hashset(
+        ast$output_axes, add_relative_pos = TRUE
+    )
     order_after_transposition <- c(
-        sapply(ordered_axis_right, function(axis) r2r::has_key(get_identifiers_hashset(ast$output_axes, add_relative_pos = TRUE)), axis),
+        ordered_axis_right[sapply(
+            ordered_axis_right,
+            function(axis) r2r::has_key(relative_output_identifiers, axis)
+        )],
         reduced_axes
     )
 
-    # order_after_transposition = [axis for axis in ordered_axis_rght if axis in left.identifiers] + reduced_axes
-    # axes_permutation = [ordered_axis_left.index(axis) for axis in order_after_transposition]
-    # added_axes = {
-    #     i: axis_name2position[axis_name]
-    #     for i, axis_name in enumerate(ordered_axis_rght)
-    #     if axis_name not in left.identifiers
-    # }
+    axes_permutation <- as.integer(sapply(order_after_transposition, function(axis) {
+        which(ordered_axis_left == axis)
+    }))
+
+    added_axes <- r2r::hashmap()
+    left_identifiers <- get_identifiers_hashset(ast$input_axes)
+    for (i in seq_along(ordered_axis_rght)) {
+        axis_name <- ordered_axis_rght[i]
+        if (!r2r::has_key(left_identifiers, axis_name)) {
+            r2r::insert(added_axes, i, axis_name2position[[axis_name]])
+        }
+    }
 
     TransformRecipe(
         elementary_axes_lengths = as.integer(values(axis_name2known_length)),
-        axis_name2elementary_axis = AddOnlyOrderedMap(
-            names(axes_names), axis_name2position[names(axes_names)]
+        axis_name2elementary_axis = do.call(
+            r2r::hashmap,
+            FastUtils::zipit(names(axes_names), axis_name2position[names(axes_names)])
         ),
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
