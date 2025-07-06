@@ -201,7 +201,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         axes_permutation = axes_permutation,
         first_reduced_axis = length(order_after_transposition) - length(reduced_axes),
         added_axes = added_axes,
-        output_composite_axes = result_axes_grouping,
+        output_composite_axes = result_axes_grouping
     )
 }
 

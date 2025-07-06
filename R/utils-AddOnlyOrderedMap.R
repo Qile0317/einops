@@ -82,7 +82,7 @@ has_key.AddOnlyOrderedMap <- function(x, key, ...) x$has_key(key)
 values <- function(x, ...) UseMethod("values")
 
 #' @export
-values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order(x)
+values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order()
 
 #' @export
 as.list.AddOnlyOrderedMap <- function(x, ...) {
@@ -159,7 +159,7 @@ public = list(
     },
 
     get_values_in_order = function() {
-        public$query(private$get_keys_in_order, vectorize = TRUE)
+        self$query(private$get_keys_in_order, vectorize = TRUE)
     },
 
     get_key_to_index_map = function() {
