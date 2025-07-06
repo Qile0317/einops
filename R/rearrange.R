@@ -40,4 +40,4 @@ rearrange <- function(x, expr, ...) {
 
 #' @rdname rearrange
 #' @export
-einops.rearrange <- rearrange
+einops.rearrange <- rearrange # nolint: object_name_linter.

@@ -80,7 +80,7 @@ parse_shape <- function(x, expr, ...) {
         ))
 
     }
-    return(result)
+    result
 }
 
 validate_shape_ast <- function(onesided_ast, shape, expr) {

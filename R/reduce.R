@@ -62,7 +62,7 @@ reduce <- function(x, expr, func, ...) {
 
 #' @rdname reduce
 #' @export
-einops.reduce <- reduce
+einops.reduce <- reduce # nolint: object_name_linter.
 
 #' @export
 reduce.list <- function(x, expr, func, ...) {
