@@ -102,9 +102,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         repeat_axes_names %<>% c(ast_key)
     }
 
-    axis_name2position <- make_addonlyorderedmap_bypairs(
-        FastUtils::enumerateit(axis_name2known_length), .reverse = TRUE
-    )
+    axis_name2position <- get_key_to_index_map(axis_name2known_length)
 
     for (elementary_axis in axes_names) {
         # TODO check the axis name

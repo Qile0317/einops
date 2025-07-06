@@ -44,31 +44,6 @@ AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
     .AddOnlyOrderedMap$new(keys, values)
 }
 
-#' make an [AddOnlyOrderedMap()] by using key value pairs
-#' @param ... either lists of length 2, or a single list containing lists of
-#' length 2
-#' @param .reverse if TRUE, will treat the second element as the key
-#' @noRd
-make_addonlyorderedmap_bypairs <- function(..., .reverse = FALSE) {
-
-    if (nargs() == 1 && is.list(..1)) {
-        pairs <- ..1
-    } else {
-        pairs <- list(...)
-    }
-
-    if (length(pairs) == 0) return(AddOnlyOrderedMap())
-
-    keys <- values <- FastUtils::initList(length(pairs))
-    for (i in seq_along(pairs)) {
-        pair <- pairs[[i]]
-        if (length(pair) != 2) stop("Each argument must be a pair (length 2)")
-        keys[[i]] <- pair[[1 + .reverse]]
-        values[[i]] <- pair[[2 - .reverse]]
-    }
-    AddOnlyOrderedMap(keys = keys, values = values)
-}
-
 #' @export
 "[.AddOnlyOrderedMap" <- function(x, i) {
     x$query(i, vectorize = TRUE)
@@ -112,6 +87,13 @@ values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order(x)
 #' @export
 as.list.AddOnlyOrderedMap <- function(x, ...) {
     FastUtils::setNames(values(x), sapply(keys(x), repr, indent = 0L))
+}
+
+get_key_to_index_map <- function(x, ...) UseMethod("get_key_to_index_map")
+
+#' @export
+get_key_to_index_map.AddOnlyOrderedMap <- function(x, ...) {
+    x$get_key_to_index_map()
 }
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
@@ -178,6 +160,10 @@ public = list(
 
     get_values_in_order = function() {
         public$query(private$get_keys_in_order, vectorize = TRUE)
+    },
+
+    get_key_to_index_map = function() {
+        private$key2index
     },
 
     size = function() {
