@@ -84,17 +84,19 @@ Additionally, einops can be used with any framework that supports R's array acce
 
 ## Development Roadmap (Delete after completion)
 
-- [x] Lexer
-- [x] Ast Datastructure
-- [x] Token -> Ast Parser
+- [x] Lexical Analysis (`lex("expression")` -> `EinopsTokenSequence()`)
+- [x] Parser (`parse_einops_ast(EinopsTokenSequence())` -> `EinopsAst()`)
 - [x] `einops:::parse_shape.array()`
-- [x] Semantic validator for different task contexts
-- [ ] IR generation into a TransformRecipe()
-- [ ] Intermediate Representation Generator & Executor (planner)
-- [ ] `einops:::repeat.array()`
-- [ ] `einops:::rearrange.array()`
-- [ ] `einops:::reduce.array()`
+- [x] Semantic Analysis (`validate_reduction_operation()`, `expand_ellipsis()` -> `EinopsAst()`)
+- [ ] Intermediate Representation generation (`prepare_transformation_recipe()` -> `TransformRecipe()`)
+- [ ] Code generation (`create_execution_plan()` -> `EinopsExecutionPlan()`)
+- [x] Execution (`apply_recipe()`, `EinopsBackend()` -> output)
+- [x] `einops:::repeat.array()`
+- [x] `einops:::rearrange.array()`
+- [x] `einops:::reduce.array()`
+- [ ] Make Github Repository Public
 - [x] `einops:::parse_shape.torch_tensor()`
+- [ ] `TorchBackend()`
 - [ ] `einops:::repeat.torch_tensor()`
 - [ ] `einops:::rearrange.torch_tensor()`
 - [ ] `einops:::Rearrange.torch()`
@@ -116,5 +118,5 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [ ] Google Analytics for the docsite
 - [ ] R-universe upload
 - [ ] Much better README
-- [ ] Rcpp Acceleration for `base::array` operations
+- [ ] Rcpp Acceleration if needed
 - [ ] Copy the existing einops docs pages as vignettes
