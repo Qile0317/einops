@@ -22,6 +22,12 @@
 #' behaviour is undefined.
 #' @param values Optional list. A vector of values corresponding to the keys. If
 #' length of values is one, all inserted keys will have that value.
+#' @param key_validator Optional function. A function that validates keys
+#' before insertion, returning TRUE if valid, FALSE otherwise. Defaults to a
+#' function that returns TRUE for non-NULL values.
+#' @param val_validator Optional function. A function that validates values
+#' before insertion, returning TRUE if valid, FALSE otherwise. Defaults to a
+#' function that returns TRUE for non-NULL values.
 #'
 #' @return An `AddOnlyOrderedMap` instance
 #' @keywords internal
@@ -33,15 +39,32 @@
 #'
 #' @examples
 #' map <- AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2))
+#' 
+#' # With validators
+#' key_val <- function(k) is.character(k)
+#' val_val <- function(v) is.numeric(v) 
+#' map_validated <- AddOnlyOrderedMap(
+#'   keys = c("a", "b"), 
+#'   values = c(1, 2),
+#'   key_validator = key_val,
+#'   val_validator = val_val
+#' )
 #'
-AddOnlyOrderedMap <- function(keys = NULL, values = NULL) {
+AddOnlyOrderedMap <- function(
+    keys = NULL,
+    values = NULL,
+    key_validator = Negate(is.null),
+    val_validator = Negate(is.null)
+) {
     assert_that(
-        is.null(keys) && is.null(values) || (
+        (is.null(keys) && is.null(values)) || (
             !is.null(keys) && !is.null(values) &&
                 (length(keys) == length(values) || length(values) == 1L)
-        )
+        ),
+        is.function(key_validator),
+        is.function(val_validator)
     )
-    .AddOnlyOrderedMap$new(keys, values)
+    .AddOnlyOrderedMap$new(keys, values, key_validator, val_validator)
 }
 
 #' @export
@@ -100,12 +123,40 @@ get_key_to_index_map.AddOnlyOrderedMap <- function(x, ...) {
 private = list( # nolint start: indentation_linter
     key2value = NULL,
     key2index = NULL,
-    highest_index = NA
+    highest_index = NA,
+    key_validator = NULL,
+    val_validator = NULL,
+    
+    validate_inputs = function(keys, values, vectorize = FALSE) {
+        if (vectorize) {
+            key_results <- sapply(keys, private$key_validator)
+            val_results <- sapply(values, private$val_validator)
+            if (!all(key_results)) {
+                stop("Key validation failed for one or more keys")
+            }
+            if (!all(val_results)) {
+                stop("Value validation failed for one or more values")
+            }
+        } else {
+            if (!private$key_validator(keys)) {
+                stop("Key validation failed")
+            }
+            if (!private$val_validator(values)) {
+                stop("Value validation failed")
+            }
+        }
+        invisible(TRUE)
+    }
 ),
 public = list(
 
-    initialize = function(keys = NULL, values = NULL) {
+    initialize = function(keys, values, key_validator, val_validator) {
+
+        private$key_validator <- key_validator
+        private$val_validator <- val_validator
+
         if (!is.null(keys) && !is.null(values)) {
+            # TODO validate inputs
             assert_that(length(keys) == length(values) || length(values) == 1L)
             private$key2value <- do.call(r2r::hashmap, FastUtils::zipit(keys, values))
             private$key2index <- do.call(r2r::hashmap, FastUtils::zipit(keys, seq_along(keys)))
@@ -116,6 +167,7 @@ public = list(
             private$highest_index <- 0L
         }
     },
+
 
     print = function(...) {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
@@ -131,6 +183,10 @@ public = list(
 
     insert = function(key, value, vectorize = FALSE) {
         assert_that(!is.null(value))
+        
+        # Validate key and value before insertion
+        private$validate_inputs(key, value, vectorize = vectorize)
+        
         if (vectorize) {
             private$key2value[key] <- value
             private$highest_index <- private$highest_index + length(key)
@@ -159,7 +215,7 @@ public = list(
     },
 
     get_values_in_order = function() {
-        self$query(private$get_keys_in_order(), vectorize = TRUE)
+        self$query(self$get_keys_in_order(), vectorize = TRUE)
     },
 
     get_key_to_index_map = function() {
