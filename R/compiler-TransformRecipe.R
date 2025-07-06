@@ -134,7 +134,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         if (length(unknown) + length(known) != length(composite_axis)) {
             stop(glue(
                 "The input axes {to_expression(composite_axis_node)} ",
-                "do not match the expected axes {to_expression(axes_names)}."
+                "do not match the expected axes {repr(axes_names)}."
             ))
         }
 
@@ -192,10 +192,13 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     TransformRecipe(
         elementary_axes_lengths = as.integer(values(axis_name2known_length)),
-        axis_name2elementary_axis = do.call(
-            r2r::hashmap,
-            FastUtils::zipit(names(axes_names), axis_name2position[names(axes_names)])
-        ),
+        axis_name2elementary_axis = if (length(axes_names) == 0L)
+            r2r::hashmap()
+        else
+            do.call(
+                r2r::hashmap,
+                FastUtils::zipit(names(axes_names), axis_name2position[names(axes_names)])
+            ),
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
         first_reduced_axis = length(order_after_transposition) - length(reduced_axes),
