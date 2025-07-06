@@ -38,7 +38,7 @@ public = list(
             # Check if backend instance is already loaded
             if (exists(tensor_class, envir = private$loaded_backends, inherits = FALSE)) {
                 if (private$debug_importing) {
-                    message(sprintf("[einops] Using loaded backend for class: %s", tensor_class))
+                    message(glue("[einops] Using loaded backend for class: {repr(tensor_class)}"))
                 }
                 return(get(tensor_class, envir = private$loaded_backends, inherits = FALSE))
             }
@@ -46,14 +46,14 @@ public = list(
             if (exists(tensor_class, envir = private$type2backend, inherits = FALSE)) {
                 backend_generator <- get(tensor_class, envir = private$type2backend, inherits = FALSE)
                 if (private$debug_importing) {
-                    message(sprintf("[einops] Initializing backend for class: %s", tensor_class))
+                    message(glue("[einops] Initializing backend for class: {repr(tensor_class)}"))
                 }
                 backend_instance <- backend_generator$new()
                 assign(tensor_class, backend_instance, envir = private$loaded_backends)
                 return(backend_instance)
             }
         }
-        stop(sprintf("Tensor type unknown to einops: %s", paste(tensor_classes, collapse = ", ")))
+        stop(glue("Tensor type unknown to einops: {repr(tensor_classes)})"))
     },
 
     #' @description Set whether debug messages should be displayed
@@ -76,7 +76,7 @@ public = list(
         }
         tensor_type_name <- backend_singleton_instance$tensor_type()
         if (private$debug_importing) {
-            message(sprintf("[einops] Registering backend for tensor type: %s", tensor_type_name))
+            message(glue("[einops] Registering backend for tensor type: {tensor_type_name}"))
         }
         assign(
             x = tensor_type_name,
@@ -175,7 +175,7 @@ public = list(
     },
 
     repr = function() {
-        sprintf("<einops backend for %s>", self$tensor_type())
+        glue("<einops backend for {self$tensor_type()}>")
     },
     
     einsum = function(pattern, ...) {

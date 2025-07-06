@@ -94,8 +94,8 @@ lex <- function(pattern) {
         }
 
         # Skip any character we don't recognize
-        warning(sprintf(
-            "Invalid character '%s' at position %d, skipping...", char, pos
+        warning(glue(
+            "Invalid character '{char}' at position {pos}, skipping..."
         ))
         pos <- pos + 1
     }
