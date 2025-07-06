@@ -168,8 +168,8 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         ast$output_axes, add_relative_pos = TRUE
     )
     order_after_transposition <- c(
-        ordered_axis_right[sapply(
-            ordered_axis_right,
+        ordered_axis_rght[sapply(
+            ordered_axis_rght,
             function(axis) r2r::has_key(relative_output_identifiers, axis)
         )],
         reduced_axes
