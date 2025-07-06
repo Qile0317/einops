@@ -63,7 +63,14 @@ EinopsExecutionPlan <- function(
 ) {
     # TODO typecheck inputs
     structure(
-        as.list(match.call())[-1],
+        list(
+            init_shapes = init_shapes,
+            axes_reordering = axes_reordering,
+            reduced_axes = reduced_axes,
+            added_axes = added_axes,
+            final_shapes = final_shapes,
+            n_axes_w_added = n_axes_w_added
+        ),
         class = c("EinopsExecutionPlan", "s3list", "list")
     )
 }

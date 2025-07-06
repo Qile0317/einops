@@ -40,7 +40,15 @@ TransformRecipe <- function(
             all(sapply(output_composite_axes, is.integer))
     )
     structure(
-        as.list(match.call())[-1],
+        list(
+            elementary_axes_lengths = elementary_axes_lengths,
+            axis_name2elementary_axis = axis_name2elementary_axis,
+            input_composition_known_unknown = input_composition_known_unknown,
+            axes_permutation = axes_permutation,
+            first_reduced_axis = first_reduced_axis,
+            added_axes = added_axes,
+            output_composite_axes = output_composite_axes
+        ),
         class = c("TransformRecipe", "s3list", "list")
     )
 }
