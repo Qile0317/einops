@@ -1,6 +1,25 @@
-test_that("expand_ellipsis works", { # TODO: these tests are not comprehensive
+test_that("expand_ellipsis works", {
 
-    # check that having no ellipsis does not cause problems
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "a",
+                src = list(start = 1)
+            ),
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 3)
+            )
+        ),
+        output_axes = OneSidedAstNode(
+            NamedAxisAstNode(
+                name = "b",
+                src = list(start = 8)
+            )
+        ),
+        src = list(start = 1)
+    )
+    expect_identical(expand_ellipsis(ast, 2), ast)
 
     ast <- EinopsAst(
         input_axes = OneSidedAstNode(
@@ -82,4 +101,14 @@ test_that("expand_ellipsis works", { # TODO: these tests are not comprehensive
 
     expect_identical(expand_ellipsis(ast, 3), expected_ast)
 
+})
+
+test_that("prepare_transformation_recipe works", {
+    # sanity check
+    expect_no_error(prepare_transformation_recipe(
+        "b c h w -> c h w",
+        "mean",
+        list(),
+        4L
+    ))
 })

@@ -159,7 +159,7 @@ public = list(
     },
 
     get_values_in_order = function() {
-        self$query(private$get_keys_in_order, vectorize = TRUE)
+        self$query(private$get_keys_in_order(), vectorize = TRUE)
     },
 
     get_key_to_index_map = function() {
