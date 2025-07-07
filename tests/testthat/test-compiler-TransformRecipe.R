@@ -104,6 +104,7 @@ test_that("expand_ellipsis works", {
 })
 
 test_that("prepare_transformation_recipe works", {
+
     # sanity check
     expect_no_error(prepare_transformation_recipe(
         "b c h w -> c h w",
@@ -111,4 +112,36 @@ test_that("prepare_transformation_recipe works", {
         list(),
         4L
     ))
+
+    # TODO test expr above's output
+
+    # TODO test prepare_transformation_recipe(
+    #     "... c h w -> ... h w",
+    #     "mean",
+    #     list(),
+    #     4L
+    # )
+
+    # TODO test prepare_transformation_recipe(
+    #     "... c h w -> ... h w",
+    #     "mean",
+    #     list(c = 4L),
+    #     4L
+    # )
+
+    # TODO test prepare_transformation_recipe(
+    #     "... 4 h w -> ... h w",
+    #     "mean",
+    #     list(),
+    #     4L
+    # )
+
+    # TODO some test with 1's
+
+    # TODO some test with brackets
+
+    # TODO some test with 1's, brackets, anonymous axes, ellipses,
+    # bracketted axes, etc.
+
+    # TODO some tests with ADDED axes
 })

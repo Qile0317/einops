@@ -7,13 +7,19 @@
 #' ellipsis dimensions.
 #' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to
 #' position. if additional axes are provided, they should be set in prev array.
+#' The keys are unclassed [AxisNames()] objects, and the values are
+#' integer positions of the elementary axes.
 #' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
+#' known and unknown are integer vectors, but this may also be fully empty.
 #' @param axes_permutation Integer vector. Permutation applied to elementary
 #' axes, if ellipsis is absent. This is ONE INDEXED!
 #' @param first_reduced_axis Integer of length 1. First position of reduced axes.
-#' @param added_axes [r2r::hashmap()]. Axis position -> axis index.
+#' Permutation puts reduced axes in the end, we only need to know the first position.
+#' @param added_axes [r2r::hashmap()]. Axis position -> axis index. At which positions
+#' which of elementary axes should appear.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they
-#' appear in result.
+#' appear in result. Again pointers to elementary_axes_lengths, only used to infer
+#' result dimensions.
 #' @return An object of class 'TransformRecipe'.
 #' @keywords internal
 TransformRecipe <- function(
