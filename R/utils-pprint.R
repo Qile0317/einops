@@ -29,7 +29,8 @@ pprint <- function(x, ...) {
 #' @param x Object to represent
 #' @param indent Indentation level (number of spaces)
 #' @param ... Additional arguments passed to methods
-#' @return A character vector of class c("repr_output", "character"), each element is a line
+#' @return A character vector of class c("repr_output", "character"), each
+#' element is a line
 #' @keywords internal
 repr <- function(x, indent = 0L, ...) {
     UseMethod("repr", x)
@@ -124,10 +125,26 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
     if (indent == 0L) {
         nms <- names(x)
         contents <- vapply(seq_along(x), function(i) {
-            name_part <- ifelse(!is.null(nms) && nms[i] != "" && incl_nm, paste0(nms[i], " = "), "")
-            paste0(name_part, paste0(repr(x[[i]], indent = 0L, incl_nm = incl_nm, s3_cons = s3_cons, ...), collapse = ""))
+            name_part <- ifelse(
+                !is.null(nms) && nms[i] != "" && incl_nm,
+                paste0(nms[i], " = "),
+                ""
+            )
+            content_part <- paste0(
+                repr(
+                    x[[i]],
+                    indent = 0L,
+                    incl_nm = incl_nm,
+                    s3_cons = s3_cons,
+                    ...
+                ),
+                collapse = ""
+            )
+            paste0(name_part, content_part)
         }, character(1))
-        return(as_repr(paste0(constructor_str, paste(contents, collapse = ", "), ")")))
+        return(as_repr(
+            paste0(constructor_str, paste(contents, collapse = ", "), ")")
+        ))
     }
 
     indent_str <- strrep(" ", indent)
@@ -135,7 +152,9 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 
     elems <- lapply(seq_along(x), function(i) {
         # recurse to obtain the element's own repr
-        elem_lines <- as.character(repr(x[[i]], indent = indent, incl_nm = incl_nm, s3_cons = s3_cons, ...))
+        elem_lines <- as.character(repr(
+            x[[i]], indent = indent, incl_nm = incl_nm, s3_cons = s3_cons, ...
+        ))
 
         # attach name (if any) to the first line
         name_part <- if (!is.null(nms) && incl_nm && nms[i] != "")
@@ -157,5 +176,58 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
     }
 
     out <- c(constructor_str, unlist(elems, use.names = FALSE), ")")
+    as_repr(out)
+}
+
+#' @export
+repr.r2r_hashmap <- function(x, indent = 0L, ...) {
+
+    if (length(x) == 0) {
+        return(as_repr("r2r::hashmap()"))
+    }
+    
+    # Extract keys and values from the hashmap
+    keys_list <- r2r::keys(x)
+    values_list <- x[keys_list]
+    
+    # Create list of key-value pairs using FastUtils::zipit
+    kv_pairs <- FastUtils::zipit(keys_list, values_list)
+    
+    # Create the constructor call
+    if (indent == 0L) {
+        # Create individual representations for each key-value pair
+        pair_reprs <- vapply(kv_pairs, function(pair) {
+            paste0(repr(pair, indent = 0L, ...), collapse = "")
+        }, character(1))
+        content <- paste(pair_reprs, collapse = ", ")
+        return(as_repr(paste0("r2r::hashmap(", content, ")")))
+    }
+    
+    # Multi-line representation for indented output
+    indent_str <- strrep(" ", indent)
+    
+    # Create representations for each key-value pair with proper indentation
+    pair_lines <- lapply(kv_pairs, function(pair) {
+        pair_repr <- repr(pair, indent = indent, ...)
+        # Add indentation to each line
+        paste0(indent_str, pair_repr)
+    })
+    
+    # Add commas to all but the last pair
+    if (length(pair_lines) > 1) {
+        for (i in seq_len(length(pair_lines) - 1L)) {
+            last_line_idx <- length(pair_lines[[i]])
+            pair_lines[[i]][last_line_idx] <- paste0(
+                pair_lines[[i]][last_line_idx], ","
+            )
+        }
+    }
+    
+    out <- c(
+        "r2r::hashmap(",
+        unlist(pair_lines, use.names = FALSE),
+        ")"
+    )
+    
     as_repr(out)
 }

@@ -19,15 +19,16 @@
 #'
 #' @param keys Optional list. A vector of keys to initialize the map with. Can
 #' be any R object. It is assumed that all keys are unique, otherwise the
-#' behaviour is undefined.
-#' @param values Optional list. A vector of values corresponding to the keys. If
-#' length of values is one, all inserted keys will have that value.
-#' @param key_validator Optional function. A function that validates keys
-#' before insertion, returning TRUE if valid, FALSE otherwise. Defaults to a
-#' function that returns TRUE for non-NULL values.
-#' @param val_validator Optional function. A function that validates values
-#' before insertion, returning TRUE if valid, FALSE otherwise. Defaults to a
-#' function that returns TRUE for non-NULL values.
+#' behaviour is undefined. This CANNOT be a scalar value. If that is desired,
+#' wrap it in a [list()].
+#' @param values Optional list. An iterable vector of values corresponding to
+#' the keys. This CANNOT be a scalar value. If that is desired, wrap it in a
+#' [list()].
+#' @param key_validator Optional function. A function that validates
+#' *individual* keys before insertion, returning TRUE if valid, FALSE otherwise.
+#' @param val_validator Optional function. A function that validates
+#' *individual* values before insertion, returning TRUE if valid, FALSE
+#' otherwise.
 #'
 #' @return An `AddOnlyOrderedMap` instance
 #' @keywords internal
@@ -39,12 +40,12 @@
 #'
 #' @examples
 #' map <- AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2))
-#' 
+#'
 #' # With validators
 #' key_val <- function(k) is.character(k)
-#' val_val <- function(v) is.numeric(v) 
+#' val_val <- function(v) is.numeric(v)
 #' map_validated <- AddOnlyOrderedMap(
-#'   keys = c("a", "b"), 
+#'   keys = c("a", "b"),
 #'   values = c(1, 2),
 #'   key_validator = key_val,
 #'   val_validator = val_val
@@ -121,31 +122,30 @@ get_key_to_index_map.AddOnlyOrderedMap <- function(x, ...) {
 
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
+
     key2value = NULL,
     key2index = NULL,
-    highest_index = NA,
+    highest_index = 0L,
     key_validator = NULL,
     val_validator = NULL,
+
+    validate_key = function(key, vectorize = FALSE) {
+        if (!vectorize) return(private$key_validator(key))
+        all(sapply(key, private$key_validator))
+    },
+
+    validate_val = function(value, vectorize = FALSE) {
+        if (!vectorize) return(private$val_validator(value))
+        all(sapply(value, private$val_validator))
+    },
     
     validate_inputs = function(keys, values, vectorize = FALSE) {
-        if (vectorize) {
-            key_results <- sapply(keys, private$key_validator)
-            val_results <- sapply(values, private$val_validator)
-            if (!all(key_results)) {
-                stop("Key validation failed for one or more keys")
-            }
-            if (!all(val_results)) {
-                stop("Value validation failed for one or more values")
-            }
-        } else {
-            if (!private$key_validator(keys)) {
-                stop("Key validation failed")
-            }
-            if (!private$val_validator(values)) {
-                stop("Value validation failed")
-            }
+        if (!private$validate_key(keys, vectorize)) {
+            stop("Key validation failed")
         }
-        invisible(TRUE)
+        if (!private$validate_val(values, vectorize)) {
+            stop("Value validation failed")
+        }
     }
 ),
 public = list(
@@ -156,7 +156,7 @@ public = list(
         private$val_validator <- val_validator
 
         if (!is.null(keys) && !is.null(values)) {
-            # TODO validate inputs
+            # private$validate_inputs(keys, values, vectorize = TRUE)
             assert_that(length(keys) == length(values) || length(values) == 1L)
             private$key2value <- do.call(r2r::hashmap, FastUtils::zipit(keys, values))
             private$key2index <- do.call(r2r::hashmap, FastUtils::zipit(keys, seq_along(keys)))
@@ -182,10 +182,9 @@ public = list(
     },
 
     insert = function(key, value, vectorize = FALSE) {
-        assert_that(!is.null(value))
-        
-        # Validate key and value before insertion
-        private$validate_inputs(key, value, vectorize = vectorize)
+
+        assert_that(!is.null(key), !is.null(value))
+        private$validate_inputs(key, value, vectorize)
         
         if (vectorize) {
             private$key2value[key] <- value
@@ -197,6 +196,7 @@ public = list(
             private$key2index[[key]] <- private$highest_index + 1
             private$highest_index <- private$highest_index + 1
         }
+
         invisible(self)
     },
 

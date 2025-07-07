@@ -102,7 +102,10 @@ get_identifiers <- function(ast, add_relative_pos = FALSE, ...) {
 }
 
 get_identifiers_hashset <- function(ast, add_relative_pos = FALSE, ...) {
-    do.call(r2r::hashset, get_identifiers(ast, add_relative_pos = add_relative_pos, ...))
+    do.call(
+        r2r::hashset,
+        get_identifiers(ast, add_relative_pos = add_relative_pos, ...)
+    )
 }
 
 #' @title Convert an AstNode into an [AxisNames()] object
@@ -189,4 +192,10 @@ add_relative_pos <- function(axes) {
         }
     }
     axes
+}
+
+# check of an object can be a single element within a flat [AxisNames()]
+# object. This is used for code readability.
+is_flat_axis_names_element <- function(x) {
+    inherits(x, "ConstantAstNode") || is.string(x)
 }

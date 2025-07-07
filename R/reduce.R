@@ -12,7 +12,8 @@
 #' prod, etc.)
 #' @param ... either corresponding axes lengths or a single list of them.
 #'
-#' @return tensor of the same type as input, with dimensions according to output pattern
+#' @return tensor of the same type as input, with dimensions according to output
+#' pattern
 #' @export
 #'
 #' @examples
@@ -65,6 +66,16 @@ reduce <- function(x, expr, func, ...) {
 einops.reduce <- reduce # nolint: object_name_linter.
 
 #' @export
+reduce.default <- function(x, expr, func, ...) {
+    tryCatch(
+        .reduce(x, expr, func, ...),
+        error = function(e) {
+            stop("In Einops - ", conditionMessage(e), call. = FALSE)
+        }
+    )
+}
+
+#' @export
 reduce.list <- function(x, expr, func, ...) {
     if (length(x) == 0) {
         stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
@@ -73,18 +84,7 @@ reduce.list <- function(x, expr, func, ...) {
     reduce(backend$stack_on_zeroth_dimension(x), expr, func, ...)
 }
 
-#' @export
-reduce.numeric <- function(x, expr, func, ...) {
-    if (length(x) == 0) {
-        stop("Rearrange/Reduce/Repeat can't be applied to an empty numeric")
-    }
-    output <- reduce(as.array(x), expr, func, ...)
-    if (length(dim(output)) == 1) return(as.numeric(output))
-    output
-}
-
-#' @export
-reduce.default <- function(x, expr, func, ...) {
+.reduce <- function(x, expr, func, ...) {
     axes_lengths <- if (nargs() == 1 && is.list(..1)) ..1 else list(...)
     backend <- get_backend(x)
     hashable_axes_lengths <- unlist(unname(axes_lengths))

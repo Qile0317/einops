@@ -2,16 +2,24 @@
 #' @description Recipe describes actual computation pathway. Can be applied to a
 #' tensor or variable.
 #' @param elementary_axes_lengths Integer vector. List of sizes for elementary
-#' axes as they appear in left expression.
+#' axes as they appear in left expression. This is what (after computing unknown
+#' parts) will be a shape after first transposition. This does not include any
+#' ellipsis dimensions.
 #' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to
-#' position.
+#' position. if additional axes are provided, they should be set in prev array.
+#' The keys are unclassed [AxisNames()] objects, and the values are
+#' integer positions of the elementary axes.
 #' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
+#' known and unknown are integer vectors, but this may also be fully empty.
 #' @param axes_permutation Integer vector. Permutation applied to elementary
-#' axes. This is ONE INDEXED!
+#' axes, if ellipsis is absent. This is ONE INDEXED!
 #' @param first_reduced_axis Integer of length 1. First position of reduced axes.
-#' @param added_axes [r2r::hashmap()]. Axis position -> axis index.
+#' Permutation puts reduced axes in the end, we only need to know the first position.
+#' @param added_axes [r2r::hashmap()]. Axis position -> axis index. At which positions
+#' which of elementary axes should appear.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they
-#' appear in result.
+#' appear in result. Again pointers to elementary_axes_lengths, only used to infer
+#' result dimensions.
 #' @return An object of class 'TransformRecipe'.
 #' @keywords internal
 TransformRecipe <- function(
@@ -81,15 +89,16 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
     
-    UNKNOWN_AXIS_LENGTH = -999999
-    EXPECTED_AXIS_LENGTH = -99999
+    UNKNOWN_AXIS_LENGTH = -999999L
+    EXPECTED_AXIS_LENGTH = -99999L
 
-    # the keyset are unclassed [AxisNames()] objects.
-    # the keys represent unique axes, where named axes are just their
-    # names, but constant axes are represented by the ConstantAstNode
-    # the values are the known lengths of the axes, if unknown, then
-    # the value is UNKNOWN_AXIS_LENGTH
-    axis_name2known_length <- AddOnlyOrderedMap()
+    axis_name2known_length <- AddOnlyOrderedMap(
+        key_validator = is_flat_axis_names_element,
+        val_validator = function(x) {
+            if(!(is.integer(x) && length(x) == 1L)) return(FALSE)
+            x > 0L || x == UNKNOWN_AXIS_LENGTH || x == EXPECTED_AXIS_LENGTH
+        }
+    )
     for (axis_node in get_ungrouped_nodes(ast$input_axes)) {
         if (inherits(axis_node, "ConstantAstNode")) {
             if (axis_node$count == 1L) next
@@ -184,7 +193,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     )
 
     axes_permutation <- as.integer(sapply(order_after_transposition, function(axis) {
-        which(ordered_axis_left == axis)
+        which(sapply(ordered_axis_left, function(x) identical(x, axis)))
     }))
 
     added_axes <- r2r::hashmap()
