@@ -231,3 +231,8 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     
     as_repr(out)
 }
+
+#' @export
+repr.R6 <- function(x, ...) {
+    tryCatch(as_repr(x$repr(...)), error = function(e) repr.default(x, ...))
+}

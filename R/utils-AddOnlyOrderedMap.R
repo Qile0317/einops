@@ -193,8 +193,8 @@ public = list(
                 (private$highest_index - length(key) + 1):private$highest_index
         } else {
             private$key2value[[key]] <- value
-            private$key2index[[key]] <- private$highest_index + 1
-            private$highest_index <- private$highest_index + 1
+            private$key2index[[key]] <- private$highest_index + 1L
+            private$highest_index %+=% 1L
         }
 
         invisible(self)

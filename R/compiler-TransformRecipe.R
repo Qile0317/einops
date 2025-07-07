@@ -2,7 +2,7 @@
 #' @description Recipe describes actual computation pathway. Can be applied to a
 #' tensor or variable.
 #' @param elementary_axes_lengths Integer vector. List of sizes for elementary
-#' axes as they appear in left expression. This is what (after computing unknown
+#' axes as they appear in the input (left) expression. This is what (after computing unknown
 #' parts) will be a shape after first transposition. This does not include any
 #' ellipsis dimensions.
 #' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to

@@ -26,7 +26,8 @@ Imports:
     r2r,
     R6,
     R6P,
-    Rcpp
+    Rcpp,
+    roperators
 Suggests: 
     abind,
     assertthat,

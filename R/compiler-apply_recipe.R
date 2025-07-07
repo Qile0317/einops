@@ -107,63 +107,72 @@ EinopsExecutionPlan <- function(
 
 #' @title
 #' Reconstruct all actual parameters using shape.
+#' @description
+#' This implements `_reconstruct_from_shape_uncached` from the python
+#' implementation of einops. In the future, a cached version may be
+#' implemented.
 #' @param recipe a populated [TransformRecipe()] object
 #' @param shape A vector of integers representing the shape of the tensor.
-#' @param axes_dims TODO
-#' @noRd
+#' @param axes_dims A named list of axes names to their dimensions/lengths.
+#' @return An `EinopsExecutionPlan` object that contains the execution plan for
+#' transforming tensors according to the specified recipe and shape.
+#' @keywords internal
+#'
 create_execution_plan <- function(recipe, shape, axes_dims) {
-    # TODO try to do a cached version (`reconstruct_from_shape` in the python impl)
-    # this is _reconstruct_from_shape_uncached
+
+    assert_that(
+        inherits(recipe, "TransformRecipe"),
+        is.integer(shape),
+        is.list(axes_dims)
+    )
 
     need_init_reshape <- FALSE
 
     # last axis is allocated for collapsed ellipsis
     axes_lengths <- recipe$elementary_axes_lengths
-
-    # Set axes dimensions from axes_dims
     for (axis in names(axes_dims)) {
-        axes_lengths[recipe$axis_name2elementary_axis[[axis]]] <- axes_dims[[axis]]
+        dim <- axes_dims[[axis]]
+        axes_lengths[[recipe$axis_name2elementary_axis[[axis]]]] <- dim
     }
 
     # Process input composition known/unknown
-    for (input_axis in seq_along(recipe$input_composition_known_unknown)) {
-        composition <- recipe$input_composition_known_unknown[[input_axis]]
-        known_axes <- composition$known
-        unknown_axes <- composition$unknown
-        length <- shape[input_axis]
+    for (el in FastUtils::enumerateit(recipe$input_composition_known_unknown)) {
+        input_axis <- FastUtils::ind(el)
+        known_axes <- FastUtils::val(el)$known
+        unknown_axes <- FastUtils::val(el)$unknown
         
-        if (length(known_axes) == 0 && length(unknown_axes) == 1) {
-            # shortcut for the most common case
-            axes_lengths[unknown_axes[1]] <- length
+        if (length(known_axes) == 0L && length(unknown_axes) == 1L) {
+            axes_lengths[[unknown_axes[1]]] <- shape[input_axis]
             next
         }
 
         known_product <- 1L
         for (axis in known_axes) {
-            known_product <- known_product * axes_lengths[axis]
+            known_product %*=% axes_lengths[axis]
         }
 
-        if (length(unknown_axes) == 0) {
-            if (is.integer(length) && is.integer(known_product) && length != known_product) {
-                stop(glue("Shape mismatch, {length} != {known_product}"))
+        if (length(unknown_axes) == 0L) {
+            if (is.integer(shape[input_axis]) && is.integer(known_product) && shape[input_axis] != known_product) {
+                stop(glue("Shape mismatch, {shape[input_axis]} != {known_product}"))
             }
         } else {
             # assert len(unknown_axes) == 1, 'this is enforced when recipe is created'
-            if (is.integer(length) && is.integer(known_product) && length %% known_product != 0) {
-                stop(glue("Shape mismatch, can't divide axis of length {length} in chunks of {known_product}"))
+            if (is.integer(shape[input_axis]) && is.integer(known_product) && shape[input_axis] %% known_product != 0L) {
+                stop(glue("Shape mismatch, can't divide axis of length {shape[input_axis]} in chunks of {known_product}"))
             }
 
             unknown_axis <- unknown_axes[1]
             inferred_length <- as.integer(length %/% known_product)
-            axes_lengths[unknown_axis] <- inferred_length
+            axes_lengths[[unknown_axis]] <- inferred_length
         }
 
-        if (length(known_axes) + length(unknown_axes) != 1) {
+        if (length(known_axes) + length(unknown_axes) != 1L) {
             need_init_reshape <- TRUE
         }
     }
 
-    # at this point all axes_lengths are computed (either have values or variables, but not Nones)
+    # at this point all axes_lengths are computed (either have values or
+    # variables, but not NULLs)
 
     # elementary axes are ordered as they appear in input, then all added axes
     init_shapes <- if (need_init_reshape) {

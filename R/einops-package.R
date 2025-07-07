@@ -8,6 +8,7 @@
 #' @importFrom R6P Singleton
 #' @importFrom glue glue
 #' @importFrom magrittr %<>%
+#' @importFrom roperators %+=% %*=%
 #' @useDynLib einops, .registration = TRUE
 ## usethis namespace: end
 NULL
