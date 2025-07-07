@@ -16,9 +16,9 @@ TransformRecipe(
 }
 \arguments{
 \item{elementary_axes_lengths}{Integer vector. List of sizes for elementary
-axes as they appear in the input (left) expression. This is what (after computing unknown
-parts) will be a shape after first transposition. This does not include any
-ellipsis dimensions.}
+axes as they appear in the input (left) expression. This is what (after
+computing unknown parts) will be a shape after first transposition. This does
+not include any ellipsis dimensions.}
 
 \item{axis_name2elementary_axis}{\code{\link[r2r:hashtable]{r2r::hashmap()}} Mapping from name to
 position. if additional axes are provided, they should be set in prev array.

@@ -2,9 +2,9 @@
 #' @description Recipe describes actual computation pathway. Can be applied to a
 #' tensor or variable.
 #' @param elementary_axes_lengths Integer vector. List of sizes for elementary
-#' axes as they appear in the input (left) expression. This is what (after computing unknown
-#' parts) will be a shape after first transposition. This does not include any
-#' ellipsis dimensions.
+#' axes as they appear in the input (left) expression. This is what (after
+#' computing unknown parts) will be a shape after first transposition. This does
+#' not include any ellipsis dimensions.
 #' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to
 #' position. if additional axes are provided, they should be set in prev array.
 #' The keys are unclassed [AxisNames()] objects, and the values are
@@ -69,11 +69,19 @@ unknown_axis_length <- function() {
     )
 }
 
+is_unknown_axis_length <- function(x) {
+    identical(x, unclass(unknown_axis_length()))
+}
+
 expected_axis_length <- function() {
     structure(
         -88888L,
         class = c("expected_axis_length", "s3_scalar_constant", "integer")
     )
+}
+
+is_expected_axis_length <- function(x) {
+    identical(x, unclass(expected_axis_length()))
 }
 
 #' @title
@@ -145,20 +153,26 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     }
 
     input_axes_known_unknown <- list()
+    # some shapes are inferred later - all information is prepared for faster
+    # inference
     for (composite_axis in as_iterables(as_axis_names(ast$input_axes))) {
 
         known <- r2r::hashset()
         unknown <- r2r::hashset()
 
         for (axis in composite_axis) {
-            if (axis_name2known_length[[axis]] == unknown_axis_length()) {
+            if (is_unknown_axis_length(axis_name2known_length[[axis]])) {
                 r2r::insert(unknown, axis)
-            } else {
+            } else if (
+                !is_unknown_axis_length(axis_name2known_length[[axis]])
+            ) {
                 r2r::insert(known, axis)
-            }
+            } # unsure if ConstantAstNodes can also be present
         }
 
-        if (length(unknown) > 1) stop(glue("Could not infer sizes"))
+        if (length(unknown) > 1L) stop(glue(
+            "Could not infer sizes for {repr(r2r::keys(unknown))}"
+        ))
         if (length(unknown) + length(known) != length(composite_axis)) {
             stop(glue(
                 "The input axes {to_expression(composite_axis_node)} ",
@@ -167,8 +181,12 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
 
         input_axes_known_unknown %<>% append(list(list(
-            known = AxisNames(lapply(known, function(x) axis_name2position[[x]])),
-            unknown = AxisNames(lapply(unknown, function(x) axis_name2position[[x]]))
+            known = as.integer(sapply(
+                r2r::keys(known), function(x) axis_name2position[[x]]
+            )),
+            unknown = as.integer(sapply(
+                r2r::keys(unknown), function(x) axis_name2position[[x]]
+            ))
         )))
     }
 
