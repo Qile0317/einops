@@ -87,7 +87,7 @@ reduce.list <- function(x, expr, func, ...) {
 .reduce <- function(x, expr, func, ...) {
     axes_lengths <- if (nargs() == 1 && is.list(..1)) ..1 else list(...)
     backend <- get_backend(x)
-    hashable_axes_lengths <- unlist(unname(axes_lengths))
+    hashable_axes_lengths <- axes_lengths
     shape <- backend$shape(x)
     recipe <- prepare_transformation_recipe(
         expr, func, axes_names = axes_lengths, ndim = length(shape)
