@@ -61,6 +61,20 @@ TransformRecipe <- function(
     )
 }
 
+unknown_axis_length <- function() {
+    structure(
+        -999999L,
+        class = c("unknown_axis_length", "s3_scalar_constant", "integer")
+    )
+}
+
+expected_axis_length <- function() {
+    structure(
+        -88888L,
+        class = c("expected_axis_length", "s3_scalar_constant", "integer")
+    )
+}
+
 #' @title
 #' Create the Transformation Recipe for an einops call
 #'
@@ -88,15 +102,12 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
-    
-    UNKNOWN_AXIS_LENGTH = -999999L
-    EXPECTED_AXIS_LENGTH = -99999L
 
     axis_name2known_length <- AddOnlyOrderedMap(
         key_validator = is_flat_axis_names_element,
         val_validator = function(x) {
             if(!(is.integer(x) && length(x) == 1L)) return(FALSE)
-            x > 0L || x == UNKNOWN_AXIS_LENGTH || x == EXPECTED_AXIS_LENGTH
+            x > 0L || x == unknown_axis_length() || x == expected_axis_length()
         }
     )
     for (axis_node in get_ungrouped_nodes(ast$input_axes)) {
@@ -104,7 +115,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             if (axis_node$count == 1L) next
             axis_name2known_length[[axis_node]] <- axis_node$count
         } else {
-            axis_name2known_length[[axis_node$name]] <- UNKNOWN_AXIS_LENGTH
+            axis_name2known_length[[axis_node$name]] <- unknown_axis_length()
         }
     }
 
@@ -114,7 +125,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         if (inherits(ast_key, "ConstantAstNode")) {
             axis_name2known_length[[ast_key]] <- ast_key$count
         } else {
-            axis_name2known_length[[ast_key]] <- UNKNOWN_AXIS_LENGTH
+            axis_name2known_length[[ast_key]] <- unknown_axis_length()
         }
         repeat_axes_names %<>% c(ast_key)
     }
@@ -128,7 +139,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
                 "Axis {repr(elementary_axis, indent = 0L)} is not used in transform"
             ))
         }
-        axis_name2known_length[[elementary_axis]] <- EXPECTED_AXIS_LENGTH
+        axis_name2known_length[[elementary_axis]] <- expected_axis_length()
     }
 
     input_axes_known_unknown <- list()
@@ -138,7 +149,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         unknown <- r2r::hashset()
 
         for (axis in composite_axis) {
-            if (axis_name2known_length[[axis]] == UNKNOWN_AXIS_LENGTH) {
+            if (axis_name2known_length[[axis]] == unknown_axis_length()) {
                 r2r::insert(unknown, axis)
             } else {
                 r2r::insert(known, axis)

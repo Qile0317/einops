@@ -236,3 +236,24 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
 repr.R6 <- function(x, ...) {
     tryCatch(as_repr(x$repr(...)), error = function(e) repr.default(x, ...))
 }
+
+#' @export
+print.s3_scalar_constant <- pprint
+
+#' @export
+repr.s3_scalar_constant <- function(x, s3_cons = TRUE, ...) {
+
+    if (!s3_cons) return(repr(remove_class(x, "s3_scalar_constant")))
+
+    for (class_name in class(x)) {
+        if (!exists(class_name)) next
+        if (!is.function(get(class_name))) next
+        return(as_repr(glue("{class_name}()")))
+    }
+
+    return(repr(remove_class(x, "s3_scalar_constant")))
+}
+
+remove_class <- function(x, cls) {
+    structure(unclass(x), class = setdiff(class(x), cls))
+}

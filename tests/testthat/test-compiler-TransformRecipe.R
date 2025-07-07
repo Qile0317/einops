@@ -115,6 +115,41 @@ test_that("prepare_transformation_recipe works", {
 
     # TODO test expr above's output
 
+    # expect_identical(
+    #     prepare_transformation_recipe(
+    #         "a b -> b", "mean", list(), 2L
+    #     ),
+    #     TransformRecipe(
+    #         elementary_axes_lengths = c(
+    #             -999999L,
+    #             -999999L
+    #         ),
+    #         axis_name2elementary_axis = r2r::hashmap(),
+    #         input_composition_known_unknown = list(
+    #             list(
+    #                 known = AxisNames(),
+    #                 unknown = AxisNames()
+    #             ),
+    #             list(
+    #                 known = AxisNames(),
+    #                 unknown = AxisNames()
+    #             )
+    #         ),
+    #         axes_permutation = c(2,
+    #             1),
+    #         first_reduced_axis = 1,
+    #         added_axes = r2r::hashmap(
+    #             list(
+    #                 1,
+    #                 NULL
+    #             )
+    #         ),
+    #         output_composite_axes = list(
+    #             2
+    #         )
+    #     )
+    # )
+
     # TODO test prepare_transformation_recipe(
     #     "... c h w -> ... h w",
     #     "mean",
