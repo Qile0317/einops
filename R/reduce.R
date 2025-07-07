@@ -12,7 +12,8 @@
 #' prod, etc.)
 #' @param ... either corresponding axes lengths or a single list of them.
 #'
-#' @return tensor of the same type as input, with dimensions according to output pattern
+#' @return tensor of the same type as input, with dimensions according to output
+#' pattern
 #' @export
 #'
 #' @examples
@@ -65,15 +66,6 @@ reduce <- function(x, expr, func, ...) {
 einops.reduce <- reduce # nolint: object_name_linter.
 
 #' @export
-reduce.list <- function(x, expr, func, ...) {
-    if (length(x) == 0) {
-        stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
-    }
-    backend <- get_backend(x[[1]])
-    reduce(backend$stack_on_zeroth_dimension(x), expr, func, ...)
-}
-
-#' @export
 reduce.default <- function(x, expr, func, ...) {
     tryCatch(
         .reduce(x, expr, func, ...),
@@ -81,6 +73,15 @@ reduce.default <- function(x, expr, func, ...) {
             stop("In Einops - ", conditionMessage(e), call. = FALSE)
         }
     )
+}
+
+#' @export
+reduce.list <- function(x, expr, func, ...) {
+    if (length(x) == 0) {
+        stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
+    }
+    backend <- get_backend(x[[1]])
+    reduce(backend$stack_on_zeroth_dimension(x), expr, func, ...)
 }
 
 .reduce <- function(x, expr, func, ...) {
