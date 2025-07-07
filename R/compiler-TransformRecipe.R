@@ -89,15 +89,16 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         validate_reduction_operation(func) %>%
         expand_ellipsis(ndim)
     
-    UNKNOWN_AXIS_LENGTH = -999999
-    EXPECTED_AXIS_LENGTH = -99999
+    UNKNOWN_AXIS_LENGTH = -999999L
+    EXPECTED_AXIS_LENGTH = -99999L
 
-    # the keyset are unclassed [AxisNames()] objects.
-    # the keys represent unique axes, where named axes are just their
-    # names, but constant axes are represented by the ConstantAstNode
-    # the values are the known lengths of the axes, if unknown, then
-    # the value is UNKNOWN_AXIS_LENGTH
-    axis_name2known_length <- AddOnlyOrderedMap()
+    axis_name2known_length <- AddOnlyOrderedMap(
+        key_validator = is_flat_axis_names_element,
+        val_validator = function(x) {
+            if(!(is.integer(x) && length(x) == 1L)) return(FALSE)
+            x > 0L || x == UNKNOWN_AXIS_LENGTH || x == EXPECTED_AXIS_LENGTH
+        }
+    )
     for (axis_node in get_ungrouped_nodes(ast$input_axes)) {
         if (inherits(axis_node, "ConstantAstNode")) {
             if (axis_node$count == 1L) next
