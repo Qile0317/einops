@@ -209,8 +209,8 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    ordered_axis_left <- add_relative_pos(get_ordered_axis_names(ast$input_axes))
-    ordered_axis_rght <- add_relative_pos(get_ordered_axis_names(ast$output_axes))
+    ordered_axis_left <- add_rel_pos(get_ordered_axis_names(ast$input_axes))
+    ordered_axis_rght <- add_rel_pos(get_ordered_axis_names(ast$output_axes))
     reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
     relative_output_identifiers <- get_identifiers_hashset(
         ast$output_axes, add_relative_pos = TRUE
@@ -223,9 +223,11 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         reduced_axes
     )
 
-    axes_permutation <- as.integer(sapply(order_after_transposition, function(axis) {
-        which(sapply(ordered_axis_left, function(x) identical(x, axis)))
-    }))
+    axes_permutation <- as.integer(sapply(
+        order_after_transposition, function(axis) {
+            which(sapply(ordered_axis_left, function(x) identical(x, axis)))
+        }
+    ))
 
     added_axes <- r2r::hashmap()
     left_identifiers <- get_identifiers_hashset(ast$input_axes)
@@ -243,11 +245,14 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         else
             do.call(
                 r2r::hashmap,
-                FastUtils::zipit(names(axes_names), axis_name2position[names(axes_names)])
+                FastUtils::zipit(
+                    names(axes_names), axis_name2position[names(axes_names)]
+                )
             ),
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
-        first_reduced_axis = length(order_after_transposition) - length(reduced_axes),
+        first_reduced_axis =
+            length(order_after_transposition) - length(reduced_axes),
         added_axes = added_axes,
         output_composite_axes = result_axes_grouping
     )

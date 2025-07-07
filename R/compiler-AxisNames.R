@@ -194,6 +194,10 @@ add_relative_pos <- function(axes) {
     axes
 }
 
+#' @rdname add_relative_pos
+#' @keywords internal
+add_rel_pos <- add_relative_pos
+
 # check of an object can be a single element within a flat [AxisNames()]
 # object. This is used for code readability.
 is_flat_axis_names_element <- function(x) {
