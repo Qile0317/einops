@@ -29,7 +29,8 @@ pprint <- function(x, ...) {
 #' @param x Object to represent
 #' @param indent Indentation level (number of spaces)
 #' @param ... Additional arguments passed to methods
-#' @return A character vector of class c("repr_output", "character"), each element is a line
+#' @return A character vector of class c("repr_output", "character"), each
+#' element is a line
 #' @keywords internal
 repr <- function(x, indent = 0L, ...) {
     UseMethod("repr", x)
@@ -124,10 +125,26 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
     if (indent == 0L) {
         nms <- names(x)
         contents <- vapply(seq_along(x), function(i) {
-            name_part <- ifelse(!is.null(nms) && nms[i] != "" && incl_nm, paste0(nms[i], " = "), "")
-            paste0(name_part, paste0(repr(x[[i]], indent = 0L, incl_nm = incl_nm, s3_cons = s3_cons, ...), collapse = ""))
+            name_part <- ifelse(
+                !is.null(nms) && nms[i] != "" && incl_nm,
+                paste0(nms[i], " = "),
+                ""
+            )
+            content_part <- paste0(
+                repr(
+                    x[[i]],
+                    indent = 0L,
+                    incl_nm = incl_nm,
+                    s3_cons = s3_cons,
+                    ...
+                ),
+                collapse = ""
+            )
+            paste0(name_part, content_part)
         }, character(1))
-        return(as_repr(paste0(constructor_str, paste(contents, collapse = ", "), ")")))
+        return(as_repr(
+            paste0(constructor_str, paste(contents, collapse = ", "), ")")
+        ))
     }
 
     indent_str <- strrep(" ", indent)
@@ -135,7 +152,9 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 
     elems <- lapply(seq_along(x), function(i) {
         # recurse to obtain the element's own repr
-        elem_lines <- as.character(repr(x[[i]], indent = indent, incl_nm = incl_nm, s3_cons = s3_cons, ...))
+        elem_lines <- as.character(repr(
+            x[[i]], indent = indent, incl_nm = incl_nm, s3_cons = s3_cons, ...
+        ))
 
         # attach name (if any) to the first line
         name_part <- if (!is.null(nms) && incl_nm && nms[i] != "")
