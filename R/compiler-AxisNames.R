@@ -115,7 +115,9 @@ get_identifiers_hashset <- function(ast, add_relative_pos = FALSE, ...) {
 #' @keywords internal
 #' @examples
 #' get_axis_names(parse_onesided_ast(lex('a (b c 1) 2 d')))
-#' # should output AxisNames("a", AxisNames("b", "c", ConstantAstNode(1)), ConstantAstNode(2), "d")
+#' # should output AxisNames(
+#'     "a", AxisNames("b", "c", ConstantAstNode(1)), ConstantAstNode(2), "d"
+#' )
 as_axis_names <- function(ast, ...) UseMethod("as_axis_names")
 
 #' @export
@@ -186,7 +188,7 @@ add_relative_pos <- function(axes) {
             if (is.null(const_positions[[as.character(count)]])) {
                 const_positions[[as.character(count)]] <- 1
             } else {
-                const_positions[[as.character(count)]] <- const_positions[[as.character(count)]] + 1
+                const_positions[[as.character(count)]] %+=% 1
             }
             axes[[i]]$src$relative_pos <- const_positions[[as.character(count)]]
         }

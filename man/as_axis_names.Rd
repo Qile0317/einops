@@ -19,6 +19,8 @@ Convert an AstNode into an \code{\link[=AxisNames]{AxisNames()}} object
 }
 \examples{
 get_axis_names(parse_onesided_ast(lex('a (b c 1) 2 d')))
-# should output AxisNames("a", AxisNames("b", "c", ConstantAstNode(1)), ConstantAstNode(2), "d")
+# should output AxisNames(
+    "a", AxisNames("b", "c", ConstantAstNode(1)), ConstantAstNode(2), "d"
+)
 }
 \keyword{internal}
