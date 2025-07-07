@@ -159,3 +159,56 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
     out <- c(constructor_str, unlist(elems, use.names = FALSE), ")")
     as_repr(out)
 }
+
+#' @export
+repr.r2r_hashmap <- function(x, indent = 0L, ...) {
+
+    if (length(x) == 0) {
+        return(as_repr("r2r::hashmap()"))
+    }
+    
+    # Extract keys and values from the hashmap
+    keys_list <- r2r::keys(x)
+    values_list <- x[keys_list]
+    
+    # Create list of key-value pairs using FastUtils::zipit
+    kv_pairs <- FastUtils::zipit(keys_list, values_list)
+    
+    # Create the constructor call
+    if (indent == 0L) {
+        # Create individual representations for each key-value pair
+        pair_reprs <- vapply(kv_pairs, function(pair) {
+            paste0(repr(pair, indent = 0L, ...), collapse = "")
+        }, character(1))
+        content <- paste(pair_reprs, collapse = ", ")
+        return(as_repr(paste0("r2r::hashmap(", content, ")")))
+    }
+    
+    # Multi-line representation for indented output
+    indent_str <- strrep(" ", indent)
+    
+    # Create representations for each key-value pair with proper indentation
+    pair_lines <- lapply(kv_pairs, function(pair) {
+        pair_repr <- repr(pair, indent = indent, ...)
+        # Add indentation to each line
+        paste0(indent_str, pair_repr)
+    })
+    
+    # Add commas to all but the last pair
+    if (length(pair_lines) > 1) {
+        for (i in seq_len(length(pair_lines) - 1L)) {
+            last_line_idx <- length(pair_lines[[i]])
+            pair_lines[[i]][last_line_idx] <- paste0(
+                pair_lines[[i]][last_line_idx], ","
+            )
+        }
+    }
+    
+    out <- c(
+        "r2r::hashmap(",
+        unlist(pair_lines, use.names = FALSE),
+        ")"
+    )
+    
+    as_repr(out)
+}
