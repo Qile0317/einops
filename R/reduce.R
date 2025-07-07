@@ -74,17 +74,16 @@ reduce.list <- function(x, expr, func, ...) {
 }
 
 #' @export
-reduce.numeric <- function(x, expr, func, ...) {
-    if (length(x) == 0) {
-        stop("Rearrange/Reduce/Repeat can't be applied to an empty numeric")
-    }
-    output <- reduce(as.array(x), expr, func, ...)
-    if (length(dim(output)) == 1) return(as.numeric(output))
-    output
+reduce.default <- function(x, expr, func, ...) {
+    tryCatch(
+        .reduce(x, expr, func, ...),
+        error = function(e) {
+            stop("In Einops - ", conditionMessage(e), call. = FALSE)
+        }
+    )
 }
 
-#' @export
-reduce.default <- function(x, expr, func, ...) {
+.reduce <- function(x, expr, func, ...) {
     axes_lengths <- if (nargs() == 1 && is.list(..1)) ..1 else list(...)
     backend <- get_backend(x)
     hashable_axes_lengths <- unlist(unname(axes_lengths))
