@@ -2,12 +2,14 @@
 #' @description Recipe describes actual computation pathway. Can be applied to a
 #' tensor or variable.
 #' @param elementary_axes_lengths Integer vector. List of sizes for elementary
-#' axes as they appear in left expression.
+#' axes as they appear in left expression. This is what (after computing unknown
+#' parts) will be a shape after first transposition. This does not include any
+#' ellipsis dimensions.
 #' @param axis_name2elementary_axis [r2r::hashmap()] Mapping from name to
-#' position.
+#' position. if additional axes are provided, they should be set in prev array.
 #' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
 #' @param axes_permutation Integer vector. Permutation applied to elementary
-#' axes. This is ONE INDEXED!
+#' axes, if ellipsis is absent. This is ONE INDEXED!
 #' @param first_reduced_axis Integer of length 1. First position of reduced axes.
 #' @param added_axes [r2r::hashmap()]. Axis position -> axis index.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they
@@ -184,7 +186,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     )
 
     axes_permutation <- as.integer(sapply(order_after_transposition, function(axis) {
-        which(ordered_axis_left == axis)
+        which(sapply(ordered_axis_left, function(x) identical(x, axis)))
     }))
 
     added_axes <- r2r::hashmap()
