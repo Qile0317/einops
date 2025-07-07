@@ -82,15 +82,15 @@ Einops works with ...
 
 Additionally, einops can be used with any framework that supports R's array access S3 generics -->
 
-## Development Roadmap (Delete after completion)
+## Development Roadmap (Will be deleted after completion)
 
 - [x] Lexical Analysis (`lex("expression")` -> `EinopsTokenSequence()`)
 - [x] Parser (`parse_einops_ast(EinopsTokenSequence())` -> `EinopsAst()`)
 - [x] `einops:::parse_shape.array()`
-- [x] Semantic Analysis (`validate_reduction_operation()`, `expand_ellipsis()` -> `EinopsAst()`)
-- [ ] Intermediate Representation generation (`prepare_transformation_recipe()` -> `TransformRecipe()`)
-- [ ] Code generation (`create_execution_plan()` -> `EinopsExecutionPlan()`)
-- [x] Execution (`apply_recipe()`, `EinopsBackend()` -> output)
+- [x] Semantic Analysis (`validate_reduction_operation(EinopsAst())`, `expand_ellipsis(EinopsAst())` -> `EinopsAst()`)
+- [x] Intermediate Representation generation (`prepare_transformation_recipe(EinopsAst())` -> `TransformRecipe()`)
+- [x] Code generation (`create_execution_plan(TransformRecipe())` -> `EinopsExecutionPlan()`)
+- [x] Execution (`apply_recipe(EinopsExecutionPlan())`, `EinopsBackend()` -> output)
 - [x] `einops:::repeat.array()`
 - [x] `einops:::rearrange.array()`
 - [x] `einops:::reduce.array()`
@@ -120,3 +120,5 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [ ] Much better README
 - [ ] Rcpp Acceleration if needed
 - [ ] Copy the existing einops docs pages as vignettes
+- [ ] update NEWS.md
+- [ ] CRAN release

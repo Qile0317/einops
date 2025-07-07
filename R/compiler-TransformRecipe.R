@@ -9,17 +9,18 @@
 #' position. if additional axes are provided, they should be set in prev array.
 #' The keys are unclassed [AxisNames()] objects, and the values are
 #' integer positions of the elementary axes.
-#' @param input_composition_known_unknown List of list(known, unknown) [AxisNames()].
-#' known and unknown are integer vectors, but this may also be fully empty.
+#' @param input_composition_known_unknown List of list(known, unknown).
+#' known and unknown are integer vectors.
 #' @param axes_permutation Integer vector. Permutation applied to elementary
-#' axes, if ellipsis is absent. This is ONE INDEXED!
-#' @param first_reduced_axis Integer of length 1. First position of reduced axes.
-#' Permutation puts reduced axes in the end, we only need to know the first position.
-#' @param added_axes [r2r::hashmap()]. Axis position -> axis index. At which positions
-#' which of elementary axes should appear.
+#' axes, if ellipsis is absent.
+#' @param first_reduced_axis Integer of length 1. First position of reduced
+#' axes. Permutation puts reduced axes in the end, we only need to know the
+#' first position.
+#' @param added_axes [r2r::hashmap()]. Axis position -> axis index. At which
+#' positions which of elementary axes should appear.
 #' @param output_composite_axes List of integer vectors. Ids of axes as they
-#' appear in result. Again pointers to elementary_axes_lengths, only used to infer
-#' result dimensions.
+#' appear in result. Again pointers to elementary_axes_lengths, only used to
+#' infer result dimensions.
 #' @return An object of class 'TransformRecipe'.
 #' @keywords internal
 TransformRecipe <- function(
@@ -38,8 +39,8 @@ TransformRecipe <- function(
             is.list(x) &&
                 length(x) == 2L &&
                 identical(names(x), c("known", "unknown")) &&
-                inherits(x$known, "AxisNames") &&
-                inherits(x$unknown, "AxisNames")
+                is.integer(x$known) &&
+                is.integer(x$unknown)
         })),
         is.integer(axes_permutation),
         is.count(first_reduced_axis),
@@ -136,7 +137,8 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         # TODO check the axis name
         if (!has_key(axis_name2known_length, elementary_axis)) {
             stop(glue(
-                "Axis {repr(elementary_axis, indent = 0L)} is not used in transform"
+                "Axis {repr(elementary_axis, indent = 0L)} is not used in ",
+                "transform"
             ))
         }
         axis_name2known_length[[elementary_axis]] <- expected_axis_length()

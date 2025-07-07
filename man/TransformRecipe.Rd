@@ -25,21 +25,22 @@ position. if additional axes are provided, they should be set in prev array.
 The keys are unclassed \code{\link[=AxisNames]{AxisNames()}} objects, and the values are
 integer positions of the elementary axes.}
 
-\item{input_composition_known_unknown}{List of list(known, unknown) \code{\link[=AxisNames]{AxisNames()}}.
-known and unknown are integer vectors, but this may also be fully empty.}
+\item{input_composition_known_unknown}{List of list(known, unknown).
+known and unknown are integer vectors.}
 
 \item{axes_permutation}{Integer vector. Permutation applied to elementary
-axes, if ellipsis is absent. This is ONE INDEXED!}
+axes, if ellipsis is absent.}
 
-\item{first_reduced_axis}{Integer of length 1. First position of reduced axes.
-Permutation puts reduced axes in the end, we only need to know the first position.}
+\item{first_reduced_axis}{Integer of length 1. First position of reduced
+axes. Permutation puts reduced axes in the end, we only need to know the
+first position.}
 
-\item{added_axes}{\code{\link[r2r:hashtable]{r2r::hashmap()}}. Axis position -> axis index. At which positions
-which of elementary axes should appear.}
+\item{added_axes}{\code{\link[r2r:hashtable]{r2r::hashmap()}}. Axis position -> axis index. At which
+positions which of elementary axes should appear.}
 
 \item{output_composite_axes}{List of integer vectors. Ids of axes as they
-appear in result. Again pointers to elementary_axes_lengths, only used to infer
-result dimensions.}
+appear in result. Again pointers to elementary_axes_lengths, only used to
+infer result dimensions.}
 }
 \value{
 An object of class 'TransformRecipe'.
