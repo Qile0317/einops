@@ -145,19 +145,42 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
-    # TODO test prepare_transformation_recipe(
-    #     "... c h w -> ... h w",
-    #     "mean",
-    #     list(c = 4L),
-    #     4L
-    # )
+    expect_identical(
+        prepare_transformation_recipe(
+            "... c h w -> ... h w", "mean", list(), 5L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 5L),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:5),
+            axes_permutation = c(1L, 2L, 4L, 5L, 3L),
+            first_reduced_axis = 5L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(1L, 2L, 4L, 5L)
+        )
+    )
 
-    # TODO test prepare_transformation_recipe(
-    #     "... 4 h w -> ... h w",
-    #     "mean",
-    #     list(),
-    #     4L
-    # )
+    expect_identical(
+        prepare_transformation_recipe(
+            "... 4 h w -> ... h w", "mean", list(), 4L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = c(
+                unknown_axis_length(), 4L, rep(unknown_axis_length(), 2L)
+            ),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = list(
+                list(known = integer(), unknown = 1L),
+                list(known = 2L, unknown = integer()),
+                list(known = integer(), unknown = 3L),
+                list(known = integer(), unknown = 4L)
+            ),
+            axes_permutation = c(1L, 3L, 4L, 2L),
+            first_reduced_axis = 4L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(1L, 3L, 4L)
+        )
+    )
 
     # TODO some test with 1's
 
