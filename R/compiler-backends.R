@@ -120,7 +120,7 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        get_backend_from_type(tensor_type)$required_pkgs()
+        private$get_backend_from_type(tensor_type)$required_pkgs()
     }
 ))
 
@@ -233,7 +233,9 @@ public = list(
     }
 ))
 
-NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE)
+NullEinopsBackend <- R6Class(
+    "NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE
+)
 
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(

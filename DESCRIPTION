@@ -27,14 +27,10 @@ Imports:
     r2r,
     R6,
     R6P,
-    Rcpp,
     roperators
 Suggests: 
     abind,
-    conflicted,
     lobstr,
     testthat (>= 3.0.0),
     torch
 Config/testthat/edition: 3
-LinkingTo: 
-    Rcpp

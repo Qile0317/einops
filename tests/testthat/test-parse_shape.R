@@ -125,7 +125,9 @@ create_tensor <- function(type, values, dims) {
 
 for (tensor_type in tensor_types) {
 
-    # TODO skip_if_not_installed(pkg, minimum_version = NULL)
+    for (pkg in BackendRegistry$new()$get_dependencies(tensor_type)) {
+        skip_if_not_installed(pkg)
+    }
 
     test_that(paste("parse_shape works for simple cases of ", tensor_type), {
         expect_identical(
