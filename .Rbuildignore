@@ -6,3 +6,4 @@
 ^dev/$
 ^\.vscode/$
 ^\.lintr$
+^dev/$

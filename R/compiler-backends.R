@@ -21,26 +21,17 @@ BackendRegistry <- R6Class("BackendRegistry", inherit = Singleton, cloneable = F
 
 private = list(
     # A mapping of types to backend class generators
-    type2backend = new.env(parent = emptyenv()),
+    type2backend = r2r::hashmap(),
     # A mapping of types to backend instances
-    loaded_backends = new.env(parent = emptyenv()),
-    debug_importing = FALSE,
+    loaded_backends = r2r::hashmap(),
 
     get_backend_from_type = function(tensor_class) {
-        if (exists(tensor_class, envir = private$loaded_backends, inherits = FALSE)) {
-            if (private$debug_importing) {
-                message(glue("[einops] Using loaded backend for class: {repr(tensor_class)}"))
-            }
-            return(get(tensor_class, envir = private$loaded_backends, inherits = FALSE))
+        if (r2r::has_key(private$loaded_backends, tensor_class)) {
+            return(private$loaded_backends[[tensor_class]])
         }
-        # Otherwise, check if a backend generator is registered
-        if (exists(tensor_class, envir = private$type2backend, inherits = FALSE)) {
-            backend_generator <- get(tensor_class, envir = private$type2backend, inherits = FALSE)
-            if (private$debug_importing) {
-                message(glue("[einops] Initializing backend for class: {repr(tensor_class)}"))
-            }
-            backend_instance <- backend_generator$new()
-            assign(tensor_class, backend_instance, envir = private$loaded_backends)
+        if (r2r::has_key(private$type2backend, tensor_class)) {
+            backend_instance <- private$type2backend[[tensor_class]]$new()
+            private$loaded_backends[[tensor_class]] <- backend_instance
             return(backend_instance)
         }
         NullEinopsBackend$new()
@@ -61,15 +52,6 @@ public = list(
         stop(glue("Tensor type unknown to einops: {repr(tensor_classes)})"))
     },
 
-    #' @description Set whether debug messages should be displayed
-    #' @param flag boolean
-    #' @return this object
-    set_debug = function(flag = TRUE) {
-        assert_that(is.flag(flag))
-        private$debug_importing <- flag
-        return(self)
-    },
-
     #' @description Register a new backend singleton
     #' @param backend_class an EinopsBackend subclass generator
     #' @return this object
@@ -80,14 +62,7 @@ public = list(
             stop(glue("{backend_class} is not an EinopsBackend"))
         }
         tensor_type_name <- backend_singleton_instance$tensor_type()
-        if (private$debug_importing) {
-            message(glue("[einops] Registering backend for tensor type: {tensor_type_name}"))
-        }
-        assign(
-            x = tensor_type_name,
-            value = backend_class,
-            envir = private$type2backend
-        )
+        private$type2backend[[tensor_type_name]] <- backend_class
         return(self)
     },
 
@@ -97,11 +72,11 @@ public = list(
     #' @return this object
     unregister_backend = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        if (exists(tensor_type, envir = private$type2backend, inherits = FALSE)) {
-            rm(list = tensor_type, envir = private$type2backend)
+        if (r2r::has_key(private$type2backend, tensor_type)) {
+            private$type2backend[[tensor_type]] <- NULL
         }
-        if (exists(tensor_type, envir = private$loaded_backends, inherits = FALSE)) {
-            rm(list = tensor_type, envir = private$loaded_backends)
+        if (r2r::has_key(private$loaded_backends, tensor_type)) {
+            private$loaded_backends[[tensor_type]] <- NULL
         }
         return(self)
     },
@@ -110,7 +85,7 @@ public = list(
     #' Get a list of all registered backend types.
     #' @return A character vector of backend types.
     get_supported_types = function() {
-        ls(private$type2backend)
+        sort(as.character(r2r::keys(private$type2backend)))
     },
 
     #' @description
