@@ -42,7 +42,9 @@ reshape (view), squeeze, unsqueeze, stack, concatenate and other operations.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">x</span>, <span class="va">expr</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">x</span>, <span class="va">expr</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">einops.rearrange</span><span class="op">(</span><span class="va">x</span>, <span class="va">expr</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,7 +65,8 @@ reshape (view), squeeze, unsqueeze, stack, concatenate and other operations.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>tensor of the same type as input, with dimensions according to output pattern</p>
+    <p>tensor of the same type as input, with dimensions according to output
+pattern</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -76,26 +79,30 @@ have different last axis). Find more examples in the vignettes.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># suppose we have a set of 32 images in "h w c" format (height-width-channel)</span></span></span>
 <span class="r-in"><span><span class="va">images</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">32</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">*</span><span class="fl">40</span><span class="op">*</span><span class="fl">3</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># stack along first (batch) axis, output is a single array</span></span></span>
-<span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b h w c'</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># stacked and reordered axes to "b c h w" format</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b c h w'</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>coercing argument of type 'list' to logical</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - 'list' object cannot be coerced to type 'logical'</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># concatenate images along height (vertical axis), 960 = 32 * 30</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; (b h) w c'</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># concatenated images along horizontal axis, 1280 = 32 * 40</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; h (b w) c'</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># flattened each image into a vector, 3600 = 30 * 40 * 3</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b h w c -&gt; b (c h w)'</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># split each image into 4 smaller (top-left, top-right, bottom-left, bottom-right), 128 = 32 * 2 * 2</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b (h1 h) (w1 w) c -&gt; (b h1 w1) h w c'</span>, h1<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># space-to-depth operation</span></span></span>
 <span class="r-in"><span><span class="fu">rearrange</span><span class="op">(</span><span class="va">images</span>, <span class="st">'b (h h1) (w w1) c -&gt; b h w (c h1 w1)'</span>, h1<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
