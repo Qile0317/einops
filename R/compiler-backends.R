@@ -72,12 +72,8 @@ public = list(
     #' @return this object
     unregister_backend = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        if (r2r::has_key(private$type2backend, tensor_type)) {
-            private$type2backend[[tensor_type]] <- NULL
-        }
-        if (r2r::has_key(private$loaded_backends, tensor_type)) {
-            private$loaded_backends[[tensor_type]] <- NULL
-        }
+        r2r::delete(private$type2backend, tensor_type)
+        r2r::delete(private$loaded_backends, tensor_type)
         return(self)
     },
 

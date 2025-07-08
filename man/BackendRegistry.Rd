@@ -14,7 +14,6 @@ Contains global backend pool
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
-\item \href{#method-BackendRegistry-set_debug}{\code{BackendRegistry$set_debug()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
 \item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
 \item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
@@ -46,26 +45,6 @@ detect the return relevant backend from the input
 }
 \subsection{Returns}{
 A singleton instance of a \code{\link[=BackendRegistry]{BackendRegistry()}} object
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-BackendRegistry-set_debug"></a>}}
-\if{latex}{\out{\hypertarget{method-BackendRegistry-set_debug}{}}}
-\subsection{Method \code{set_debug()}}{
-Set whether debug messages should be displayed
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$set_debug(flag = TRUE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{flag}}{boolean}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-this object
 }
 }
 \if{html}{\out{<hr>}}
