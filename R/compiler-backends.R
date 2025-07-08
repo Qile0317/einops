@@ -84,7 +84,10 @@ public = list(
             envir = private$type2backend
         )
         return(self)
-    }
+    }#, # TODO
+    # get_supported_types = function() {
+    #     ls(private$type2backend)
+    # }
 ))
 
 #' @noRd
@@ -92,8 +95,21 @@ EinopsBackend <- R6Class("EinopsBackend", inherit = Singleton, cloneable = FALSE
 
 public = list(
 
+    initialize = function() {
+        super$initialize()
+        for (pkg in self$required_pkgs()) {
+            if (!requireNamespace(pkg, quietly = TRUE)) {
+                stop(glue("Package '{pkg}' is required for this tensor."))
+            }
+        }
+    },
+
     tensor_type = function() {
         stop("Not implemented")
+    },
+
+    required_pkgs = function() {
+        character(0)
     },
 
     #' @param start integer, inclusive
@@ -186,13 +202,9 @@ public = list(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    initialize = function() {
-        if (!requireNamespace("abind", quietly = TRUE)) {
-            stop("abind package required for array operations")
-        }
-    },
-
     tensor_type = function() "array",
+
+    required_pkgs = function() "abind",
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -245,13 +257,9 @@ register_backend(BaseArrayBackend)
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    initialize = function() {
-        if (!requireNamespace("torch", quietly = TRUE)) {
-            stop("torch package required for TorchBackend")
-        }
-    },
+    tensor_type = function() "torch_tensor",
 
-    tensor_type = function() "torch_tensor"
+    required_pkgs = function() "torch"
 ))
 
 register_backend(TorchBackend)

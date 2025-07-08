@@ -112,9 +112,9 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     )
 })
 
-tensor_types <- c("base::array", "torch_tensor")
+tensor_types <- c("base::array", "torch_tensor") # TODO BackendRegistry$new()$get_supported_types()
 
-create_tensor <- function(type, values, dims) {
+create_tensor <- function(type, values, dims) { # TODO should be managed by the BackendRegister
     switch(type,
         "base::array" = array(values, dim = dims),
         "torch_tensor" = {
