@@ -105,6 +105,11 @@ test_that("expand_ellipsis works", {
 
 test_that("prepare_transformation_recipe works", {
 
+    # utility function to create a list of unknown axis lengths
+    make_unknown_composition <- function(x) {
+        lapply(seq_along(x), function(i) list(known = integer(), unknown = i))
+    }
+
     # sanity check
     expect_no_error(prepare_transformation_recipe(
         "a b -> b", "mean", list(), 2L
@@ -117,10 +122,7 @@ test_that("prepare_transformation_recipe works", {
         TransformRecipe(
             elementary_axes_lengths = rep(unknown_axis_length(), 2L),
             axis_name2elementary_axis = r2r::hashmap(),
-            input_composition_known_unknown = list(
-                list(known = integer(), unknown = 1L),
-                list(known = integer(), unknown = 2L)
-            ),
+            input_composition_known_unknown = make_unknown_composition(1:2),
             axes_permutation = c(2L, 1L),
             first_reduced_axis = 2L,
             added_axes = r2r::hashmap(),
@@ -128,12 +130,20 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
-    # TODO test prepare_transformation_recipe(
-    #     "... c h w -> ... h w",
-    #     "mean",
-    #     list(),
-    #     4L
-    # )
+    expect_identical(
+        prepare_transformation_recipe(
+            "... c h w -> ... h w", "mean", list(), 4L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 4L),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:4),
+            axes_permutation = c(1L, 3L, 4L, 2L),
+            first_reduced_axis = 4L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(1L, 3L, 4L)
+        )
+    )
 
     # TODO test prepare_transformation_recipe(
     #     "... c h w -> ... h w",

@@ -116,7 +116,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         key_validator = is_flat_axis_names_element,
         val_validator = function(x) {
             if (!(is.integer(x) && length(x) == 1L)) return(FALSE)
-            x > 0L || x == unknown_axis_length() || x == expected_axis_length()
+            x > 0L || is_unknown_axis_length(x) || is_expected_axis_length(x)
         }
     )
     for (axis_node in get_ungrouped_nodes(ast$input_axes)) {
