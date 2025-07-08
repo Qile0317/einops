@@ -70,7 +70,7 @@ unknown_axis_length <- function() {
 }
 
 is_unknown_axis_length <- function(x) {
-    identical(x, unclass(unknown_axis_length()))
+    identical(unclass(x), unclass(unknown_axis_length()))
 }
 
 expected_axis_length <- function() {
@@ -81,7 +81,7 @@ expected_axis_length <- function() {
 }
 
 is_expected_axis_length <- function(x) {
-    identical(x, unclass(expected_axis_length()))
+    identical(unclass(x), unclass(expected_axis_length()))
 }
 
 #' @title
@@ -252,7 +252,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
         first_reduced_axis =
-            length(order_after_transposition) - length(reduced_axes),
+            length(order_after_transposition) - length(reduced_axes) + 1L,
         added_axes = added_axes,
         output_composite_axes = result_axes_grouping
     )
