@@ -5,3 +5,4 @@
 ^pkgdown$
 ^dev/$
 ^\.vscode/$
+^\.lintr$
