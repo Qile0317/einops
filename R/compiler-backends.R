@@ -24,7 +24,27 @@ private = list(
     type2backend = new.env(parent = emptyenv()),
     # A mapping of types to backend instances
     loaded_backends = new.env(parent = emptyenv()),
-    debug_importing = FALSE
+    debug_importing = FALSE,
+
+    get_backend_from_type = function(tensor_class) {
+        if (exists(tensor_class, envir = private$loaded_backends, inherits = FALSE)) {
+            if (private$debug_importing) {
+                message(glue("[einops] Using loaded backend for class: {repr(tensor_class)}"))
+            }
+            return(get(tensor_class, envir = private$loaded_backends, inherits = FALSE))
+        }
+        # Otherwise, check if a backend generator is registered
+        if (exists(tensor_class, envir = private$type2backend, inherits = FALSE)) {
+            backend_generator <- get(tensor_class, envir = private$type2backend, inherits = FALSE)
+            if (private$debug_importing) {
+                message(glue("[einops] Initializing backend for class: {repr(tensor_class)}"))
+            }
+            backend_instance <- backend_generator$new()
+            assign(tensor_class, backend_instance, envir = private$loaded_backends)
+            return(backend_instance)
+        }
+        NullEinopsBackend$new()
+    }
 ),
 
 public = list(
@@ -35,23 +55,8 @@ public = list(
     get_backend = function(tensor) {
         tensor_classes <- class(tensor)
         for (tensor_class in tensor_classes) {
-            # Check if backend instance is already loaded
-            if (exists(tensor_class, envir = private$loaded_backends, inherits = FALSE)) {
-                if (private$debug_importing) {
-                    message(glue("[einops] Using loaded backend for class: {repr(tensor_class)}"))
-                }
-                return(get(tensor_class, envir = private$loaded_backends, inherits = FALSE))
-            }
-            # Otherwise, check if a backend generator is registered
-            if (exists(tensor_class, envir = private$type2backend, inherits = FALSE)) {
-                backend_generator <- get(tensor_class, envir = private$type2backend, inherits = FALSE)
-                if (private$debug_importing) {
-                    message(glue("[einops] Initializing backend for class: {repr(tensor_class)}"))
-                }
-                backend_instance <- backend_generator$new()
-                assign(tensor_class, backend_instance, envir = private$loaded_backends)
-                return(backend_instance)
-            }
+            backend <- private$get_backend_from_type(tensor_class)
+            if (!inherits(backend, "NullEinopsBackend")) return(backend)
         }
         stop(glue("Tensor type unknown to einops: {repr(tensor_classes)})"))
     },
@@ -84,10 +89,39 @@ public = list(
             envir = private$type2backend
         )
         return(self)
-    }#, # TODO
-    # get_supported_types = function() {
-    #     ls(private$type2backend)
-    # }
+    },
+
+    #' @description
+    #' Unregister a backend for a specific tensor type.
+    #' @param tensor_type a string with the tensor type
+    #' @return this object
+    unregister_backend = function(tensor_type) {
+        assert_that(is.string(tensor_type))
+        if (exists(tensor_type, envir = private$type2backend, inherits = FALSE)) {
+            rm(list = tensor_type, envir = private$type2backend)
+        }
+        if (exists(tensor_type, envir = private$loaded_backends, inherits = FALSE)) {
+            rm(list = tensor_type, envir = private$loaded_backends)
+        }
+        return(self)
+    },
+
+    #' @description
+    #' Get a list of all registered backend types.
+    #' @return A character vector of backend types.
+    get_supported_types = function() {
+        ls(private$type2backend)
+    },
+
+    #' @description
+    #' given a tensor type, return the required packages
+    #' @param tensor_type a string with the tensor type
+    #' @return a character vector with required packages. Length 0 if
+    #' no packages are required.
+    get_dependencies = function(tensor_type) {
+        assert_that(is.string(tensor_type))
+        get_backend_from_type(tensor_type)$required_pkgs()
+    }
 ))
 
 #' @noRd
@@ -198,6 +232,8 @@ public = list(
         stop("backend does not support einsum")
     }
 ))
+
+NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE)
 
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(

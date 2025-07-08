@@ -112,21 +112,21 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     )
 })
 
-tensor_types <- c("base::array", "torch_tensor") # TODO BackendRegistry$new()$get_supported_types()
+tensor_types <- BackendRegistry$new()$get_supported_types()
 
-create_tensor <- function(type, values, dims) { # TODO should be managed by the BackendRegister
+create_tensor <- function(type, values, dims) {
     switch(type,
-        "base::array" = array(values, dim = dims),
+        "array" = array(values, dim = dims),
         "torch_tensor" = {
-            if (!requireNamespace("torch", quietly = TRUE)) {
-                testthat::skip("torch package not available")
-            }
             torch::torch_tensor(array(values, dim = dims))
         }
     )
 }
 
 for (tensor_type in tensor_types) {
+
+    # TODO skip_if_not_installed(pkg, minimum_version = NULL)
+
     test_that(paste("parse_shape works for simple cases of ", tensor_type), {
         expect_identical(
             parse_shape(

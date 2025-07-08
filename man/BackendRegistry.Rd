@@ -16,6 +16,9 @@ Contains global backend pool
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
 \item \href{#method-BackendRegistry-set_debug}{\code{BackendRegistry$set_debug()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
+\item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
+\item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
+\item \href{#method-BackendRegistry-get_dependencies}{\code{BackendRegistry$get_dependencies()}}
 }
 }
 \if{html}{\out{
@@ -83,6 +86,60 @@ Register a new backend singleton
 }
 \subsection{Returns}{
 this object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-unregister_backend"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-unregister_backend}{}}}
+\subsection{Method \code{unregister_backend()}}{
+Unregister a backend for a specific tensor type.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$unregister_backend(tensor_type)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_type}}{a string with the tensor type}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+this object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-get_supported_types"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-get_supported_types}{}}}
+\subsection{Method \code{get_supported_types()}}{
+Get a list of all registered backend types.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$get_supported_types()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A character vector of backend types.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-get_dependencies"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-get_dependencies}{}}}
+\subsection{Method \code{get_dependencies()}}{
+given a tensor type, return the required packages
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$get_dependencies(tensor_type)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_type}}{a string with the tensor type}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a character vector with required packages. Length 0 if
+no packages are required.
 }
 }
 }

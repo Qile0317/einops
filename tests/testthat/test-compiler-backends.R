@@ -30,4 +30,6 @@ test_that("get_backend returns identical singleton objects", {
     # All objects themselves should be identical too
     expect_identical(backend_singleton, backend1)
     expect_identical(backend1, backend2)
+
+    BackendRegistry$new()$unregister_backend("DummyTensor")
 })
