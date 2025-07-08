@@ -115,7 +115,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     axis_name2known_length <- AddOnlyOrderedMap(
         key_validator = is_flat_axis_names_element,
         val_validator = function(x) {
-            if(!(is.integer(x) && length(x) == 1L)) return(FALSE)
+            if (!(is.integer(x) && length(x) == 1L)) return(FALSE)
             x > 0L || x == unknown_axis_length() || x == expected_axis_length()
         }
     )
@@ -232,7 +232,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     added_axes <- r2r::hashmap()
     left_identifiers <- get_identifiers_hashset(ast$input_axes)
     for (i in seq_along(ordered_axis_rght)) {
-        axis_name <- ordered_axis_rght[i]
+        axis_name <- ordered_axis_rght[[i]]
         if (!r2r::has_key(left_identifiers, axis_name)) {
             r2r::insert(added_axes, i, axis_name2position[[axis_name]])
         }
