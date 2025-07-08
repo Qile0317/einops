@@ -94,7 +94,7 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] `einops:::repeat.array()`
 - [x] `einops:::rearrange.array()`
 - [x] `einops:::reduce.array()`
-- [ ] Make Github Repository Public
+- [x] Make Github Repository Public
 - [x] `einops:::parse_shape.torch_tensor()`
 - [ ] `TorchBackend()`
 - [ ] `einops:::repeat.torch_tensor()`
@@ -114,11 +114,11 @@ Additionally, einops can be used with any framework that supports R's array acce
 
 ### Nice to Haves
 
-- [ ] Dockerfile
-- [ ] Google Analytics for the docsite
+- [ ] Dockerfile & devcontainers.json
+- [x] Google Analytics for the docsite
 - [ ] R-universe upload
 - [ ] Much better README
-- [ ] Rcpp Acceleration if needed
+<!-- - [ ] Rcpp Acceleration if needed -->
 - [ ] Copy the existing einops docs pages as vignettes
 - [ ] update NEWS.md
 - [ ] CRAN release
