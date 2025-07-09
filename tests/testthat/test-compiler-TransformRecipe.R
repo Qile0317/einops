@@ -182,12 +182,34 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
-    # TODO some test with 1's
+    expect_identical(
+        prepare_transformation_recipe(
+            "b c h w -> 1 c 1 1", "mean", list(), 4L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 4L),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:4),
+            axes_permutation = c(2L, 1L, 3L, 4L),
+            first_reduced_axis = 2L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(integer(), 2L, integer(), integer())
+        )
+    )
 
     # TODO some test with brackets
 
     # TODO some test with 1's, brackets, anonymous axes, ellipses,
     # bracketted axes, etc.
+
+    # expect_identical(
+    #     prepare_transformation_recipe(
+    #         "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c",
+    #         "rearrange",
+    #         list(h2 = 2, w2 = 2, w3 = 2, h3 = 2),
+    #         4L
+    #     )
+    # )
 
     # TODO some tests with ADDED axes
 })
