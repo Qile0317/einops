@@ -60,7 +60,6 @@ to_tokens.EllipsisAstNode <- function(x, ...) {
 }
 
 #' @title Create a NothingAstNode
-#' @param src List with start position
 #' @return NothingAstNode object
 #' @keywords internal
 NothingAstNode <- function() {
@@ -104,7 +103,7 @@ GroupAstNode <- function(children, src = list()) {
 #' Get the last n children of a GroupAstNode as a list of AstNodes.
 #' @keywords internal
 #' @export
-tail.GroupAstNode <- function(x, n = 1) {
+tail.GroupAstNode <- function(x, n = 1, ...) {
     if (n < 1) {
         stop("n must be at least 1")
     }

@@ -38,19 +38,6 @@
 #' the number of insertion/query inputs, in contrast to R lists which has
 #' quadratic time complexity for the same operations.
 #'
-#' @examples
-#' map <- AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2))
-#'
-#' # With validators
-#' key_val <- function(k) is.character(k)
-#' val_val <- function(v) is.numeric(v)
-#' map_validated <- AddOnlyOrderedMap(
-#'   keys = c("a", "b"),
-#'   values = c(1, 2),
-#'   key_validator = key_val,
-#'   val_validator = val_val
-#' )
-#'
 AddOnlyOrderedMap <- function(
     keys = NULL,
     values = NULL,

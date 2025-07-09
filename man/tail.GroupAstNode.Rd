@@ -4,7 +4,7 @@
 \alias{tail.GroupAstNode}
 \title{Get the last n children of a GroupAstNode as a list of AstNodes.}
 \usage{
-\method{tail}{GroupAstNode}(x, n = 1)
+\method{tail}{GroupAstNode}(x, n = 1, ...)
 }
 \description{
 Get the last n children of a GroupAstNode as a list of AstNodes.

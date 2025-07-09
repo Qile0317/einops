@@ -1,0 +1,20 @@
+citHeader("If using the R implementation of Einops in your research work, please cite the original ICLR paper, in addition to this package:")
+
+bibentry(
+  bibtype  = "inproceedings",
+  title    = "Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation",
+  author   = "Alex Rogozhnikov",
+  booktitle = "International Conference on Learning Representations",
+  year     = 2022,
+  url      = "https://openreview.net/forum?id=oapKSVM2bcj",
+  textVersion = "Rogozhnikov, A., (2022). Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation. International Conference on Learning Representations. https://openreview.net/forum?id=oapKSVM2bcj"
+)
+
+bibentry(
+  bibtype  = "misc",
+  title    = "Einops for R",
+  author   = "Qile Yang",
+  year     = 2025,
+  url      = "https://github.com/Qile0317/einops",
+  textVersion = "Yang, Q., (2025). Einops for R. https://github.com/Qile0317/einops"
+)

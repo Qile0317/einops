@@ -1,9 +1,10 @@
 ^LICENSE\.md$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^dev/$
-^\.vscode/$
+^dev/
+^\.vscode/
 ^\.lintr$
-^dev/$

@@ -44,7 +44,7 @@ image <- array(rnorm(30*40), dim = c(30, 40))
 einops_repeat(image, 'h w -> h w c', c=3)
 
 # repeat image 2 times along height (vertical axis)
-einops_repeat(image, 'h w -> (repeat h) w', repeat=2)
+einops_repeat(image, 'h w -> (r h) w', r=2)
 
 # repeat image 2 times along height and 3 times along width
 einops_repeat(image, 'h w -> (h2 h) (w3 w)', h2=2, w3=3)

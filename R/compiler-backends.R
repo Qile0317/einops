@@ -93,11 +93,20 @@ public = list(
     }
 ))
 
-#' @noRd
+#' @title
+#' Base Backend Class for Einops Tensor Operations
+#' @description
+#' Abstract base class that defines the interface for tensor operations
+#' across different frameworks. All backend implementations must inherit
+#' from this class and implement the required methods.
+#' @keywords internal
 EinopsBackend <- R6Class("EinopsBackend", inherit = Singleton, cloneable = FALSE,
 
 public = list(
 
+    #' @description
+    #' Initialize the backend and check for required packages.
+    #' @return A new EinopsBackend instance.
     initialize = function() {
         super$initialize()
         for (pkg in self$required_pkgs()) {
@@ -107,10 +116,16 @@ public = list(
         }
     },
 
+    #' @description
+    #' Get the tensor type name that this backend supports.
+    #' @return A character string with the tensor type name.
     tensor_type = function() {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Get the list of required packages for this backend.
+    #' @return A character vector of package names.
     required_pkgs = function() {
         character(0)
     },
@@ -123,28 +138,57 @@ public = list(
     },
 
     #' @description
-    #' shape should return a tuple with integers or "shape symbols"
-    #' (which will evaluate to actual size)
+    #' Get the shape of a tensor.
+    #' Shape should return a tuple with integers or "shape symbols"
+    #' (which will evaluate to actual size).
+    #' @param x The input tensor/array.
+    #' @return A numeric vector representing the tensor shape.
     shape = function(x) {
         tryCatch(dim(x), error = function(e) stop("Not implemented"))
     },
 
+    #' @description
+    #' Reshape a tensor to the specified dimensions.
+    #' @param x The input tensor/array.
+    #' @param shape A numeric vector specifying the new shape.
+    #' @return The reshaped tensor/array.
     reshape = function(x, shape) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Transpose a tensor along the specified axes.
+    #' @param x The input tensor/array.
+    #' @param axes A numeric vector specifying the new axis order.
+    #' @return The transposed tensor/array.
     transpose = function(x, axes) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Reduce a tensor along specified axes using the given operation.
+    #' @param x The input tensor/array.
+    #' @param operation A character string specifying the reduction operation
+    #' (e.g., "sum", "mean", "max", "min", "prod").
+    #' @param axes A numeric vector specifying which axes to reduce over.
+    #' @return The reduced tensor/array.
     reduce = function(x, operation, axes) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Stack multiple tensors along a new zeroth dimension.
+    #' @param tensors A list of tensors/arrays to stack.
+    #' @return A tensor/array with the input tensors stacked along dimension 1.
     stack_on_zeroth_dimension = function(tensors) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Add a new axis to a tensor at the specified position.
+    #' @param x The input tensor/array.
+    #' @param new_position The position (1-based) where to insert the new axis.
+    #' @return The tensor/array with a new axis added.
     add_axis = function(x, new_position) {
         stop("Not implemented")
     },
@@ -173,30 +217,53 @@ public = list(
     },
 
     #' @description
-    #' repeats - same lengths as x.shape
+    #' Tile (repeat) a tensor along each axis according to the repeat counts.
+    #' The repeats vector should have the same length as the tensor's shape.
+    #' @param x The input tensor/array.
+    #' @param repeats A numeric vector specifying how many times to repeat
+    #' along each axis. Must have same length as x.shape.
+    #' @return The tiled tensor/array.
     tile = function(x, repeats) {
         stop("Not implemented")
     },
 
     #' @description
-    #' concatenates tensors along axis. Assume identical across tensors:
-    #' devices, dtypes and shapes except selected axis.
+    #' Concatenate tensors along the specified axis.
+    #' Assumes identical devices, dtypes and shapes except for the selected axis.
+    #' @param tensors A list of tensors/arrays to concatenate.
+    #' @param axis The axis along which to concatenate (1-based).
+    #' @return The concatenated tensor/array.
     concat = function(tensors, axis) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Check if the tensor has a floating point data type.
+    #' @param x The input tensor/array.
+    #' @return A logical value indicating if the tensor is of float type.
     is_float_type = function(x) {
         stop("Not implemented")
     },
 
+    #' @description
+    #' Get neural network layers specific to this backend.
+    #' @return Backend-specific layer implementations.
     layers = function() {
         stop("backend does not provide layers")
     },
 
+    #' @description
+    #' Get a string representation of this backend.
+    #' @return A character string describing the backend.
     repr = function() {
         glue("<einops backend for {self$tensor_type()}>")
     },
     
+    #' @description
+    #' Perform Einstein summation on tensors.
+    #' @param pattern A character string specifying the einsum pattern.
+    #' @param ... Additional tensors to operate on.
+    #' @return The result of the einsum operation.
     einsum = function(pattern, ...) {
         stop("backend does not support einsum")
     }
