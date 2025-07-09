@@ -99,12 +99,18 @@ is_expected_axis_length <- function(x) {
 #'
 #' @param expr The input einops expression string
 #' @param func The string/function indicating the reduction operation
-#' @param axes_names the user defined keyword args for dims as a [list()].
-#' Names correspond to axes variable names, and values are their dimension.
+#' @param axes_names user defined axis names as a [character()] vector.
 #' @param ndim count for the number of dimensions of the input tensor
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
 prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+
+    assert_that(
+        is.character(expr) && length(expr) == 1L,
+        is.character(func) || is.function(func),
+        is.character(axes_names),
+        is.count(ndim)
+    )
 
     tokens <- lex(expr)
 
@@ -113,7 +119,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         expand_ellipsis(ndim)
 
     axis_name2known_length <- AddOnlyOrderedMap(
-        key_validator = is_flat_axis_names_element,
+        key_validator = is_flat_axis_names_element, # TODO I think only characters are needed
         val_validator = function(x) {
             if (!(is.integer(x) && length(x) == 1L)) return(FALSE)
             x > 0L || is_unknown_axis_length(x) || is_expected_axis_length(x)
@@ -246,7 +252,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             do.call(
                 r2r::hashmap,
                 FastUtils::zipit(
-                    names(axes_names), axis_name2position[names(axes_names)]
+                    axes_names, axis_name2position[axes_names]
                 )
             ),
         input_composition_known_unknown = input_axes_known_unknown,

@@ -11,8 +11,7 @@ prepare_transformation_recipe(expr, func, axes_names, ndim)
 
 \item{func}{The string/function indicating the reduction operation}
 
-\item{axes_names}{the user defined keyword args for dims as a \code{\link[=list]{list()}}.
-Names correspond to axes variable names, and values are their dimension.}
+\item{axes_names}{user defined axis names as a \code{\link[=character]{character()}} vector.}
 
 \item{ndim}{count for the number of dimensions of the input tensor}
 }

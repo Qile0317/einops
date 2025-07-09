@@ -112,12 +112,12 @@ test_that("prepare_transformation_recipe works", {
 
     # sanity check
     expect_no_error(prepare_transformation_recipe(
-        "a b -> b", "mean", list(), 2L
+        "a b -> b", "mean", character(), 2L
     ))
 
     expect_identical(
         prepare_transformation_recipe(
-            "a b -> b", "mean", list(), 2L
+            "a b -> b", "mean", character(), 2L
         ),
         TransformRecipe(
             elementary_axes_lengths = rep(unknown_axis_length(), 2L),
@@ -132,7 +132,7 @@ test_that("prepare_transformation_recipe works", {
 
     expect_identical(
         prepare_transformation_recipe(
-            "... c h w -> ... h w", "mean", list(), 4L
+            "... c h w -> ... h w", "mean", character(), 4L
         ),
         TransformRecipe(
             elementary_axes_lengths = rep(unknown_axis_length(), 4L),
@@ -147,7 +147,7 @@ test_that("prepare_transformation_recipe works", {
 
     expect_identical(
         prepare_transformation_recipe(
-            "... c h w -> ... h w", "mean", list(), 5L
+            "... c h w -> ... h w", "mean", character(), 5L
         ),
         TransformRecipe(
             elementary_axes_lengths = rep(unknown_axis_length(), 5L),
@@ -162,7 +162,7 @@ test_that("prepare_transformation_recipe works", {
 
     expect_identical(
         prepare_transformation_recipe(
-            "... 4 h w -> ... h w", "mean", list(), 4L
+            "... 4 h w -> ... h w", "mean", character(), 4L
         ),
         TransformRecipe(
             elementary_axes_lengths = c(
@@ -184,7 +184,7 @@ test_that("prepare_transformation_recipe works", {
 
     expect_identical(
         prepare_transformation_recipe(
-            "b c h w -> 1 c 1 1", "mean", list(), 4L
+            "b c h w -> 1 c 1 1", "mean", character(), 4L
         ),
         TransformRecipe(
             elementary_axes_lengths = rep(unknown_axis_length(), 4L),
@@ -202,14 +202,31 @@ test_that("prepare_transformation_recipe works", {
     # TODO some test with 1's, brackets, anonymous axes, ellipses,
     # bracketted axes, etc.
 
-    # expect_identical(
-    #     prepare_transformation_recipe(
-    #         "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c",
-    #         "rearrange",
-    #         list(h2 = 2, w2 = 2, w3 = 2, h3 = 2),
-    #         4L
-    #     )
-    # )
-
+    expect_identical(
+        prepare_transformation_recipe(
+            "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c",
+            "rearrange",
+            c("h2", "w2", "w3", "h3"),
+            4L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 8L),
+            axis_name2elementary_axis = r2r::hashmap(
+                list("h2", 3L), list("w2", 6L), list("w3", 7L), list("h3", 4L)
+            ),
+            input_composition_known_unknown = list(
+                list(known = integer(), unknown = 1L),
+                list(known = c(4L, 3L), unknown = 2L),
+                list(known = c(6L, 7L), unknown = 5L),
+                list(known = integer(), unknown = 8L)
+            ),
+            axes_permutation = c(2L, 6L, 4L, 1L, 5L, 3L, 7L, 8L),
+            first_reduced_axis = 9L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(
+                c(2L, 6L, 4L), c(1L, 5L, 3L, 7L), 8L
+            )
+        )
+    )
     # TODO some tests with ADDED axes
 })
