@@ -2,13 +2,12 @@ test_that("get_backend returns identical singleton objects", {
     
     dummy_tensor <- structure(list(), class = "DummyTensor")
     DummyBackend <- R6::R6Class(
-        "DummyBackend", inherit = EinopsBackend, cloneable = FALSE,
-        public = list(tensor_type = function() "DummyTensor")
+        "DummyBackend", inherit = EinopsBackend, cloneable = FALSE
     )
 
     # Create and register the singleton instance only once
     backend_singleton <- DummyBackend$new()
-    BackendRegistry$new()$register_backend(DummyBackend)
+    BackendRegistry$new()$register_backend("DummyTensor", DummyBackend)
 
     backend1 <- get_backend(dummy_tensor)
     backend2 <- get_backend(dummy_tensor)

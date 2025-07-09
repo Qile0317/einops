@@ -6,8 +6,8 @@ get_backend <- function(tensor) {
     BackendRegistry$new()$get_backend(tensor)
 }
 
-register_backend <- function(backend_class) {
-    BackendRegistry$new()$register_backend(backend_class)
+register_backend <- function(tensor_type, backend_class) {
+    BackendRegistry$new()$register_backend(tensor_type, backend_class)
 }
 
 # nolint start: indentation_linter.
@@ -26,11 +26,13 @@ private = list(
     loaded_backends = r2r::hashmap(),
 
     get_backend_from_type = function(tensor_class) {
+        assert_that(is.string(tensor_class))
         if (r2r::has_key(private$loaded_backends, tensor_class)) {
             return(private$loaded_backends[[tensor_class]])
         }
         if (r2r::has_key(private$type2backend, tensor_class)) {
-            backend_instance <- private$type2backend[[tensor_class]]$new()
+            backend_class <- private$type2backend[[tensor_class]]
+            backend_instance <- backend_class$new()
             private$loaded_backends[[tensor_class]] <- backend_instance
             return(backend_instance)
         }
@@ -53,16 +55,12 @@ public = list(
     },
 
     #' @description Register a new backend singleton
+    #' @param tensor_type a string with the tensor type the backend supports
     #' @param backend_class an EinopsBackend subclass generator
     #' @return this object
-    register_backend = function(backend_class) {
+    register_backend = function(tensor_type, backend_class) {
         assert_that(inherits(backend_class, "R6ClassGenerator"))
-        backend_singleton_instance <- backend_class$new()
-        if (!inherits(backend_singleton_instance, "EinopsBackend")) {
-            stop(glue("{backend_class} is not an EinopsBackend"))
-        }
-        tensor_type_name <- backend_singleton_instance$tensor_type()
-        private$type2backend[[tensor_type_name]] <- backend_class
+        private$type2backend[[tensor_type]] <- backend_class
         return(self)
     },
 
@@ -211,8 +209,6 @@ NullEinopsBackend <- R6Class(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    tensor_type = function() "array",
-
     required_pkgs = function() "abind",
 
     arange = function(start, stop) seq(from = start, to = stop),
@@ -261,16 +257,14 @@ public = list(
     }
 ))
 
-register_backend(BaseArrayBackend)
+register_backend("array", BaseArrayBackend)
 
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    tensor_type = function() "torch_tensor",
-
     required_pkgs = function() "torch"
 ))
 
-register_backend(TorchBackend)
+register_backend("torch_tensor", TorchBackend)
 
 # nolint end: indentation_linter.

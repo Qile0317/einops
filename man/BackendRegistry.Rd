@@ -53,12 +53,14 @@ A singleton instance of a \code{\link[=BackendRegistry]{BackendRegistry()}} obje
 \subsection{Method \code{register_backend()}}{
 Register a new backend singleton
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(backend_class)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(tensor_type, backend_class)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{tensor_type}}{a string with the tensor type the backend supports}
+
 \item{\code{backend_class}}{an EinopsBackend subclass generator}
 }
 \if{html}{\out{</div>}}
