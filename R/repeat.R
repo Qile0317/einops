@@ -21,20 +21,20 @@
 #' image <- array(rnorm(30*40), dim = c(30, 40))
 #'
 #' # change it to RGB format by repeating in each channel
-#' einops_repeat(image, 'h w -> h w c', c=3)
+#' einops.repeat(image, 'h w -> h w c', c=3)
 #'
 #' # repeat image 2 times along height (vertical axis)
-#' einops_repeat(image, 'h w -> (r h) w', r=2)
+#' einops.repeat(image, 'h w -> (r h) w', r=2)
 #'
 #' # repeat image 2 times along height and 3 times along width
-#' einops_repeat(image, 'h w -> (h2 h) (w3 w)', h2=2, w3=3)
+#' einops.repeat(image, 'h w -> (h2 h) (w3 w)', h2=2, w3=3)
 #'
 #' # convert each pixel to a small square 2x2, i.e. upsample an image by 2x
-#' einops_repeat(image, 'h w -> (h h2) (w w2)', h2=2, w2=2)
+#' einops.repeat(image, 'h w -> (h h2) (w w2)', h2=2, w2=2)
 #'
 #' # 'pixelate' an image first by downsampling by 2x, then upsampling
 #' # downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
-#' # einops_repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
+#' # einops.repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
 einops.repeat <- function(x, expr, ...) { # nolint: object_name_linter.
     reduce(x, expr, "repeat", ...)
 }

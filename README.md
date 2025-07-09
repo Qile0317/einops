@@ -122,3 +122,4 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [ ] Copy the existing einops docs pages as vignettes
 - [ ] update NEWS.md
 - [ ] CRAN release
+- [ ] Spelling check
