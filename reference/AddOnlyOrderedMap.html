@@ -125,24 +125,6 @@ the number of insertion/query inputs, in contrast to R lists which has
 quadratic time complexity for the same operations.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu">AddOnlyOrderedMap</span><span class="op">(</span>keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>, values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2)):</span> could not find function "AddOnlyOrderedMap"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># With validators</span></span></span>
-<span class="r-in"><span><span class="va">key_val</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">is.character</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">val_val</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">map_validated</span> <span class="op">&lt;-</span> <span class="fu">AddOnlyOrderedMap</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  key_validator <span class="op">=</span> <span class="va">key_val</span>,</span></span>
-<span class="r-in"><span>  val_validator <span class="op">=</span> <span class="va">val_val</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in AddOnlyOrderedMap(keys = c("a", "b"), values = c(1, 2), key_validator = key_val,     val_validator = val_val):</span> could not find function "AddOnlyOrderedMap"</span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
