@@ -233,6 +233,48 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
 }
 
 #' @export
+repr.r2r_hashset <- function(x, indent = 0L, ...) {
+
+    if (length(x) == 0) {
+        return(as_repr("r2r::hashset()"))
+    }
+    
+    elements_list <- r2r::keys(x)
+    
+    if (indent == 0L) {
+        element_reprs <- vapply(elements_list, function(element) {
+            paste0(repr(element, indent = 0L, ...), collapse = "")
+        }, character(1))
+        content <- paste(element_reprs, collapse = ", ")
+        return(as_repr(paste0("r2r::hashset(", content, ")")))
+    }
+    
+    indent_str <- strrep(" ", indent)
+    
+    element_lines <- lapply(elements_list, function(element) {
+        element_repr <- repr(element, indent = indent, ...)
+        paste0(indent_str, element_repr)
+    })
+    
+    if (length(element_lines) > 1) {
+        for (i in seq_len(length(element_lines) - 1L)) {
+            last_line_idx <- length(element_lines[[i]])
+            element_lines[[i]][last_line_idx] <- paste0(
+                element_lines[[i]][last_line_idx], ","
+            )
+        }
+    }
+    
+    out <- c(
+        "r2r::hashset(",
+        unlist(element_lines, use.names = FALSE),
+        ")"
+    )
+    
+    as_repr(out)
+}
+
+#' @export
 repr.R6 <- function(x, ...) {
     tryCatch(as_repr(x$repr(...)), error = function(e) repr.default(x, ...))
 }

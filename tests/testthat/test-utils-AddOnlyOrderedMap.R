@@ -1,5 +1,3 @@
-# Tests for AddOnlyOrderedMap and its methods
-
 test_that("AddOnlyOrderedMap basic creation and length", {
     map <- AddOnlyOrderedMap(keys = list("a", "b"), values = list(1, 2))
     expect_s3_class(map, "AddOnlyOrderedMap")
@@ -21,7 +19,6 @@ test_that("AddOnlyOrderedMap vectorized insertion and update", {
     map[c("a", "b")] <- c(1, 2)
     expect_equal(map[["a"]], 1)
     expect_equal(map[["b"]], 2)
-    # Update value
     map[["a"]] <- 100
     expect_equal(map[["a"]], 100)
 })

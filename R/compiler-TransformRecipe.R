@@ -235,11 +235,16 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     ))
 
+    # FIXME
     added_axes <- r2r::hashmap()
     left_identifiers <- get_identifiers_hashset(ast$input_axes)
     for (i in seq_along(ordered_axis_rght)) {
         axis_name <- ordered_axis_rght[[i]]
         if (!r2r::has_key(left_identifiers, axis_name)) {
+            pprint(axis_name)
+            print("_______________________")
+            pprint(axis_name2position)
+            print("_______________________")
             added_axes[[i]] <- axis_name2position[[axis_name]]
         }
     }
