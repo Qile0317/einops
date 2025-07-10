@@ -145,7 +145,13 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         repeat_axes_names %<>% c(ast_key)
     }
 
+    pprint(axis_name2known_length)
+    print("_______________________")
+
     axis_name2position <- get_key_to_index_map(axis_name2known_length)
+
+    pprint(axis_name2position)
+    print("_______________________")
 
     for (elementary_axis in axes_names) {
         # TODO check the axis name
@@ -219,7 +225,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     ordered_axis_rght <- add_rel_pos(get_ordered_axis_names(ast$output_axes))
     reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
     relative_output_identifiers <- get_identifiers_hashset(
-        ast$output_axes, add_relative_pos = TRUE
+        ast$output_axes, add_relative_positions = TRUE
     )
     order_after_transposition <- c(
         ordered_axis_rght[sapply(

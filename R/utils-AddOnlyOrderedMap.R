@@ -159,7 +159,6 @@ public = list(
         }
     },
 
-
     print = function(...) {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))

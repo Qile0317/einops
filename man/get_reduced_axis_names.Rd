@@ -7,14 +7,16 @@
 get_reduced_axis_names(x, y, ...)
 }
 \arguments{
-\item{x}{AxisNames object to reduce}
+\item{x}{\code{\link[=AxisNames]{AxisNames()}} object to reduce}
 
-\item{y}{AxisNames object containing axes to remove}
+\item{y}{\code{\link[=AxisNames]{AxisNames()}} object containing axes to remove}
 
 \item{...}{additional arguments (not used)}
 }
 \value{
-AxisNames object with axes from x that are not in y
+AxisNames object with axes from x that are not in y.
+Note that the only element left in each constant node's src
+list will be \code{relative_pos}.
 }
 \description{
 Get reduced axis names by removing axes present in y from x

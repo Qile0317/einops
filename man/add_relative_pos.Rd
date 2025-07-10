@@ -9,12 +9,17 @@ comparing \code{ConstantAstNode} objects in the AST, as they may
 have the same count, different/same starts, but same/different
 relative positions.}
 \usage{
-add_relative_pos(axes)
+add_relative_pos(axes, rm_other_src_elements = FALSE, ...)
 
-add_rel_pos(axes)
+add_rel_pos(axes, rm_other_src_elements = FALSE, ...)
 }
 \arguments{
 \item{axes}{a flat \code{\link[=AxisNames]{AxisNames()}} object}
+
+\item{rm_other_src_elements}{a boolean indicating whether to remove
+other source elements from the \code{ConstantAstNode} objects. If TRUE,
+the only element within the \code{src} list of each \code{ConstantAstNode}
+will be \code{relative_pos}, and all other elements will be removed.}
 }
 \value{
 a modified \code{\link[=AxisNames]{AxisNames()}} object with \code{relative_pos} added to
