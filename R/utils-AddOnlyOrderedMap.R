@@ -97,7 +97,10 @@ values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order()
 
 #' @export
 as.list.AddOnlyOrderedMap <- function(x, ...) {
-    FastUtils::setNames(values(x), sapply(keys(x), repr, indent = 0L))
+    FastUtils::setNames(
+        values(x),
+        as.character(sapply(keys(x), repr, indent = 0L))
+    )
 }
 
 get_key_to_index_map <- function(x, ...) UseMethod("get_key_to_index_map")
@@ -174,18 +177,15 @@ public = list(
         private$validate_inputs(key, value, vectorize)
         
         if (vectorize) {
-            # Identify new and existing keys
             is_existing <- r2r::has_key(private$key2value, key)
             new_keys <- key[!is_existing]
             existing_keys <- key[is_existing]
-            # Insert new keys and update highest_index only for them
             n_new <- length(new_keys)
             if (n_new > 0) {
                 private$key2value[new_keys] <- value[match(new_keys, key)]
                 private$key2index[new_keys] <- (private$highest_index + 1):(private$highest_index + n_new)
                 private$highest_index <- private$highest_index + n_new
             }
-            # Update values for existing keys, but do not update index or highest_index
             if (length(existing_keys) > 0) {
                 private$key2value[existing_keys] <- value[match(existing_keys, key)]
             }
@@ -196,7 +196,6 @@ public = list(
                 private$highest_index %+=% 1L
             } else {
                 private$key2value[[key]] <- value
-                # Do not update index or highest_index for existing key
             }
         }
 
