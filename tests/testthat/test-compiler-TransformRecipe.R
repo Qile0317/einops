@@ -210,13 +210,19 @@ test_that("prepare_transformation_recipe works", {
             4L
         ),
         TransformRecipe(
-            elementary_axes_lengths = rep(unknown_axis_length(), 8L),
+            elementary_axes_lengths = c(
+                rep(unknown_axis_length(), 2L),
+                rep(expected_axis_length(), 2L),
+                unknown_axis_length(),
+                rep(expected_axis_length(), 2L),
+                unknown_axis_length()
+            ),
             axis_name2elementary_axis = r2r::hashmap(
                 list("h2", 3L), list("w2", 6L), list("w3", 7L), list("h3", 4L)
             ),
             input_composition_known_unknown = list(
                 list(known = integer(), unknown = 1L),
-                list(known = c(4L, 3L), unknown = 2L),
+                list(known = c(3L, 4L), unknown = 2L),
                 list(known = c(6L, 7L), unknown = 5L),
                 list(known = integer(), unknown = 8L)
             ),
@@ -228,5 +234,6 @@ test_that("prepare_transformation_recipe works", {
             )
         )
     )
+
     # TODO some tests with ADDED axes
 })
