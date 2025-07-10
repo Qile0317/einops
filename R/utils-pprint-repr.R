@@ -180,7 +180,7 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 }
 
 #' @export
-repr.r2r_hashmap <- function(x, indent = 0L, ...) {
+repr.r2r_hashmap <- function(x, indent = 0L, s3_cons = TRUE, ...) {
 
     if (length(x) == 0) {
         return(as_repr("r2r::hashmap()"))
@@ -197,7 +197,7 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     if (indent == 0L) {
         # Create individual representations for each key-value pair
         pair_reprs <- vapply(kv_pairs, function(pair) {
-            paste0(repr(pair, indent = 0L, ...), collapse = "")
+            paste0(repr(pair, indent = 0L, s3_cons = TRUE, ...), collapse = "")
         }, character(1))
         content <- paste(pair_reprs, collapse = ", ")
         return(as_repr(paste0("r2r::hashmap(", content, ")")))
@@ -208,7 +208,7 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     
     # Create representations for each key-value pair with proper indentation
     pair_lines <- lapply(kv_pairs, function(pair) {
-        pair_repr <- repr(pair, indent = indent, ...)
+        pair_repr <- repr(pair, indent = indent, s3_cons = TRUE, ...)
         # Add indentation to each line
         paste0(indent_str, pair_repr)
     })
