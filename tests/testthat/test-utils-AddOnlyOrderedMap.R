@@ -67,3 +67,14 @@ test_that("size method returns correct size", {
     map[["b"]] <- 2
     expect_equal(map$size(), 2)
 })
+
+test_that("modifying a value preserves map integrity", {
+    map <- AddOnlyOrderedMap(keys = list("foo", "bar"), values = list(1, 2))
+    map[["foo"]] <- 99
+    expect_equal(map[["foo"]], 99)
+    expect_equal(map[["bar"]], 2)
+    expect_equal(keys(map), list("foo", "bar"))
+    expect_equal(values(map), list(99, 2))
+    expect_equal(unname(as.list(map)), list(99, 2))
+    expect_equal(map$size(), 2)
+})
