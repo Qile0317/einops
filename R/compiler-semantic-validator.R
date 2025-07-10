@@ -119,9 +119,7 @@ has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
 #' @export
 has_non_unitary_anonymous_axes.OneSidedAstNode <- function(x, ...) {
     any(sapply(x, function(child) {
-        if (inherits(child, "ConstantAstNode")) {
-            child$count > 1L
-        }
+        inherits(child, "ConstantAstNode") && child$count > 1L
     }))
 }
 
