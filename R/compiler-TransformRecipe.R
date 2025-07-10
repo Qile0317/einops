@@ -240,7 +240,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     for (i in seq_along(ordered_axis_rght)) {
         axis_name <- ordered_axis_rght[[i]]
         if (!r2r::has_key(left_identifiers, axis_name)) {
-            r2r::insert(added_axes, i, axis_name2position[[axis_name]])
+            added_axes[[i]] <- axis_name2position[[axis_name]]
         }
     }
 

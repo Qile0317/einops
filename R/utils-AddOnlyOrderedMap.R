@@ -110,6 +110,7 @@ get_key_to_index_map.AddOnlyOrderedMap <- function(x, ...) {
     x$get_key_to_index_map()
 }
 
+# this is essentially a LinkedHashMap without the ability to remove
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
 
@@ -146,7 +147,7 @@ public = list(
         private$val_validator <- val_validator
 
         if (!is.null(keys) && !is.null(values)) {
-            # private$validate_inputs(keys, values, vectorize = TRUE)
+            private$validate_inputs(keys, values, vectorize = TRUE)
             assert_that(length(keys) == length(values) || length(values) == 1L)
             private$key2value <- do.call(r2r::hashmap, FastUtils::zipit(keys, values))
             private$key2index <- do.call(r2r::hashmap, FastUtils::zipit(keys, seq_along(keys)))

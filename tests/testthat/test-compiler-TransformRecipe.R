@@ -235,5 +235,20 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
-    # TODO some tests with ADDED axes
+    expect_identical(
+        prepare_transformation_recipe(
+            "h w c -> h 5 w c", "repeat", character(), 3L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = c(
+                rep(unknown_axis_length(), 3L), 5L
+            ),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:3),
+            axes_permutation = c(1L, 2L, 3L),
+            first_reduced_axis = 4L,
+            added_axes = r2r::hashmap(list(2L, 4L)), # FIXME: outputs NULL inplace of 4
+            output_composite_axes = list(1L, 4L, 2L, 3L)
+        )
+    )
 })
