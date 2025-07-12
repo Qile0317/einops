@@ -60,18 +60,18 @@
 
 
 <dl><dt id="arg-init-shapes">init_shapes<a class="anchor" aria-label="anchor" href="#arg-init-shapes"></a></dt>
-<dd><p>Optional list of integers specifying initial tensor shapes
-for reshaping.</p></dd>
+<dd><p>integer vector specifying initial tensor shapes
+for reshaping. Length 0 signifies nullness.</p></dd>
 
 
 <dt id="arg-axes-reordering">axes_reordering<a class="anchor" aria-label="anchor" href="#arg-axes-reordering"></a></dt>
-<dd><p>Optional list of integers specifying the order for
-transposing tensor axes.</p></dd>
+<dd><p>integer vector specifying the order for
+transposing tensor axes. Length 0 signifies nullness.</p></dd>
 
 
 <dt id="arg-reduced-axes">reduced_axes<a class="anchor" aria-label="anchor" href="#arg-reduced-axes"></a></dt>
 <dd><p>List of integers specifying which axes to reduce during
-operations.</p></dd>
+operations. Length 0 signifies nullness.</p></dd>
 
 
 <dt id="arg-added-axes">added_axes<a class="anchor" aria-label="anchor" href="#arg-added-axes"></a></dt>
@@ -81,7 +81,7 @@ lengths (int) for axes to be added.</p></dd>
 
 <dt id="arg-final-shapes">final_shapes<a class="anchor" aria-label="anchor" href="#arg-final-shapes"></a></dt>
 <dd><p>list of integers specifying final tensor shapes
-for reshaping. Signify nullness with integer(0)</p></dd>
+for reshaping. Length 0 signifies nullness.</p></dd>
 
 
 <dt id="arg-n-axes-w-added">n_axes_w_added<a class="anchor" aria-label="anchor" href="#arg-n-axes-w-added"></a></dt>

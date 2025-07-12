@@ -79,7 +79,10 @@ integer positions of the elementary axes.</p></dd>
 
 <dt id="arg-input-composition-known-unknown">input_composition_known_unknown<a class="anchor" aria-label="anchor" href="#arg-input-composition-known-unknown"></a></dt>
 <dd><p>List of list(known, unknown).
-known and unknown are integer vectors.</p></dd>
+known and unknown are integer vectors containing axis positions. These
+unknown and unknown integer vectors represent an unordered set and are
+always sorted to help with testing.
+ascending order for deterministic output.</p></dd>
 
 
 <dt id="arg-axes-permutation">axes_permutation<a class="anchor" aria-label="anchor" href="#arg-axes-permutation"></a></dt>
