@@ -89,11 +89,11 @@ pattern</p>
 <span class="r-in"><span><span class="co"># perform max-reduction on the first axis</span></span></span>
 <span class="r-in"><span><span class="co"># Axis t does not appear on RHS - thus we reduced over t</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'t b c -&gt; b c'</span>, <span class="st">'max'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - argument "index" is missing, with no default</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># same as previous, but using verbose names for axes</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'time batch channel -&gt; batch channel'</span>, <span class="st">'max'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - argument "index" is missing, with no default</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># let's pretend now that x is a batch of images</span></span></span>
 <span class="r-in"><span><span class="co"># with 4 dims: batch=10, height=20, width=30, channel=40</span></span></span>
@@ -101,36 +101,36 @@ pattern</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2d max-pooling with kernel size = 2 * 2 for image processing</span></span></span>
 <span class="r-in"><span><span class="va">y1</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 h2) (w1 w2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># same as previous, using anonymous axes,</span></span></span>
 <span class="r-in"><span><span class="co"># note: only reduced axes can be anonymous</span></span></span>
 <span class="r-in"><span><span class="va">y1</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 2) (w1 2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># adaptive 2d max-pooling to 3 * 4 grid,</span></span></span>
 <span class="r-in"><span><span class="co"># each element is max of 10x10 tile in the original tensor.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 h2) (w1 w2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span>, h1<span class="op">=</span><span class="fl">3</span>, w1<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span><span class="co"># (10, 20, 3, 4)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Global average pooling</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c'</span>, <span class="st">'mean'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - argument "index" is missing, with no default</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span><span class="co"># (10, 20)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># subtracting mean over batch for each channel;</span></span></span>
 <span class="r-in"><span><span class="co"># similar to x - apply(x, c(2,3,4), mean)</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; 1 c 1 1'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - argument "index" is missing, with no default</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Subtracting per-image mean for each channel</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c 1 1'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - argument "index" is missing, with no default</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># same as previous, but using empty compositions</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c () ()'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - no applicable method for 'contains_node' applied to an object of class "list"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> In Einops - axes_names is not a character vector</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

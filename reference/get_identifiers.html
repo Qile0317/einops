@@ -57,7 +57,7 @@ nodes are flattened, and EllipsisAstNode nodes are ignored.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_identifiers</span><span class="op">(</span><span class="va">ast</span>, add_relative_pos <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_identifiers</span><span class="op">(</span><span class="va">ast</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -65,12 +65,9 @@ nodes are flattened, and EllipsisAstNode nodes are ignored.</p>
 
 
 <dl><dt id="arg-ast">ast<a class="anchor" aria-label="anchor" href="#arg-ast"></a></dt>
-<dd><p>the Abstract Syntax Tree (AST) of the einops expression</p></dd>
-
-
-<dt id="arg-add-relative-pos">add_relative_pos<a class="anchor" aria-label="anchor" href="#arg-add-relative-pos"></a></dt>
-<dd><p>a boolean indicating whether to add relative
-positions to the <code>ConstantAstNode</code> objects in the output.</p></dd>
+<dd><p>the Abstract Syntax Tree (AST) of the einops expression
+positions to the <code>ConstantAstNode</code> objects in the output. This will
+REMOVE all other elements in the src list.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
