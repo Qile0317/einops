@@ -237,6 +237,28 @@ test_that("prepare_transformation_recipe works", {
 
     expect_identical(
         prepare_transformation_recipe(
+            "(b h w) c2 -> b c2 h w", "rearrange", c("b", "h", "w"), 2L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = c(
+                rep(expected_axis_length(), 3L), unknown_axis_length()
+            ),
+            axis_name2elementary_axis = r2r::hashmap(
+                list("b", 1L), list("h", 2L), list("w", 3L)
+            ),
+            input_composition_known_unknown = list(
+                list(known = 1:3, unknown = integer()),
+                list(known = integer(), unknown = 4L)
+            ),
+            axes_permutation = c(1L, 4L, 2L, 3L),
+            first_reduced_axis = 5L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(1L, 4L, 2L, 3L)
+        )
+    )
+
+    expect_identical(
+        prepare_transformation_recipe(
             "h w c -> h 5 w c", "repeat", character(), 3L
         ),
         TransformRecipe(

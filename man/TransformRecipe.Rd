@@ -26,7 +26,10 @@ The keys are unclassed \code{\link[=AxisNames]{AxisNames()}} objects, and the va
 integer positions of the elementary axes.}
 
 \item{input_composition_known_unknown}{List of list(known, unknown).
-known and unknown are integer vectors.}
+known and unknown are integer vectors containing axis positions. These
+unknown and unknown integer vectors represent an unordered set and are
+always sorted to help with testing.
+ascending order for deterministic output.}
 
 \item{axes_permutation}{Integer vector. Permutation applied to elementary
 axes, if ellipsis is absent.}
