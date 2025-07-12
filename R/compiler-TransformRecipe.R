@@ -99,12 +99,18 @@ is_expected_axis_length <- function(x) {
 #'
 #' @param expr The input einops expression string
 #' @param func The string/function indicating the reduction operation
-#' @param axes_names the user defined keyword args for dims as a [list()].
-#' Names correspond to axes variable names, and values are their dimension.
+#' @param axes_names user defined axis names as a [character()] vector.
 #' @param ndim count for the number of dimensions of the input tensor
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
 prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+
+    assert_that(
+        is.character(expr) && length(expr) == 1L,
+        is.character(func) || is.function(func),
+        is.character(axes_names),
+        is.count(ndim)
+    )
 
     tokens <- lex(expr)
 
@@ -113,7 +119,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         expand_ellipsis(ndim)
 
     axis_name2known_length <- AddOnlyOrderedMap(
-        key_validator = is_flat_axis_names_element,
+        key_validator = is_flat_axis_names_element, # TODO I think only characters are needed
         val_validator = function(x) {
             if (!(is.integer(x) && length(x) == 1L)) return(FALSE)
             x > 0L || is_unknown_axis_length(x) || is_expected_axis_length(x)
@@ -209,16 +215,21 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    ordered_axis_left <- add_rel_pos(get_ordered_axis_names(ast$input_axes))
-    ordered_axis_rght <- add_rel_pos(get_ordered_axis_names(ast$output_axes))
-    reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
-    relative_output_identifiers <- get_identifiers_hashset(
-        ast$output_axes, add_relative_pos = TRUE
+    ordered_axis_left <- get_ordered_axis_names(ast$input_axes)
+    ordered_axis_rght <- get_ordered_axis_names(ast$output_axes)
+    reduced_axes <- AxisNames(Filter(
+        function(axis) {
+            !r2r::has_key(do.call(r2r::hashset, ordered_axis_rght), axis)
+        },
+        ordered_axis_left
+    ))
+    input_identifiers <- get_identifiers_hashset(
+        ast$input_axes
     )
     order_after_transposition <- c(
         ordered_axis_rght[sapply(
             ordered_axis_rght,
-            function(axis) r2r::has_key(relative_output_identifiers, axis)
+            function(axis) r2r::has_key(input_identifiers, axis)
         )],
         reduced_axes
     )
@@ -229,12 +240,13 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     ))
 
+    # FIXME
     added_axes <- r2r::hashmap()
     left_identifiers <- get_identifiers_hashset(ast$input_axes)
     for (i in seq_along(ordered_axis_rght)) {
         axis_name <- ordered_axis_rght[[i]]
         if (!r2r::has_key(left_identifiers, axis_name)) {
-            r2r::insert(added_axes, i, axis_name2position[[axis_name]])
+            added_axes[[i]] <- axis_name2position[[axis_name]]
         }
     }
 
@@ -246,7 +258,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
             do.call(
                 r2r::hashmap,
                 FastUtils::zipit(
-                    names(axes_names), axis_name2position[names(axes_names)]
+                    axes_names, axis_name2position[axes_names]
                 )
             ),
         input_composition_known_unknown = input_axes_known_unknown,

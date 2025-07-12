@@ -71,12 +71,12 @@ as_iterables.AxisNames <- function(x, ...) {
 #' are just themselves, aside from 1 which is ignored. GroupAstNode
 #' nodes are flattened, and EllipsisAstNode nodes are ignored.
 #' @param ast the Abstract Syntax Tree (AST) of the einops expression
-#' @param add_relative_pos a boolean indicating whether to add relative
-#' positions to the `ConstantAstNode` objects in the output.
+#' positions to the `ConstantAstNode` objects in the output. This will
+#' REMOVE all other elements in the src list.
 #' @param ... additional arguments (not used)
 #' @return an [AxisNames()] of unique identifiers
 #' @keywords internal
-get_identifiers <- function(ast, add_relative_pos = FALSE, ...) {
+get_identifiers <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
     identifiers <- r2r::hashset()
     for (node in get_ungrouped_nodes(ast)) {
@@ -95,16 +95,15 @@ get_identifiers <- function(ast, add_relative_pos = FALSE, ...) {
             class(node)[1]
         )
     }
-    if (add_relative_pos) {
-        identifiers <- add_relative_pos(identifiers)
-    }
     AxisNames(r2r::keys(identifiers))
 }
 
-get_identifiers_hashset <- function(ast, add_relative_pos = FALSE, ...) {
+get_identifiers_hashset <- function(ast, ...) {
     do.call(
         r2r::hashset,
-        get_identifiers(ast, add_relative_pos = add_relative_pos, ...)
+        get_identifiers(
+            ast, ...
+        )
     )
 }
 
@@ -149,56 +148,6 @@ get_ordered_axis_names <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
     AxisNames(unlist(as_iterables(as_axis_names(ast)), recursive = FALSE))
 }
-
-#' Get reduced axis names by removing axes present in y from x
-#' @param x AxisNames object to reduce
-#' @param y AxisNames object containing axes to remove
-#' @param ... additional arguments (not used)
-#' @return AxisNames object with axes from x that are not in y
-#' @keywords internal
-get_reduced_axis_names <- function(x, y, ...) {
-    assert_that(inherits(x, "AxisNames"))
-    assert_that(inherits(y, "AxisNames"))
-
-    x_axes <- add_relative_pos(x)
-    y_axes <- add_relative_pos(y)
-    y_identifiers <- do.call(r2r::hashset, y_axes)
-    
-    result_axes <- Filter(
-        function(axis) !r2r::has_key(y_identifiers, axis), x_axes
-    )
-    AxisNames(result_axes)
-}
-
-#' Given a flat [AxisNames()] object, add relative positions
-#' to each `ConstantAstNode` in the list. This is used for
-#' comparing `ConstantAstNode` objects in the AST, as they may
-#' have the same count, different/same starts, but same/different
-#' relative positions.
-#' @param axes a flat [AxisNames()] object
-#' @return a modified [AxisNames()] object with `relative_pos` added to
-#' each `ConstantAstNode` in the list.
-#' @keywords internal
-add_relative_pos <- function(axes) {
-    const_positions <- list()
-    
-    for (i in seq_along(axes)) {
-        if (inherits(axes[[i]], "ConstantAstNode")) {
-            count <- axes[[i]]$count
-            if (is.null(const_positions[[as.character(count)]])) {
-                const_positions[[as.character(count)]] <- 1
-            } else {
-                const_positions[[as.character(count)]] %+=% 1
-            }
-            axes[[i]]$src$relative_pos <- const_positions[[as.character(count)]]
-        }
-    }
-    axes
-}
-
-#' @rdname add_relative_pos
-#' @keywords internal
-add_rel_pos <- add_relative_pos
 
 # check of an object can be a single element within a flat [AxisNames()]
 # object. This is used for code readability.

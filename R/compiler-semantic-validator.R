@@ -19,9 +19,8 @@ validate_reduction_operation <- function(einops_ast, operation) {
 
     # check for nested brackets
     for (axes in list(left, rght)) {
-        group_nodes <- axes[find_node_types_indices(axes, "GroupAstNode")]
-        for (grp_node in group_nodes) {
-            if (contains_node(grp_node$children, "GroupAstNode")) {
+        for (grp_node in axes[find_node_types_indices(axes, "GroupAstNode")]) {
+            if (contains_node(grp_node, "GroupAstNode")) {
                 stop(glue(
                     "Nested brackets are not allowed in the expression: ",
                     "{to_expression(einops_ast)}"
@@ -120,9 +119,7 @@ has_non_unitary_anonymous_axes.EinopsAst <- function(x, ...) {
 #' @export
 has_non_unitary_anonymous_axes.OneSidedAstNode <- function(x, ...) {
     any(sapply(x, function(child) {
-        if (inherits(child, "ConstantAstNode")) {
-            child$count > 1L
-        }
+        inherits(child, "ConstantAstNode") && child$count > 1L
     }))
 }
 

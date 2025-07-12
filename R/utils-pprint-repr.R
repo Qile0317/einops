@@ -180,7 +180,7 @@ repr.list <- function(x, indent = 0L, incl_nm = TRUE, s3_cons = FALSE, ...) {
 }
 
 #' @export
-repr.r2r_hashmap <- function(x, indent = 0L, ...) {
+repr.r2r_hashmap <- function(x, indent = 0L, s3_cons = TRUE, ...) {
 
     if (length(x) == 0) {
         return(as_repr("r2r::hashmap()"))
@@ -197,7 +197,7 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     if (indent == 0L) {
         # Create individual representations for each key-value pair
         pair_reprs <- vapply(kv_pairs, function(pair) {
-            paste0(repr(pair, indent = 0L, ...), collapse = "")
+            paste0(repr(pair, indent = 0L, s3_cons = TRUE, ...), collapse = "")
         }, character(1))
         content <- paste(pair_reprs, collapse = ", ")
         return(as_repr(paste0("r2r::hashmap(", content, ")")))
@@ -208,7 +208,7 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     
     # Create representations for each key-value pair with proper indentation
     pair_lines <- lapply(kv_pairs, function(pair) {
-        pair_repr <- repr(pair, indent = indent, ...)
+        pair_repr <- repr(pair, indent = indent, s3_cons = TRUE, ...)
         # Add indentation to each line
         paste0(indent_str, pair_repr)
     })
@@ -226,6 +226,48 @@ repr.r2r_hashmap <- function(x, indent = 0L, ...) {
     out <- c(
         "r2r::hashmap(",
         unlist(pair_lines, use.names = FALSE),
+        ")"
+    )
+    
+    as_repr(out)
+}
+
+#' @export
+repr.r2r_hashset <- function(x, indent = 0L, ...) {
+
+    if (length(x) == 0) {
+        return(as_repr("r2r::hashset()"))
+    }
+    
+    elements_list <- r2r::keys(x)
+    
+    if (indent == 0L) {
+        element_reprs <- vapply(elements_list, function(element) {
+            paste0(repr(element, indent = 0L, ...), collapse = "")
+        }, character(1))
+        content <- paste(element_reprs, collapse = ", ")
+        return(as_repr(paste0("r2r::hashset(", content, ")")))
+    }
+    
+    indent_str <- strrep(" ", indent)
+    
+    element_lines <- lapply(elements_list, function(element) {
+        element_repr <- repr(element, indent = indent, ...)
+        paste0(indent_str, element_repr)
+    })
+    
+    if (length(element_lines) > 1) {
+        for (i in seq_len(length(element_lines) - 1L)) {
+            last_line_idx <- length(element_lines[[i]])
+            element_lines[[i]][last_line_idx] <- paste0(
+                element_lines[[i]][last_line_idx], ","
+            )
+        }
+    }
+    
+    out <- c(
+        "r2r::hashset(",
+        unlist(element_lines, use.names = FALSE),
         ")"
     )
     

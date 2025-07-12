@@ -97,7 +97,10 @@ values.AddOnlyOrderedMap <- function(x, ...) x$get_values_in_order()
 
 #' @export
 as.list.AddOnlyOrderedMap <- function(x, ...) {
-    FastUtils::setNames(values(x), sapply(keys(x), repr, indent = 0L))
+    FastUtils::setNames(
+        values(x),
+        as.character(sapply(keys(x), repr, indent = 0L))
+    )
 }
 
 get_key_to_index_map <- function(x, ...) UseMethod("get_key_to_index_map")
@@ -107,6 +110,7 @@ get_key_to_index_map.AddOnlyOrderedMap <- function(x, ...) {
     x$get_key_to_index_map()
 }
 
+# this is essentially a LinkedHashMap without the ability to remove
 .AddOnlyOrderedMap <- R6Class("AddOnlyOrderedMap",
 private = list( # nolint start: indentation_linter
 
@@ -143,7 +147,7 @@ public = list(
         private$val_validator <- val_validator
 
         if (!is.null(keys) && !is.null(values)) {
-            # private$validate_inputs(keys, values, vectorize = TRUE)
+            private$validate_inputs(keys, values, vectorize = TRUE)
             assert_that(length(keys) == length(values) || length(values) == 1L)
             private$key2value <- do.call(r2r::hashmap, FastUtils::zipit(keys, values))
             private$key2index <- do.call(r2r::hashmap, FastUtils::zipit(keys, seq_along(keys)))
@@ -155,13 +159,12 @@ public = list(
         }
     },
 
-
     print = function(...) {
         cat("AddOnlyOrderedMap with", self$size(), "elements:\n")
         if (self$size() == 0) return(invisible(self))
         keys <- self$get_keys_in_order()
         values <- self$query(keys, vectorize = TRUE)
-        key_str_reprsentations <- sapply(keys, repr)
+        key_str_reprsentations <- sapply(keys, repr, indent = 0L, s3_cons = TRUE, ...)
         names(values) <- key_str_reprsentations
         repr_lines <- repr(values, indent = 2L, s3_cons = TRUE, ...)
         cat(repr_lines[c(-1, -length(repr_lines))], sep = "\n")
@@ -174,14 +177,26 @@ public = list(
         private$validate_inputs(key, value, vectorize)
         
         if (vectorize) {
-            private$key2value[key] <- value
-            private$highest_index <- private$highest_index + length(key)
-            private$key2index[key] <-
-                (private$highest_index - length(key) + 1):private$highest_index
+            is_existing <- r2r::has_key(private$key2value, key)
+            new_keys <- key[!is_existing]
+            existing_keys <- key[is_existing]
+            n_new <- length(new_keys)
+            if (n_new > 0) {
+                private$key2value[new_keys] <- value[match(new_keys, key)]
+                private$key2index[new_keys] <- (private$highest_index + 1):(private$highest_index + n_new)
+                private$highest_index <- private$highest_index + n_new
+            }
+            if (length(existing_keys) > 0) {
+                private$key2value[existing_keys] <- value[match(existing_keys, key)]
+            }
         } else {
-            private$key2value[[key]] <- value
-            private$key2index[[key]] <- private$highest_index + 1L
-            private$highest_index %+=% 1L
+            if (!r2r::has_key(private$key2value, key)) {
+                private$key2value[[key]] <- value
+                private$key2index[[key]] <- private$highest_index + 1L
+                private$highest_index %+=% 1L
+            } else {
+                private$key2value[[key]] <- value
+            }
         }
 
         invisible(self)

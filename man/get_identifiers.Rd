@@ -4,13 +4,12 @@
 \alias{get_identifiers}
 \title{Given a \code{OneSidedAstNode} object, get unique identifiers}
 \usage{
-get_identifiers(ast, add_relative_pos = FALSE, ...)
+get_identifiers(ast, ...)
 }
 \arguments{
-\item{ast}{the Abstract Syntax Tree (AST) of the einops expression}
-
-\item{add_relative_pos}{a boolean indicating whether to add relative
-positions to the \code{ConstantAstNode} objects in the output.}
+\item{ast}{the Abstract Syntax Tree (AST) of the einops expression
+positions to the \code{ConstantAstNode} objects in the output. This will
+REMOVE all other elements in the src list.}
 
 \item{...}{additional arguments (not used)}
 }
