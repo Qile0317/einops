@@ -55,16 +55,16 @@ apply_recipe <- function(
 #' @title
 #' Constructor for an Execution Plan (`CookedRecipe` in the python sourcecode)
 #'
-#' @param init_shapes Optional list of integers specifying initial tensor shapes
-#' for reshaping.
-#' @param axes_reordering Optional list of integers specifying the order for
-#' transposing tensor axes.
+#' @param init_shapes integer vector specifying initial tensor shapes
+#' for reshaping. Length 0 signifies nullness.
+#' @param axes_reordering integer vector specifying the order for
+#' transposing tensor axes. Length 0 signifies nullness.
 #' @param reduced_axes List of integers specifying which axes to reduce during
-#' operations.
+#' operations. Length 0 signifies nullness.
 #' @param added_axes [r2r::hashmap()] mapping axis positions (int) to their
 #' lengths (int) for axes to be added.
 #' @param final_shapes list of integers specifying final tensor shapes
-#' for reshaping. Signify nullness with integer(0)
+#' for reshaping. Length 0 signifies nullness.
 #' @param n_axes_w_added Integer specifying the total number of axes after
 #' adding new axes.
 #' @return An object of class `EinopsExecutionPlan`, which is a list containing
@@ -82,11 +82,11 @@ EinopsExecutionPlan <- function(
 ) {
 
     assert_that(
-        is.null(init_shapes) || is.integer(init_shapes),
-        is.null(axes_reordering) || is.integer(axes_reordering),
+        is.integer(init_shapes),
+        is.integer(axes_reordering),
         is.integer(reduced_axes),
         inherits(added_axes, "r2r_hashmap"),
-        is.null(final_shapes) || is.integer(final_shapes),
+        is.integer(final_shapes),
         is.integer(n_axes_w_added) &&
             length(n_axes_w_added) == 1L &&
             n_axes_w_added >= 0L
@@ -114,6 +114,7 @@ EinopsExecutionPlan <- function(
 #' @param recipe a populated [TransformRecipe()] object
 #' @param shape A vector of integers representing the shape of the tensor.
 #' @param axes_dims A named list of axes names to their dimensions/lengths.
+#' May also be an empty list.
 #' @return An `EinopsExecutionPlan` object that contains the execution plan for
 #' transforming tensors according to the specified recipe and shape.
 #' @keywords internal
