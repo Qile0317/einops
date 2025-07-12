@@ -251,4 +251,7 @@ test_that("prepare_transformation_recipe works", {
             output_composite_axes = list(1L, 4L, 2L, 3L)
         )
     )
+
+    # TODO complicated test with 1's, anon axes, brackets, ellipses, and axis names
+
 })

@@ -71,13 +71,12 @@ as_iterables.AxisNames <- function(x, ...) {
 #' are just themselves, aside from 1 which is ignored. GroupAstNode
 #' nodes are flattened, and EllipsisAstNode nodes are ignored.
 #' @param ast the Abstract Syntax Tree (AST) of the einops expression
-#' @param add_relative_positions a boolean indicating whether to add relative
 #' positions to the `ConstantAstNode` objects in the output. This will
 #' REMOVE all other elements in the src list.
 #' @param ... additional arguments (not used)
 #' @return an [AxisNames()] of unique identifiers
 #' @keywords internal
-get_identifiers <- function(ast, add_relative_positions = FALSE, ...) {
+get_identifiers <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
     identifiers <- r2r::hashset()
     for (node in get_ungrouped_nodes(ast)) {
@@ -96,17 +95,14 @@ get_identifiers <- function(ast, add_relative_positions = FALSE, ...) {
             class(node)[1]
         )
     }
-    if (add_relative_positions) {
-        identifiers %<>% add_relative_pos(rm_other_src_elements = TRUE)
-    }
     AxisNames(r2r::keys(identifiers))
 }
 
-get_identifiers_hashset <- function(ast, add_relative_positions = FALSE, ...) {
+get_identifiers_hashset <- function(ast, ...) {
     do.call(
         r2r::hashset,
         get_identifiers(
-            ast, add_relative_positions = add_relative_positions, ...
+            ast, ...
         )
     )
 }
@@ -151,66 +147,6 @@ as_axis_names.OneSidedAstNode <- function(ast, ...) {
 get_ordered_axis_names <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
     AxisNames(unlist(as_iterables(as_axis_names(ast)), recursive = FALSE))
-}
-
-#' Get reduced axis names by removing axes present in y from x
-#' @param x [AxisNames()] object to reduce
-#' @param y [AxisNames()] object containing axes to remove
-#' @param ... additional arguments (not used)
-#' @return AxisNames object with axes from x that are not in y.
-#' Note that the only element left in each constant node's src
-#' list will be `relative_pos`.
-#'
-#' @keywords internal
-get_reduced_axis_names <- function(x, y, ...) {
-    # FIXME this is not correct, the set difference with the src relative pos is likely wrong
-    # Need to check how the original impl handl this - perhaps every single element of x and y
-    # must be distinct for the SAME ConstantAstNode COUNT.
-    assert_that(
-        inherits(x, "AxisNames"), inherits(y, "AxisNames")
-    )
-
-    x_axes <- add_relative_pos(x, rm_other_src_elements = TRUE)
-    y_axes <- add_relative_pos(y, rm_other_src_elements = TRUE)
-    y_identifiers <- do.call(r2r::hashset, y_axes)
-    
-    result_axes <- Filter(
-        function(axis) !r2r::has_key(y_identifiers, axis), x_axes
-    )
-    AxisNames(result_axes)
-}
-
-#' Given a flat [AxisNames()] object, add relative positions
-#' to each `ConstantAstNode` in the list. This is used for
-#' comparing `ConstantAstNode` objects in the AST, as they may
-#' have the same count, different/same starts, but same/different
-#' relative positions.
-#' @param axes a flat [AxisNames()] object
-#' @param rm_other_src_elements a boolean indicating whether to remove
-#' other source elements from the `ConstantAstNode` objects. If TRUE,
-#' the only element within the `src` list of each `ConstantAstNode`
-#' will be `relative_pos`, and all other elements will be removed.
-#' @return a modified [AxisNames()] object with `relative_pos` added to
-#' each `ConstantAstNode` in the list.
-#' @keywords internal
-add_relative_pos <- function(axes, rm_other_src_elements = FALSE, ...) {
-    const_positions <- list()
-    
-    for (i in seq_along(axes)) {
-        if (inherits(axes[[i]], "ConstantAstNode")) {
-            count <- axes[[i]]$count
-            if (is.null(const_positions[[as.character(count)]])) {
-                const_positions[[as.character(count)]] <- 1
-            } else {
-                const_positions[[as.character(count)]] %+=% 1
-            }
-            axes[[i]]$src$relative_pos <- const_positions[[as.character(count)]]
-
-            if (!rm_other_src_elements) next
-            axes[[i]]$src <- list(relative_pos = axes[[i]]$src$relative_pos)
-        }
-    }
-    axes
 }
 
 # check of an object can be a single element within a flat [AxisNames()]
