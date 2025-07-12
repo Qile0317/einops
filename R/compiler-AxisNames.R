@@ -72,7 +72,8 @@ as_iterables.AxisNames <- function(x, ...) {
 #' nodes are flattened, and EllipsisAstNode nodes are ignored.
 #' @param ast the Abstract Syntax Tree (AST) of the einops expression
 #' @param add_relative_positions a boolean indicating whether to add relative
-#' positions to the `ConstantAstNode` objects in the output.
+#' positions to the `ConstantAstNode` objects in the output. This will
+#' REMOVE all other elements in the src list.
 #' @param ... additional arguments (not used)
 #' @return an [AxisNames()] of unique identifiers
 #' @keywords internal
@@ -96,7 +97,7 @@ get_identifiers <- function(ast, add_relative_positions = FALSE, ...) {
         )
     }
     if (add_relative_positions) {
-        identifiers <- add_relative_pos(identifiers)
+        identifiers %<>% add_relative_pos(rm_other_src_elements = TRUE)
     }
     AxisNames(r2r::keys(identifiers))
 }
@@ -159,6 +160,7 @@ get_ordered_axis_names <- function(ast, ...) {
 #' @return AxisNames object with axes from x that are not in y.
 #' Note that the only element left in each constant node's src
 #' list will be `relative_pos`.
+#'
 #' @keywords internal
 get_reduced_axis_names <- function(x, y, ...) {
     # FIXME this is not correct, the set difference with the src relative pos is likely wrong
@@ -210,10 +212,6 @@ add_relative_pos <- function(axes, rm_other_src_elements = FALSE, ...) {
     }
     axes
 }
-
-#' @rdname add_relative_pos
-#' @keywords internal
-add_rel_pos <- add_relative_pos
 
 # check of an object can be a single element within a flat [AxisNames()]
 # object. This is used for code readability.

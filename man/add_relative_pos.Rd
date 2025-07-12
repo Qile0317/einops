@@ -2,7 +2,6 @@
 % Please edit documentation in R/compiler-AxisNames.R
 \name{add_relative_pos}
 \alias{add_relative_pos}
-\alias{add_rel_pos}
 \title{Given a flat \code{\link[=AxisNames]{AxisNames()}} object, add relative positions
 to each \code{ConstantAstNode} in the list. This is used for
 comparing \code{ConstantAstNode} objects in the AST, as they may
@@ -10,8 +9,6 @@ have the same count, different/same starts, but same/different
 relative positions.}
 \usage{
 add_relative_pos(axes, rm_other_src_elements = FALSE, ...)
-
-add_rel_pos(axes, rm_other_src_elements = FALSE, ...)
 }
 \arguments{
 \item{axes}{a flat \code{\link[=AxisNames]{AxisNames()}} object}

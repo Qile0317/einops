@@ -145,13 +145,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         repeat_axes_names %<>% c(ast_key)
     }
 
-    pprint(axis_name2known_length)
-    print("_______________________")
-
     axis_name2position <- get_key_to_index_map(axis_name2known_length)
-
-    pprint(axis_name2position)
-    print("_______________________")
 
     for (elementary_axis in axes_names) {
         # TODO check the axis name
@@ -221,16 +215,20 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    ordered_axis_left <- add_rel_pos(get_ordered_axis_names(ast$input_axes))
-    ordered_axis_rght <- add_rel_pos(get_ordered_axis_names(ast$output_axes))
+    ordered_axis_left <- add_relative_pos(
+        get_ordered_axis_names(ast$input_axes), rm_other_src_elements = TRUE
+    )
+    ordered_axis_rght <- add_relative_pos(
+        get_ordered_axis_names(ast$output_axes), rm_other_src_elements = TRUE
+    )
     reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
-    relative_output_identifiers <- get_identifiers_hashset(
-        ast$output_axes, add_relative_positions = TRUE
+    relative_input_identifiers <- get_identifiers_hashset(
+        ast$input_axes, add_relative_positions = TRUE
     )
     order_after_transposition <- c(
         ordered_axis_rght[sapply(
             ordered_axis_rght,
-            function(axis) r2r::has_key(relative_output_identifiers, axis)
+            function(axis) r2r::has_key(relative_input_identifiers, axis)
         )],
         reduced_axes
     )
@@ -247,10 +245,6 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     for (i in seq_along(ordered_axis_rght)) {
         axis_name <- ordered_axis_rght[[i]]
         if (!r2r::has_key(left_identifiers, axis_name)) {
-            pprint(axis_name)
-            print("_______________________")
-            pprint(axis_name2position)
-            print("_______________________")
             added_axes[[i]] <- axis_name2position[[axis_name]]
         }
     }

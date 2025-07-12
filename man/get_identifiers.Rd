@@ -10,7 +10,8 @@ get_identifiers(ast, add_relative_positions = FALSE, ...)
 \item{ast}{the Abstract Syntax Tree (AST) of the einops expression}
 
 \item{add_relative_positions}{a boolean indicating whether to add relative
-positions to the \code{ConstantAstNode} objects in the output.}
+positions to the \code{ConstantAstNode} objects in the output. This will
+REMOVE all other elements in the src list.}
 
 \item{...}{additional arguments (not used)}
 }
