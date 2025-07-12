@@ -11,7 +11,8 @@ create_execution_plan(recipe, shape, axes_dims)
 
 \item{shape}{A vector of integers representing the shape of the tensor.}
 
-\item{axes_dims}{A named list of axes names to their dimensions/lengths.}
+\item{axes_dims}{A named list of axes names to their dimensions/lengths.
+May also be an empty list.}
 }
 \value{
 An \code{EinopsExecutionPlan} object that contains the execution plan for

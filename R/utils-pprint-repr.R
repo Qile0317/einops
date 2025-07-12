@@ -38,7 +38,7 @@ repr <- function(x, indent = 0L, ...) {
 
 as_repr <- function(x) {
     assert_that(is.character(x))
-    structure(x, class = c("repr_output", class(x)))
+    structure(x, class = c("repr_output", "character"))
 }
 
 #' @export

@@ -14,20 +14,20 @@ EinopsExecutionPlan(
 )
 }
 \arguments{
-\item{init_shapes}{Optional list of integers specifying initial tensor shapes
-for reshaping.}
+\item{init_shapes}{integer vector specifying initial tensor shapes
+for reshaping. Length 0 signifies nullness.}
 
-\item{axes_reordering}{Optional list of integers specifying the order for
-transposing tensor axes.}
+\item{axes_reordering}{integer vector specifying the order for
+transposing tensor axes. Length 0 signifies nullness.}
 
 \item{reduced_axes}{List of integers specifying which axes to reduce during
-operations.}
+operations. Length 0 signifies nullness.}
 
 \item{added_axes}{\code{\link[r2r:hashtable]{r2r::hashmap()}} mapping axis positions (int) to their
 lengths (int) for axes to be added.}
 
 \item{final_shapes}{list of integers specifying final tensor shapes
-for reshaping. Signify nullness with integer(0)}
+for reshaping. Length 0 signifies nullness.}
 
 \item{n_axes_w_added}{Integer specifying the total number of axes after
 adding new axes.}

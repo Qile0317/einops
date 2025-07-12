@@ -10,7 +10,10 @@
 #' The keys are unclassed [AxisNames()] objects, and the values are
 #' integer positions of the elementary axes.
 #' @param input_composition_known_unknown List of list(known, unknown).
-#' known and unknown are integer vectors.
+#' known and unknown are integer vectors containing axis positions. These
+#' unknown and unknown integer vectors represent an unordered set and are
+#' always sorted to help with testing.
+#' ascending order for deterministic output.
 #' @param axes_permutation Integer vector. Permutation applied to elementary
 #' axes, if ellipsis is absent.
 #' @param first_reduced_axis Integer of length 1. First position of reduced
@@ -39,8 +42,8 @@ TransformRecipe <- function(
             is.list(x) &&
                 length(x) == 2L &&
                 identical(names(x), c("known", "unknown")) &&
-                is.integer(x$known) &&
-                is.integer(x$unknown)
+                is.integer(x$known) && is_sorted(x$known) &&
+                is.integer(x$unknown) && is_sorted(x$unknown)
         })),
         is.integer(axes_permutation),
         is.count(first_reduced_axis),
@@ -148,7 +151,8 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     axis_name2position <- get_key_to_index_map(axis_name2known_length)
 
     for (elementary_axis in axes_names) {
-        # TODO check the axis name
+        # TODO check the axis name which cannot start or
+        # end with an underscore
         if (!has_key(axis_name2known_length, elementary_axis)) {
             stop(glue(
                 "Axis {repr(elementary_axis, indent = 0L)} is not used in ",
@@ -173,7 +177,9 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
                 !is_unknown_axis_length(axis_name2known_length[[axis]])
             ) {
                 r2r::insert(known, axis)
-            } # unsure if ConstantAstNodes can also be present
+            } else {
+                stop("Unreachable branch")
+            }
         }
 
         if (length(unknown) > 1L) stop(glue(
@@ -187,12 +193,12 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
 
         input_axes_known_unknown %<>% append(list(list(
-            known = as.integer(sapply(
+            known = sort(as.integer(sapply(
                 r2r::keys(known), function(x) axis_name2position[[x]]
-            )),
-            unknown = as.integer(sapply(
+            ))),
+            unknown = sort(as.integer(sapply(
                 r2r::keys(unknown), function(x) axis_name2position[[x]]
-            ))
+            )))
         )))
     }
 
