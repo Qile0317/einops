@@ -215,12 +215,8 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         }
     )
 
-    ordered_axis_left <- add_relative_pos(
-        get_ordered_axis_names(ast$input_axes), rm_other_src_elements = TRUE
-    )
-    ordered_axis_rght <- add_relative_pos(
-        get_ordered_axis_names(ast$output_axes), rm_other_src_elements = TRUE
-    )
+    ordered_axis_left <- get_ordered_axis_names(ast$input_axes)
+    ordered_axis_rght <- get_ordered_axis_names(ast$output_axes)
     reduced_axes <- get_reduced_axis_names(ordered_axis_left, ordered_axis_rght)
     relative_input_identifiers <- get_identifiers_hashset(
         ast$input_axes, add_relative_positions = TRUE

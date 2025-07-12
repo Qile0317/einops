@@ -207,7 +207,7 @@ add_relative_pos <- function(axes, rm_other_src_elements = FALSE, ...) {
             axes[[i]]$src$relative_pos <- const_positions[[as.character(count)]]
 
             if (!rm_other_src_elements) next
-            axes[[i]]$src <- list(relative_post = axes[[i]]$src$relative_pos)
+            axes[[i]]$src <- list(relative_pos = axes[[i]]$src$relative_pos)
         }
     }
     axes
