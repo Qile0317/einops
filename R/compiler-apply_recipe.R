@@ -139,8 +139,8 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
     # Process input composition known/unknown
     for (el in FastUtils::enumerateit(recipe$input_composition_known_unknown)) {
         input_axis <- FastUtils::ind(el)
-        known_axes <- FastUtils::val(el)$known
-        unknown_axes <- FastUtils::val(el)$unknown
+        known_axes <- FastUtils::val1(el)$known
+        unknown_axes <- FastUtils::val1(el)$unknown
         
         if (length(known_axes) == 0L && length(unknown_axes) == 1L) {
             axes_lengths[[unknown_axes[1]]] <- shape[input_axis]
@@ -179,7 +179,7 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
     init_shapes <- if (need_init_reshape) {
         as.integer(axes_lengths[seq_len(length(recipe$axes_permutation))])
     } else {
-        NULL
+        integer()
     }
 
     need_final_reshape <- FALSE
@@ -210,10 +210,13 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
 
     axes_reordering <- recipe$axes_permutation
     if (identical(recipe$axes_permutation, seq_len(length(recipe$axes_permutation)))) {
-        axes_reordering <- NULL
+        axes_reordering <- integer()
     }
 
-    final_shapes_result <- if (need_final_reshape) as.integer(final_shapes) else integer()
+    final_shapes_result <- if (need_final_reshape)
+        as.integer(final_shapes)
+    else
+        integer()
 
     EinopsExecutionPlan(
         init_shapes = init_shapes,
