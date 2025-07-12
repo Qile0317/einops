@@ -52,11 +52,11 @@ test_that("create_execution_plan works", {
             recipe, as.integer(10 * 1:4), list(h1 = 2, w1 = 2)
         ),
         EinopsExecutionPlan(
-            init_shapes = integer(10L, 5L, 2L, 2L, 30L, 40L),
+            init_shapes = c(10L, 5L, 2L, 2L, 30L, 40L),
             axes_reordering = c(1L, 2L, 5L, 3L, 6L, 4L),
             reduced_axes = integer(),
             added_axes = r2r::hashmap(),
-            final_shapes = integer(10L, 5L, 60L, 80L),
+            final_shapes = c(10L, 5L, 60L, 80L),
             n_axes_w_added = 6L
         )
     )

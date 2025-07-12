@@ -153,17 +153,21 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         }
 
         if (length(unknown_axes) == 0L) {
-            if (is.integer(shape[input_axis]) && is.integer(known_product) && shape[input_axis] != known_product) {
-                stop(glue("Shape mismatch, {shape[input_axis]} != {known_product}"))
+            if (shape[input_axis] != known_product) {
+                stop(glue(
+                    "Shape mismatch, {shape[input_axis]} != {known_product}"
+                ))
             }
         } else {
             # assert len(unknown_axes) == 1, 'this is enforced when recipe is created'
-            if (is.integer(shape[input_axis]) && is.integer(known_product) && shape[input_axis] %% known_product != 0L) {
-                stop(glue("Shape mismatch, can't divide axis of length {shape[input_axis]} in chunks of {known_product}"))
+            if (shape[input_axis] %% known_product != 0L) {
+                stop(glue(
+                    "Shape mismatch, can't divide axis of length {shape[input_axis]} in chunks of {known_product}"
+                ))
             }
 
             unknown_axis <- unknown_axes[1]
-            inferred_length <- as.integer(length %/% known_product)
+            inferred_length <- as.integer(shape[input_axis] %/% known_product)
             axes_lengths[[unknown_axis]] <- inferred_length
         }
 

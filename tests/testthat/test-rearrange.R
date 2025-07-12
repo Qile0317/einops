@@ -29,7 +29,7 @@ test_that("rearrange() works", {
     
     # Test 4: space-to-depth
     y4 <- rearrange(x, "b c (h h1) (w w1) -> b (h1 w1 c) h w", h1 = 2, w1 = 2)
-    expect_equal(dim(y4), c(10, 20 * 4, 30 %/% 2, 40 %/% 2))
+    expect_equal(dim(y4), c(10, 20 * 4, 30 / 2, 40 / 2))
     
     # Test 5: simple transposition
     y5 <- rearrange(x, "b1 sound b2 letter -> b1 b2 sound letter")
