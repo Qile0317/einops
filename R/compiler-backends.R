@@ -89,7 +89,7 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        private$get_backend_from_type(tensor_type)$required_pkgs()
+        private$get_backend_from_type(tensor_type)$required_packages()
     }
 ))
 
@@ -109,7 +109,7 @@ public = list(
     #' @return A new EinopsBackend instance.
     initialize = function() {
         super$initialize()
-        for (pkg in self$required_pkgs()) {
+        for (pkg in self$required_packages()) {
             if (!requireNamespace(pkg, quietly = TRUE)) {
                 stop(glue("Package '{pkg}' is required for this tensor."))
             }
@@ -126,7 +126,7 @@ public = list(
     #' @description
     #' Get the list of required packages for this backend.
     #' @return A character vector of package names.
-    required_pkgs = function() {
+    required_packages = function() {
         character(0)
     },
 
@@ -276,7 +276,7 @@ NullEinopsBackend <- R6Class(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    required_pkgs = function() "abind",
+    required_packages = function() "abind",
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -341,7 +341,7 @@ public = list(
         )
     },
 
-    required_pkgs = function() "torch"
+    required_packages = function() "torch"
 ))
 
 register_backend("torch_tensor", TorchBackend)

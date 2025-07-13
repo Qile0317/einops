@@ -17,7 +17,7 @@ from this class and implement the required methods.
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
 \item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
-\item \href{#method-EinopsBackend-required_pkgs}{\code{EinopsBackend$required_pkgs()}}
+\item \href{#method-EinopsBackend-required_packages}{\code{EinopsBackend$required_packages()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
 \item \href{#method-EinopsBackend-shape}{\code{EinopsBackend$shape()}}
 \item \href{#method-EinopsBackend-reshape}{\code{EinopsBackend$reshape()}}
@@ -61,12 +61,12 @@ A character string with the tensor type name.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-EinopsBackend-required_pkgs"></a>}}
-\if{latex}{\out{\hypertarget{method-EinopsBackend-required_pkgs}{}}}
-\subsection{Method \code{required_pkgs()}}{
+\if{html}{\out{<a id="method-EinopsBackend-required_packages"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-required_packages}{}}}
+\subsection{Method \code{required_packages()}}{
 Get the list of required packages for this backend.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$required_pkgs()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$required_packages()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
