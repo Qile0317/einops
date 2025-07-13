@@ -316,7 +316,7 @@ public = list(
     },
 
     concat = function(tensors, axis) {
-        abind::abind(tensors, along = axis)
+        unname(abind::abind(tensors, along = axis))
     },
 
     is_float_type = function(x) is.numeric(x),
