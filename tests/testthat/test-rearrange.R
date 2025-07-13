@@ -50,7 +50,7 @@ test_that("rearrange() works", {
     
     # Test 10: stack
     x_list <- lapply(1:10, function(i) {
-        array(i:(i + 20 * 30 * 40 - 1), dim = c(20, 30, 40))
+        x[i, , , ]
     })
     y10 <- rearrange(x_list, "b c h w -> b h w c")
     expect_equal(dim(y10), c(10, 30, 40, 20))

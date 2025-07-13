@@ -302,7 +302,9 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        abind::abind(tensors, along = 1)
+        assert_that(is.list(tensors))
+        if (length(tensors) == 1L) return(tensors[[1]])
+        unname(abind::abind(tensors, along = 0))
     },
 
     tile = function(x, repeats) {

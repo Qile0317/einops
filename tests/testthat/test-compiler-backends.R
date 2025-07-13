@@ -39,7 +39,7 @@ test_that("each backend's stack_on_zeroth_dimension() works", {
 
     x <- array(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
     x_list <- lapply(1:10, function(i) {
-        array(i:(i + 20 * 30 * 40 - 1), dim = c(20, 30, 40))
+        x[i, , , ]
     })
 
     expect_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
