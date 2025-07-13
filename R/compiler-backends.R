@@ -6,8 +6,17 @@ get_backend <- function(tensor) {
     BackendRegistry$new()$get_backend(tensor)
 }
 
-register_backend <- function(tensor_type, backend_class) {
-    BackendRegistry$new()$register_backend(tensor_type, backend_class)
+register_backend <- function(
+    tensor_type, backend_class, dependencies = character(0)
+) {
+    # TODO make it literally add the tensor_type() method
+    BackendRegistry$new()$register_backend(
+        tensor_type, backend_class, dependencies
+    )
+}
+
+unregister_backend <- function(tensor_type) {
+    BackendRegistry$new()$unregister_backend(tensor_type)
 }
 
 # nolint start: indentation_linter, line_length_linter
@@ -25,6 +34,8 @@ private = list(
     type2backend = r2r::hashmap(),
     # A mapping of types to backend instances
     loaded_backends = r2r::hashmap(),
+    # A mapping of types to their required dependencies
+    type2dependencies = r2r::hashmap(),
 
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
@@ -58,10 +69,13 @@ public = list(
     #' @description Register a new backend singleton
     #' @param tensor_type a string with the tensor type the backend supports
     #' @param backend_class an EinopsBackend subclass generator
+    #' @param dependencies a character vector of required package names
     #' @return this object
-    register_backend = function(tensor_type, backend_class) {
+    register_backend = function(tensor_type, backend_class, dependencies = character(0)) {
         assert_that(inherits(backend_class, "R6ClassGenerator"))
+        assert_that(is.character(dependencies))
         private$type2backend[[tensor_type]] <- backend_class
+        private$type2dependencies[[tensor_type]] <- dependencies
         return(self)
     },
 
@@ -73,6 +87,7 @@ public = list(
         assert_that(is.string(tensor_type))
         r2r::delete(private$type2backend, tensor_type)
         r2r::delete(private$loaded_backends, tensor_type)
+        r2r::delete(private$type2dependencies, tensor_type)
         return(self)
     },
 
@@ -90,7 +105,10 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        private$get_backend_from_type(tensor_type)$required_packages()
+        if (r2r::has_key(private$type2dependencies, tensor_type)) {
+            return(private$type2dependencies[[tensor_type]])
+        }
+        character(0)
     }
 ))
 
@@ -110,7 +128,7 @@ public = list(
     #' @return A new EinopsBackend instance.
     initialize = function() {
         super$initialize()
-        for (pkg in self$required_packages()) {
+        for (pkg in BackendRegistry$new()$get_dependencies(self$tensor_type())) {
             if (!requireNamespace(pkg, quietly = TRUE)) {
                 stop(glue("Package '{pkg}' is required for this tensor."))
             }
@@ -122,13 +140,6 @@ public = list(
     #' @return A character string with the tensor type name.
     tensor_type = function() {
         stop("Not implemented")
-    },
-
-    #' @description
-    #' Get the list of required packages for this backend.
-    #' @return A character vector of package names.
-    required_packages = function() {
-        character(0)
     },
 
     #' @description
@@ -287,7 +298,7 @@ NullEinopsBackend <- R6Class(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    required_packages = function() "abind",
+    tensor_type = function() "array",
 
     create_tensor = function(values, dims) array(values, dim = dims),
 
@@ -339,7 +350,7 @@ public = list(
     }
 ))
 
-register_backend("array", BaseArrayBackend)
+register_backend("array", BaseArrayBackend, "abind")
 
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
@@ -354,13 +365,13 @@ public = list(
         )
     },
 
+    tensor_type = function() "torch_tensor",
+
     create_tensor = function(values, dims, ...) {
         torch::torch_tensor(array(values, dim = dims), ...)
-    },
-
-    required_packages = function() "torch"
+    }
 ))
 
-register_backend("torch_tensor", TorchBackend)
+register_backend("torch_tensor", TorchBackend, "torch")
 
 # nolint end: indentation_linter, line_length_linter

@@ -54,7 +54,11 @@ A singleton instance of a \code{\link[=BackendRegistry]{BackendRegistry()}} obje
 \subsection{Method \code{register_backend()}}{
 Register a new backend singleton
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(tensor_type, backend_class)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(
+  tensor_type,
+  backend_class,
+  dependencies = character(0)
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -63,6 +67,8 @@ Register a new backend singleton
 \item{\code{tensor_type}}{a string with the tensor type the backend supports}
 
 \item{\code{backend_class}}{an EinopsBackend subclass generator}
+
+\item{\code{dependencies}}{a character vector of required package names}
 }
 \if{html}{\out{</div>}}
 }

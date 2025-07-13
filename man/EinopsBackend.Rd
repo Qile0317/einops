@@ -17,7 +17,8 @@ from this class and implement the required methods.
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
 \item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
-\item \href{#method-EinopsBackend-required_packages}{\code{EinopsBackend$required_packages()}}
+\item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
+\item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
 \item \href{#method-EinopsBackend-shape}{\code{EinopsBackend$shape()}}
 \item \href{#method-EinopsBackend-reshape}{\code{EinopsBackend$reshape()}}
@@ -30,7 +31,6 @@ from this class and implement the required methods.
 \item \href{#method-EinopsBackend-concat}{\code{EinopsBackend$concat()}}
 \item \href{#method-EinopsBackend-is_float_type}{\code{EinopsBackend$is_float_type()}}
 \item \href{#method-EinopsBackend-layers}{\code{EinopsBackend$layers()}}
-\item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
 \item \href{#method-EinopsBackend-einsum}{\code{EinopsBackend$einsum()}}
 }
 }
@@ -61,16 +61,40 @@ A character string with the tensor type name.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-EinopsBackend-required_packages"></a>}}
-\if{latex}{\out{\hypertarget{method-EinopsBackend-required_packages}{}}}
-\subsection{Method \code{required_packages()}}{
-Get the list of required packages for this backend.
+\if{html}{\out{<a id="method-EinopsBackend-repr"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-repr}{}}}
+\subsection{Method \code{repr()}}{
+Get a string representation of this backend.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$required_packages()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$repr()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A character vector of package names.
+A character string describing the backend.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-create_tensor"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-create_tensor}{}}}
+\subsection{Method \code{create_tensor()}}{
+Create a tensor of the specified type with given values and dimensions.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$create_tensor(values, dims, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{values}}{A vector of values to initialize the tensor.}
+
+\item{\code{dims}}{A numeric vector specifying the dimensions of the tensor.}
+
+\item{\code{...}}{Additional arguments for specific backend implementations.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A tensor of the specified type.
 }
 }
 \if{html}{\out{<hr>}}
@@ -334,19 +358,6 @@ Get neural network layers specific to this backend.
 
 \subsection{Returns}{
 Backend-specific layer implementations.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-EinopsBackend-repr"></a>}}
-\if{latex}{\out{\hypertarget{method-EinopsBackend-repr}{}}}
-\subsection{Method \code{repr()}}{
-Get a string representation of this backend.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$repr()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A character string describing the backend.
 }
 }
 \if{html}{\out{<hr>}}

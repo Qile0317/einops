@@ -2,12 +2,13 @@ test_that("get_backend() returns identical singleton objects", {
     
     dummy_tensor <- structure(list(), class = "DummyTensor")
     DummyBackend <- R6::R6Class(
-        "DummyBackend", inherit = EinopsBackend, cloneable = FALSE
+        "DummyBackend", inherit = EinopsBackend, cloneable = FALSE,
+        public = list(tensor_type = function() "DummyTensor"),
     )
 
     # Create and register the singleton instance only once
     backend_singleton <- DummyBackend$new()
-    BackendRegistry$new()$register_backend("DummyTensor", DummyBackend)
+    register_backend("DummyTensor", DummyBackend)
 
     backend1 <- get_backend(dummy_tensor)
     backend2 <- get_backend(dummy_tensor)
@@ -30,7 +31,7 @@ test_that("get_backend() returns identical singleton objects", {
     expect_identical(backend_singleton, backend1)
     expect_identical(backend1, backend2)
 
-    BackendRegistry$new()$unregister_backend("DummyTensor")
+    unregister_backend("DummyTensor")
 })
 
 # TODO use a helper to test all backends like in the other tests
