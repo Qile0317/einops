@@ -1,8 +1,9 @@
 # TODO loop test over all backends
+# TODO actually check values
 
 test_that("rearrange() works", {
 
-    # test matrix transpose
+    # test 0: matrix transpose
     x <- as.matrix(mtcars)
     expect_equal(
         rearrange(x, "row col -> col row"),
@@ -48,10 +49,9 @@ test_that("rearrange() works", {
     expect_equal(dim(y7_result), c(2, 10, 10, 30, 40))
     
     # Test 10: stack
-    x_list <- list()
-    for (i in 1:10) {
-        x_list[[i]] <- array(i:(i + 20 * 30 * 40 - 1), dim = c(20, 30, 40))
-    }
+    x_list <- lapply(1:10, function(i) {
+        array(i:(i + 20 * 30 * 40 - 1), dim = c(20, 30, 40))
+    })
     y10 <- rearrange(x_list, "b c h w -> b h w c")
     expect_equal(dim(y10), c(10, 30, 40, 20))
     

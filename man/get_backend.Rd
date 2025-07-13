@@ -7,10 +7,10 @@
 get_backend(tensor)
 }
 \arguments{
-\item{tensor}{any support tensor-like class}
+\item{tensor}{any supported tensor-like object}
 }
 \value{
-An instance of a \code{BackendRegistry} class
+An instance of a \code{\link[=EinopsBackend]{EinopsBackend()}} class
 }
 \description{
 Main function to detect and return backend
