@@ -4,7 +4,8 @@
 \alias{BackendRegistry}
 \title{Singleton Backend Registry, managing all available backends.}
 \description{
-Contains global backend pool
+Contains global backend pool, ensuring backends are only loaded if
+actually required.
 }
 \keyword{internal}
 \section{Super class}{

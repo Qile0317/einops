@@ -15,7 +15,8 @@ register_backend <- function(tensor_type, backend_class) {
 #' @title
 #' Singleton Backend Registry, managing all available backends.
 #' @description
-#' Contains global backend pool
+#' Contains global backend pool, ensuring backends are only loaded if
+#' actually required.
 #' @keywords internal
 BackendRegistry <- R6Class("BackendRegistry", inherit = Singleton, cloneable = FALSE,
 
@@ -128,6 +129,23 @@ public = list(
     #' @return A character vector of package names.
     required_packages = function() {
         character(0)
+    },
+
+    #' @description
+    #' Get a string representation of this backend.
+    #' @return A character string describing the backend.
+    repr = function() {
+        glue("<einops backend for {self$tensor_type()}>")
+    },
+
+    #' @description
+    #' Create a tensor of the specified type with given values and dimensions.
+    #' @param values A vector of values to initialize the tensor.
+    #' @param dims A numeric vector specifying the dimensions of the tensor.
+    #' @param ... Additional arguments for specific backend implementations.
+    #' @return A tensor of the specified type.
+    create_tensor = function(values, dims, ...) {
+        stop("Not implemented")
     },
 
     #' @param start integer, inclusive
@@ -251,13 +269,6 @@ public = list(
     layers = function() {
         stop("backend does not provide layers")
     },
-
-    #' @description
-    #' Get a string representation of this backend.
-    #' @return A character string describing the backend.
-    repr = function() {
-        glue("<einops backend for {self$tensor_type()}>")
-    },
     
     #' @description
     #' Perform Einstein summation on tensors.
@@ -277,6 +288,8 @@ BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneab
 public = list(
 
     required_packages = function() "abind",
+
+    create_tensor = function(values, dims) array(values, dim = dims),
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -339,6 +352,10 @@ public = list(
                 stop("Error initializing torch backend. ", conditionMessage(e))
             }
         )
+    },
+
+    create_tensor = function(values, dims, ...) {
+        torch::torch_tensor(array(values, dim = dims), ...)
     },
 
     required_packages = function() "torch"
