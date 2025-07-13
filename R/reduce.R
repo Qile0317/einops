@@ -85,17 +85,25 @@ reduce.list <- function(x, expr, func, ...) {
 }
 
 .reduce <- function(x, expr, func, ...) {
-    axes_lengths <- if (nargs() == 1 && is.list(..1)) ..1 else list(...)
+
+    axes_lengths <- list(...)
+    if (length(axes_lengths) == 1L && is.list(axes_lengths[[1]])) {
+        axes_lengths <- axes_lengths[[1]]
+    }
+    
     backend <- get_backend(x)
+
     hashable_axes_lengths <- axes_lengths
+
     axes_names <- if (length(axes_lengths) == 0L)
         character()
     else
         names(axes_lengths)
-    shape <- backend$shape(x)
+
     recipe <- prepare_transformation_recipe(
-        expr, func, axes_names = axes_names, ndim = length(shape)
+        expr, func, axes_names = axes_names, ndim = length(backend$shape(x))
     )
+
     apply_recipe(
         backend,
         recipe,
