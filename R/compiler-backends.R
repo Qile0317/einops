@@ -1,6 +1,6 @@
 #' Main function to detect and return backend
-#' @param tensor any support tensor-like class
-#' @return An instance of a `BackendRegistry` class
+#' @param tensor any supported tensor-like object
+#' @return An instance of a [EinopsBackend()] class
 #' @keywords internal
 get_backend <- function(tensor) {
     BackendRegistry$new()$get_backend(tensor)
@@ -10,7 +10,7 @@ register_backend <- function(tensor_type, backend_class) {
     BackendRegistry$new()$register_backend(tensor_type, backend_class)
 }
 
-# nolint start: indentation_linter.
+# nolint start: indentation_linter, line_length_linter
 
 #' @title
 #' Singleton Backend Registry, managing all available backends.
@@ -302,7 +302,9 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        abind::abind(tensors, along = 1)
+        assert_that(is.list(tensors))
+        if (length(tensors) == 1L) return(tensors[[1]])
+        unname(abind::abind(tensors, along = 0))
     },
 
     tile = function(x, repeats) {
@@ -334,4 +336,4 @@ public = list(
 
 register_backend("torch_tensor", TorchBackend)
 
-# nolint end: indentation_linter.
+# nolint end: indentation_linter, line_length_linter

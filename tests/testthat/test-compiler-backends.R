@@ -1,4 +1,4 @@
-test_that("get_backend returns identical singleton objects", {
+test_that("get_backend() returns identical singleton objects", {
     
     dummy_tensor <- structure(list(), class = "DummyTensor")
     DummyBackend <- R6::R6Class(
@@ -31,4 +31,16 @@ test_that("get_backend returns identical singleton objects", {
     expect_identical(backend1, backend2)
 
     BackendRegistry$new()$unregister_backend("DummyTensor")
+})
+
+# TODO use a helper to test all backends like in the other tests
+
+test_that("each backend's stack_on_zeroth_dimension() works", {
+
+    x <- array(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
+    x_list <- lapply(1:10, function(i) {
+        x[i, , , ]
+    })
+
+    expect_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
 })
