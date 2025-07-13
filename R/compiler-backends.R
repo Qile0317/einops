@@ -331,6 +331,16 @@ register_backend("array", BaseArrayBackend)
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
+    initialize = function() {
+        super$initialize()
+        tryCatch(
+            torch::torch_tensor(0),
+            error = function(e) {
+                stop("Error initializing torch backend. ", conditionMessage(e))
+            }
+        )
+    },
+
     required_pkgs = function() "torch"
 ))
 
