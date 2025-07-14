@@ -12,6 +12,7 @@ actually required.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
+\item \href{#method-BackendRegistry-get_backend_from_type}{\code{BackendRegistry$get_backend_from_type()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
 \item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
 \item \href{#method-BackendRegistry-clear_testing_backends}{\code{BackendRegistry$clear_testing_backends()}}
@@ -37,6 +38,27 @@ detect the return relevant backend from the input
 }
 \subsection{Returns}{
 A singleton instance of a \code{\link[=BackendRegistry]{BackendRegistry()}} object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-get_backend_from_type"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-get_backend_from_type}{}}}
+\subsection{Method \code{get_backend_from_type()}}{
+Get a backend instance for a specific tensor type.
+If the backend is not loaded, it will be instantiated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$get_backend_from_type(tensor_class)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_class}}{A string representing the tensor type.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An instance of the backend class for the specified tensor type.
 }
 }
 \if{html}{\out{<hr>}}

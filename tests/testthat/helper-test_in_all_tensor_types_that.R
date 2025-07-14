@@ -31,17 +31,25 @@ test_in_all_tensor_types_that <- function(desc, code) {
 
             backend <- backend_registry$get_backend_from_type(tensor_type)
             
-            # Create evaluation environment with create_tensor function
-            test_env <- new.env(parent = parent.frame())
-            test_env[["create_tensor"]] <- function(values, dims, ...) { # nolint: object_usage_linter, line_length_linter.
+            # Define create_tensor in current environment
+            create_tensor <- function(values, dims, ...) { # nolint: object_usage_linter, line_length_linter.
                 backend$create_tensor(values, dims, ...)
             }
             
-            eval(substituted_code, envir = test_env)
+            eval(substituted_code)
         })
     }
 }
 
+#' Interface function for creation of tensors
+#'
+#' This function is a placeholder that should be defined in the test context.
+#' It is used to create tensors in a backend-agnostic way.
+#' @param values A vector of values to fill the tensor.
+#' @param dims A vector of dimensions for the tensor.
+#' @param ... Additional arguments passed to the backend's tensor creation
+#' method.
+#' @return A tensor object created by the backend.
 create_tensor <- function(values, dims, ...) {
     stop("create_tensor must be defined in the test context")
 }
