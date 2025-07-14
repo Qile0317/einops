@@ -165,6 +165,32 @@ public = list(
             return(private$type2dependencies[[tensor_type]])
         }
         character(0)
+    },
+
+    #' @description
+    #' Check if a tensor type is truly loadable,
+    #' i.e., if it is registered and has no missing dependencies.
+    #' @param tensor_type a string with the tensor type
+    #' @return TRUE if the tensor type is loadable, FALSE otherwise.
+    is_loadable = function(tensor_type) {
+        assert_that(is.string(tensor_type))
+        if (!(tensor_type %in% self$get_supported_types())) {
+            return(FALSE)
+        }
+        dependencies <- self$get_dependencies(tensor_type)
+        for (pkg in dependencies) {
+            if (!requireNamespace(pkg, quietly = TRUE)) {
+                return(FALSE)
+            }
+        }
+        tryCatch(
+            self$get_backend_from_type(tensor_type),
+            error = function(e) {
+                return(FALSE)
+            }
+        )
+        rm(list = tensor_type, envir = private$loaded_backends)
+        return(TRUE)
     }
 ))
 
@@ -181,6 +207,8 @@ public = list(
 
     #' @description
     #' Initialize the backend and check for required packages.
+    #' It is assumed that the constructor will fully load and
+    #' setup all dependencies and error otherwise.
     #' @return A new EinopsBackend instance.
     initialize = function() {
         for (pkg in get_backend_registry()$get_dependencies(self$tensor_type())) {
@@ -429,6 +457,6 @@ public = list(
     }
 ))
 
-register_backend("torch_tensor", TorchBackend, "torch")
+# register_backend("torch_tensor", TorchBackend, "torch")
 
 # nolint end: indentation_linter, line_length_linter
