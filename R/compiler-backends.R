@@ -1,15 +1,25 @@
 #' Main function to detect and return backend
 #' @param tensor any supported tensor-like object
-#' @return An instance of a [EinopsBackend()] class
+#' @return An instance of a [EinopsBackend()] class. Every returned object
+#' is a singleton, so the same object will be returned for the same tensor type.
 #' @keywords internal
 get_backend <- function(tensor) {
-    BackendRegistry$new()$get_backend(tensor)
+    registry <- local({
+        .registry <- NULL
+        function() {
+            if (is.null(.registry)) {
+                .registry <<- BackendRegistry$new() # nolint: assignment_linter.
+            }
+            .registry
+        }
+    })
+    registry()$get_backend(tensor)
 }
 
+# TODO document if the local setting of tensor_type() works
 register_backend <- function(
     tensor_type, backend_class, dependencies = character(0)
 ) {
-    # TODO make it literally add the tensor_type() method
     BackendRegistry$new()$register_backend(
         tensor_type, backend_class, dependencies
     )
@@ -27,7 +37,7 @@ unregister_backend <- function(tensor_type) {
 #' Contains global backend pool, ensuring backends are only loaded if
 #' actually required.
 #' @keywords internal
-BackendRegistry <- R6Class("BackendRegistry", inherit = Singleton, cloneable = FALSE,
+BackendRegistry <- R6Class("BackendRegistry", cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class generators
@@ -55,7 +65,7 @@ private = list(
 public = list(
 
     #' @description detect the return relevant backend from the input
-    #' @param tensor any support tensor-like class
+    #' @param tensor any supported tensor-like class
     #' @return A singleton instance of a [BackendRegistry()] object
     get_backend = function(tensor) {
         tensor_classes <- class(tensor)
@@ -74,6 +84,7 @@ public = list(
     register_backend = function(tensor_type, backend_class, dependencies = character(0)) {
         assert_that(inherits(backend_class, "R6ClassGenerator"))
         assert_that(is.character(dependencies))
+        backend_class$set("public", "tensor_type", function() tensor_type) # TODO ensure this actually works
         private$type2backend[[tensor_type]] <- backend_class
         private$type2dependencies[[tensor_type]] <- dependencies
         return(self)
@@ -118,8 +129,11 @@ public = list(
 #' Abstract base class that defines the interface for tensor operations
 #' across different frameworks. All backend implementations must inherit
 #' from this class and implement the required methods.
+#' 
+#' Important Note: instances are only meant to be initialized in the
+#' BackendRegistry, which will dynamically add a `tensor_type()` method
 #' @keywords internal
-EinopsBackend <- R6Class("EinopsBackend", inherit = Singleton, cloneable = FALSE,
+EinopsBackend <- R6Class("EinopsBackend", cloneable = FALSE,
 
 public = list(
 
@@ -127,19 +141,11 @@ public = list(
     #' Initialize the backend and check for required packages.
     #' @return A new EinopsBackend instance.
     initialize = function() {
-        super$initialize()
         for (pkg in BackendRegistry$new()$get_dependencies(self$tensor_type())) {
             if (!requireNamespace(pkg, quietly = TRUE)) {
                 stop(glue("Package '{pkg}' is required for this tensor."))
             }
         }
-    },
-
-    #' @description
-    #' Get the tensor type name that this backend supports.
-    #' @return A character string with the tensor type name.
-    tensor_type = function() {
-        stop("Not implemented")
     },
 
     #' @description
@@ -298,8 +304,6 @@ NullEinopsBackend <- R6Class(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
-    tensor_type = function() "array",
-
     create_tensor = function(values, dims) array(values, dim = dims),
 
     arange = function(start, stop) seq(from = start, to = stop),
@@ -364,8 +368,6 @@ public = list(
             }
         )
     },
-
-    tensor_type = function() "torch_tensor",
 
     create_tensor = function(values, dims, ...) {
         torch::torch_tensor(array(values, dim = dims), ...)

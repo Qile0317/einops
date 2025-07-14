@@ -40,7 +40,7 @@ detect the return relevant backend from the input
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{tensor}}{any support tensor-like class}
+\item{\code{tensor}}{any supported tensor-like class}
 }
 \if{html}{\out{</div>}}
 }
