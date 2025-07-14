@@ -17,13 +17,13 @@
 #' @return [logical()] of length 1 indicating whether the test passed or failed.
 test_in_all_tensor_types_that <- function(desc, code) {
 
-    tensor_types <- BackendRegistry$new()$get_supported_types()
+    tensor_types <- get_backend_registry()$get_supported_types()
 
     for (tensor_type in tensor_types) {
 
         test_that(glue("{desc} for [{tensor_type}]"), {
 
-            for (pkg in BackendRegistry$new()$get_dependencies(tensor_type)) {
+            for (pkg in get_backend_registry()$get_dependencies(tensor_type)) {
                 skip_if_not_installed(pkg)
             }
             
@@ -37,6 +37,6 @@ test_in_all_tensor_types_that <- function(desc, code) {
     }
 }
 
-create_tensor <- function(value, dims, ...) {
+create_tensor <- function(values, dims, ...) {
     stop("create_tensor must be defined in the test context")
 }
