@@ -4,29 +4,23 @@
 \alias{BackendRegistry}
 \title{Singleton Backend Registry, managing all available backends.}
 \description{
-Contains global backend pool
+Contains global backend pool, ensuring backends are only loaded if
+actually required.
 }
 \keyword{internal}
-\section{Super class}{
-\code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{BackendRegistry}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
+\item \href{#method-BackendRegistry-get_backend_from_type}{\code{BackendRegistry$get_backend_from_type()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
 \item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
+\item \href{#method-BackendRegistry-clear_testing_backends}{\code{BackendRegistry$clear_testing_backends()}}
 \item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
 \item \href{#method-BackendRegistry-get_dependencies}{\code{BackendRegistry$get_dependencies()}}
+\item \href{#method-BackendRegistry-is_loadable}{\code{BackendRegistry$is_loadable()}}
 }
 }
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
-<ul>
-<li><span class="pkg-link" data-pkg="R6P" data-topic="Singleton" data-id="initialize"><a href='../../R6P/html/Singleton.html#method-Singleton-initialize'><code>R6P::Singleton$initialize()</code></a></span></li>
-</ul>
-</details>
-}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BackendRegistry-get_backend"></a>}}
 \if{latex}{\out{\hypertarget{method-BackendRegistry-get_backend}{}}}
@@ -39,7 +33,7 @@ detect the return relevant backend from the input
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{tensor}}{any support tensor-like class}
+\item{\code{tensor}}{any supported tensor-like class}
 }
 \if{html}{\out{</div>}}
 }
@@ -48,12 +42,38 @@ A singleton instance of a \code{\link[=BackendRegistry]{BackendRegistry()}} obje
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-get_backend_from_type"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-get_backend_from_type}{}}}
+\subsection{Method \code{get_backend_from_type()}}{
+Get a backend instance for a specific tensor type.
+If the backend is not loaded, it will be instantiated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$get_backend_from_type(tensor_class)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_class}}{A string representing the tensor type.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An instance of the backend class for the specified tensor type.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BackendRegistry-register_backend"></a>}}
 \if{latex}{\out{\hypertarget{method-BackendRegistry-register_backend}{}}}
 \subsection{Method \code{register_backend()}}{
 Register a new backend singleton
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(tensor_type, backend_class)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(
+  tensor_type,
+  backend_class,
+  dependencies = character(0),
+  testing = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -62,6 +82,10 @@ Register a new backend singleton
 \item{\code{tensor_type}}{a string with the tensor type the backend supports}
 
 \item{\code{backend_class}}{an EinopsBackend subclass generator}
+
+\item{\code{dependencies}}{a character vector of required package names}
+
+\item{\code{testing}}{logical flag indicating if this is a testing-only backend}
 }
 \if{html}{\out{</div>}}
 }
@@ -85,6 +109,19 @@ Unregister a backend for a specific tensor type.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+this object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-clear_testing_backends"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-clear_testing_backends}{}}}
+\subsection{Method \code{clear_testing_backends()}}{
+Clear all testing-only backends.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$clear_testing_backends()}\if{html}{\out{</div>}}
+}
+
 \subsection{Returns}{
 this object
 }
@@ -121,6 +158,27 @@ given a tensor type, return the required packages
 \subsection{Returns}{
 a character vector with required packages. Length 0 if
 no packages are required.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-is_loadable"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-is_loadable}{}}}
+\subsection{Method \code{is_loadable()}}{
+Check if a tensor type is truly loadable,
+i.e., if it is registered and has no missing dependencies.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$is_loadable(tensor_type)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_type}}{a string with the tensor type}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TRUE if the tensor type is loadable, FALSE otherwise.
 }
 }
 }

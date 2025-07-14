@@ -1,39 +1,50 @@
-test_that("get_backend() returns identical singleton objects", {
-    
-    dummy_tensor <- structure(list(), class = "DummyTensor")
-    DummyBackend <- R6::R6Class(
-        "DummyBackend", inherit = EinopsBackend, cloneable = FALSE
-    )
-
-    # Create and register the singleton instance only once
-    backend_singleton <- DummyBackend$new()
-    BackendRegistry$new()$register_backend("DummyTensor", DummyBackend)
-
-    backend1 <- get_backend(dummy_tensor)
-    backend2 <- get_backend(dummy_tensor)
-
-    # All addresses should be identical
-    expect_identical(
-        lobstr::obj_addr(backend_singleton), lobstr::obj_addr(backend1)
-    )
-    expect_identical(
-        lobstr::obj_addr(backend1), lobstr::obj_addr(backend2)
-    )
-    expect_identical(
-        lobstr::obj_addrs(backend_singleton), lobstr::obj_addrs(backend1)
-    )
-    expect_identical(
-        lobstr::obj_addrs(backend1), lobstr::obj_addrs(backend2)
-    )
-    
-    # All objects themselves should be identical too
-    expect_identical(backend_singleton, backend1)
-    expect_identical(backend1, backend2)
-
-    BackendRegistry$new()$unregister_backend("DummyTensor")
+test_that("get_backend_registry() returns a singleton instance", {
+    registry1 <- get_backend_registry()
+    registry2 <- get_backend_registry()
+    expect_identical(registry1, registry2)
+    expect_identical(lobstr::obj_addr(registry1), lobstr::obj_addr(registry2))
+    expect_identical(lobstr::obj_addrs(registry1), lobstr::obj_addrs(registry2))
 })
 
-# TODO use a helper to test all backends like in the other tests
+test_that("get_backend() return unique singletons", {
+
+    for (i in 1:2) { # TODO use some with() like function
+        tensor_class <- glue("DummyTensor{i}")
+        register_backend(tensor_class, R6Class(
+            glue("DummyTensorBackend{i}"),
+            inherit = EinopsBackend,
+            cloneable = FALSE,
+            public = list(tensor_type = function() tensor_class)
+        ), testing = TRUE)
+    }
+
+    expect_contains(
+        get_backend_registry()$get_supported_types(),
+        c("DummyTensor1", "DummyTensor2")
+    )
+
+    backend1_1 <- get_backend(structure(1:10, class = "DummyTensor1"))
+    backend2_1 <- get_backend(structure(1:10, class = "DummyTensor2"))
+    backend1_2 <- get_backend(structure(1:10, class = "DummyTensor1"))
+    backend2_2 <- get_backend(structure(1:10, class = "DummyTensor2"))
+
+    expect_identical(
+        lobstr::obj_addr(backend1_1), lobstr::obj_addr(backend1_2)
+    )
+    expect_identical(
+        lobstr::obj_addrs(backend1_1), lobstr::obj_addrs(backend1_2)
+    )
+    expect_identical(
+        lobstr::obj_addr(backend2_1), lobstr::obj_addr(backend2_2)
+    )
+    expect_identical(
+        lobstr::obj_addrs(backend2_1), lobstr::obj_addrs(backend2_2)
+    )
+
+    # Clean up
+    unregister_backend("DummyTensor1")
+    unregister_backend("DummyTensor2")
+})
 
 test_that("each backend's stack_on_zeroth_dimension() works", {
 
