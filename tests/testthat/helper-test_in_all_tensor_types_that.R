@@ -18,21 +18,26 @@
 test_in_all_tensor_types_that <- function(desc, code) {
 
     tensor_types <- get_backend_registry()$get_supported_types()
+    substituted_code <- substitute(code)
+    backend_registry <- get_backend_registry()
 
     for (tensor_type in tensor_types) {
 
         test_that(glue("{desc} for [{tensor_type}]"), {
 
-            for (pkg in get_backend_registry()$get_dependencies(tensor_type)) {
+            for (pkg in backend_registry$get_dependencies(tensor_type)) {
                 skip_if_not_installed(pkg)
             }
+
+            backend <- backend_registry$get_backend_from_type(tensor_type)
             
-            local({
-                create_tensor <- function(values, dims, ...) { # nolint: object_usage_linter, line_length_linter.
-                    get_backend(tensor_type)$create_tensor(values, dims, ...)
-                }
-                eval(substitute(code))
-            })
+            # Create evaluation environment with create_tensor function
+            test_env <- new.env(parent = parent.frame())
+            test_env[["create_tensor"]] <- function(values, dims, ...) { # nolint: object_usage_linter, line_length_linter.
+                backend$create_tensor(values, dims, ...)
+            }
+            
+            eval(substituted_code, envir = test_env)
         })
     }
 }

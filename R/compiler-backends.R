@@ -61,8 +61,28 @@ private = list(
     # A mapping of types to their required dependencies
     type2dependencies = new.env(parent = emptyenv()),
     # A set of testing-only backend types
-    testing_types = new.env(parent = emptyenv()),
+    testing_types = new.env(parent = emptyenv())
+),
 
+public = list(
+
+    #' @description detect the return relevant backend from the input
+    #' @param tensor any supported tensor-like class
+    #' @return A singleton instance of a [BackendRegistry()] object
+    get_backend = function(tensor) {
+        tensor_classes <- class(tensor)
+        for (tensor_class in tensor_classes) {
+            backend <- self$get_backend_from_type(tensor_class)
+            if (!inherits(backend, "NullEinopsBackend")) return(backend)
+        }
+        stop(glue("Tensor type unknown to einops: {repr(tensor_classes)})"))
+    },
+
+    #' @description
+    #' Get a backend instance for a specific tensor type.
+    #' If the backend is not loaded, it will be instantiated.
+    #' @param tensor_class A string representing the tensor type.
+    #' @return An instance of the backend class for the specified tensor type.
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
         if (exists(tensor_class, envir = private$loaded_backends)) {
@@ -75,21 +95,6 @@ private = list(
             return(backend_instance)
         }
         NullEinopsBackend$new()
-    }
-),
-
-public = list(
-
-    #' @description detect the return relevant backend from the input
-    #' @param tensor any supported tensor-like class
-    #' @return A singleton instance of a [BackendRegistry()] object
-    get_backend = function(tensor) {
-        tensor_classes <- class(tensor)
-        for (tensor_class in tensor_classes) {
-            backend <- private$get_backend_from_type(tensor_class)
-            if (!inherits(backend, "NullEinopsBackend")) return(backend)
-        }
-        stop(glue("Tensor type unknown to einops: {repr(tensor_classes)})"))
     },
 
     #' @description Register a new backend singleton
