@@ -14,6 +14,7 @@ actually required.
 \item \href{#method-BackendRegistry-get_backend}{\code{BackendRegistry$get_backend()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
 \item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
+\item \href{#method-BackendRegistry-clear_testing_backends}{\code{BackendRegistry$clear_testing_backends()}}
 \item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
 \item \href{#method-BackendRegistry-get_dependencies}{\code{BackendRegistry$get_dependencies()}}
 }
@@ -47,7 +48,8 @@ Register a new backend singleton
 \if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(
   tensor_type,
   backend_class,
-  dependencies = character(0)
+  dependencies = character(0),
+  testing = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -59,6 +61,8 @@ Register a new backend singleton
 \item{\code{backend_class}}{an EinopsBackend subclass generator}
 
 \item{\code{dependencies}}{a character vector of required package names}
+
+\item{\code{testing}}{logical flag indicating if this is a testing-only backend}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,6 +86,19 @@ Unregister a backend for a specific tensor type.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+this object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-clear_testing_backends"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-clear_testing_backends}{}}}
+\subsection{Method \code{clear_testing_backends()}}{
+Clear all testing-only backends.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$clear_testing_backends()}\if{html}{\out{</div>}}
+}
+
 \subsection{Returns}{
 this object
 }

@@ -17,19 +17,25 @@ get_backend <- function(tensor) {
 #' @param refresh Logical flag indicating whether to refresh the registry.
 #' @return A singleton instance of [BackendRegistry()].
 #' @keywords internal
-get_backend_registry <- function(refresh = FALSE) {
-    assert_that(is.flag(refresh))
-    if (!exists(".backend_singleton", envir = globalenv()) || refresh) {
+get_backend_registry <- function(
+    clear_testing = !identical(Sys.getenv("TESTTHAT"), "true")
+) {
+    assert_that(is.flag(clear_testing))
+    if (!exists(".backend_singleton", envir = globalenv())) {
         assign(".backend_singleton", BackendRegistry$new(), envir = globalenv())
     }
-    get(".backend_singleton", envir = globalenv())
+    registry <- get(".backend_singleton", envir = globalenv())
+    if (clear_testing) {
+        registry$clear_testing_backends()
+    }
+    registry
 }
 
 register_backend <- function(
-    tensor_type, backend_class, dependencies = character(0)
+    tensor_type, backend_class, dependencies = character(0), testing = FALSE
 ) {
     get_backend_registry()$register_backend(
-        tensor_type, backend_class, dependencies
+        tensor_type, backend_class, dependencies, testing
     )
 }
 
@@ -54,6 +60,8 @@ private = list(
     loaded_backends = new.env(parent = emptyenv()),
     # A mapping of types to their required dependencies
     type2dependencies = new.env(parent = emptyenv()),
+    # A set of testing-only backend types
+    testing_types = new.env(parent = emptyenv()),
 
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
@@ -88,13 +96,17 @@ public = list(
     #' @param tensor_type a string with the tensor type the backend supports
     #' @param backend_class an EinopsBackend subclass generator
     #' @param dependencies a character vector of required package names
+    #' @param testing logical flag indicating if this is a testing-only backend
     #' @return this object
-    register_backend = function(tensor_type, backend_class, dependencies = character(0)) {
+    register_backend = function(tensor_type, backend_class, dependencies = character(0), testing = FALSE) {
         assert_that(
-            inherits(backend_class, "R6ClassGenerator"), is.character(dependencies)
+            inherits(backend_class, "R6ClassGenerator"), is.character(dependencies), is.flag(testing)
         )
         private$type2backend[[tensor_type]] <- backend_class
         private$type2dependencies[[tensor_type]] <- dependencies
+        if (testing) {
+            private$testing_types[[tensor_type]] <- TRUE
+        }
         invisible(self)
     },
 
@@ -112,6 +124,20 @@ public = list(
         }
         if (exists(tensor_type, envir = private$type2dependencies)) {
             rm(list = tensor_type, envir = private$type2dependencies)
+        }
+        if (exists(tensor_type, envir = private$testing_types)) {
+            rm(list = tensor_type, envir = private$testing_types)
+        }
+        invisible(self)
+    },
+
+    #' @description
+    #' Clear all testing-only backends.
+    #' @return this object
+    clear_testing_backends = function() {
+        testing_types <- ls(envir = private$testing_types)
+        for (tensor_type in testing_types) {
+            self$unregister_backend(tensor_type)
         }
         invisible(self)
     },
