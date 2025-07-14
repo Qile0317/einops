@@ -7,16 +7,15 @@
 Abstract base class that defines the interface for tensor operations
 across different frameworks. All backend implementations must inherit
 from this class and implement the required methods.
+
+Important Note: instances are only meant to be initialized in the
+BackendRegistry, which will dynamically add a \code{tensor_type()} method
 }
 \keyword{internal}
-\section{Super class}{
-\code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{EinopsBackend}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
-\item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
 \item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
 \item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
@@ -39,25 +38,14 @@ from this class and implement the required methods.
 \if{latex}{\out{\hypertarget{method-EinopsBackend-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the backend and check for required packages.
+This will error if the constructor is called directly.
+Instead, register in the BackendRegistry.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$new()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
 A new EinopsBackend instance.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-EinopsBackend-tensor_type"></a>}}
-\if{latex}{\out{\hypertarget{method-EinopsBackend-tensor_type}{}}}
-\subsection{Method \code{tensor_type()}}{
-Get the tensor type name that this backend supports.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$tensor_type()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A character string with the tensor type name.
 }
 }
 \if{html}{\out{<hr>}}

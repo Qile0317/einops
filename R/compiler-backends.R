@@ -4,29 +4,27 @@
 #' is a singleton, so the same object will be returned for the same tensor type.
 #' @keywords internal
 get_backend <- function(tensor) {
-    registry <- local({
-        .registry <- NULL
-        function() {
-            if (is.null(.registry)) {
-                .registry <<- BackendRegistry$new() # nolint: assignment_linter.
-            }
-            .registry
-        }
-    })
-    registry()$get_backend(tensor)
+    get_backend_registry()$get_backend(tensor)
+}
+
+get_backend_registry <- function() {
+    if (!exists(".backend_singleton", envir = globalenv())) {
+        assign(".backend_singleton", BackendRegistry$new(), envir = globalenv())
+    }
+    get(".backend_singleton", envir = globalenv())
 }
 
 # TODO document if the local setting of tensor_type() works
 register_backend <- function(
     tensor_type, backend_class, dependencies = character(0)
 ) {
-    BackendRegistry$new()$register_backend(
+    get_backend_registry()$register_backend(
         tensor_type, backend_class, dependencies
     )
 }
 
 unregister_backend <- function(tensor_type) {
-    BackendRegistry$new()$unregister_backend(tensor_type)
+    get_backend_registry()$unregister_backend(tensor_type)
 }
 
 # nolint start: indentation_linter, line_length_linter
@@ -84,10 +82,9 @@ public = list(
     register_backend = function(tensor_type, backend_class, dependencies = character(0)) {
         assert_that(inherits(backend_class, "R6ClassGenerator"))
         assert_that(is.character(dependencies))
-        backend_class$set("public", "tensor_type", function() tensor_type) # TODO ensure this actually works
         private$type2backend[[tensor_type]] <- backend_class
         private$type2dependencies[[tensor_type]] <- dependencies
-        return(self)
+        invisible(self)
     },
 
     #' @description
@@ -99,7 +96,7 @@ public = list(
         r2r::delete(private$type2backend, tensor_type)
         r2r::delete(private$loaded_backends, tensor_type)
         r2r::delete(private$type2dependencies, tensor_type)
-        return(self)
+        invisible(self)
     },
 
     #' @description
@@ -141,7 +138,7 @@ public = list(
     #' Initialize the backend and check for required packages.
     #' @return A new EinopsBackend instance.
     initialize = function() {
-        for (pkg in BackendRegistry$new()$get_dependencies(self$tensor_type())) {
+        for (pkg in get_backend_registry()$get_dependencies(self$tensor_type())) {
             if (!requireNamespace(pkg, quietly = TRUE)) {
                 stop(glue("Package '{pkg}' is required for this tensor."))
             }
