@@ -15,7 +15,7 @@ test_that("get_backend() return unique singletons", {
             inherit = EinopsBackend,
             cloneable = FALSE,
             public = list(tensor_type = function() tensor_class)
-        ))
+        ), testing = TRUE)
     }
 
     expect_contains(
@@ -45,8 +45,6 @@ test_that("get_backend() return unique singletons", {
     unregister_backend("DummyTensor1")
     unregister_backend("DummyTensor2")
 })
-
-# TODO use a helper to test all backends like in the other tests
 
 test_that("each backend's stack_on_zeroth_dimension() works", {
 

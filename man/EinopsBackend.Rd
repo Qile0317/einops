@@ -36,6 +36,8 @@ from this class and implement the required methods.
 \if{latex}{\out{\hypertarget{method-EinopsBackend-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the backend and check for required packages.
+It is assumed that the constructor will fully load and
+setup all dependencies and error otherwise.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$new()}\if{html}{\out{</div>}}
 }

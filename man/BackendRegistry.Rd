@@ -18,6 +18,7 @@ actually required.
 \item \href{#method-BackendRegistry-clear_testing_backends}{\code{BackendRegistry$clear_testing_backends()}}
 \item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
 \item \href{#method-BackendRegistry-get_dependencies}{\code{BackendRegistry$get_dependencies()}}
+\item \href{#method-BackendRegistry-is_loadable}{\code{BackendRegistry$is_loadable()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -157,6 +158,27 @@ given a tensor type, return the required packages
 \subsection{Returns}{
 a character vector with required packages. Length 0 if
 no packages are required.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-is_loadable"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-is_loadable}{}}}
+\subsection{Method \code{is_loadable()}}{
+Check if a tensor type is truly loadable,
+i.e., if it is registered and has no missing dependencies.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$is_loadable(tensor_type)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_type}}{a string with the tensor type}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TRUE if the tensor type is loadable, FALSE otherwise.
 }
 }
 }

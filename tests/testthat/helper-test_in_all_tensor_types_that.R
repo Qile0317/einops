@@ -29,9 +29,10 @@ test_in_all_tensor_types_that <- function(desc, code) {
                 skip_if_not_installed(pkg)
             }
 
-            if (!backend_registry$is_loadable(tensor_type)) {
-                skip(glue("Backend for {tensor_type} is not loadable"))
-            }
+            skip_if_not(
+                backend_registry$is_loadable(tensor_type),
+                glue("Tensor type {tensor_type}'s backend is not loadable")
+            )
 
             backend <- backend_registry$get_backend_from_type(tensor_type)
             

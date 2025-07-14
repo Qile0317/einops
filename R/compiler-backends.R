@@ -167,6 +167,8 @@ public = list(
         character(0)
     },
 
+    # TODO potentially just return err message
+
     #' @description
     #' Check if a tensor type is truly loadable,
     #' i.e., if it is registered and has no missing dependencies.
@@ -183,14 +185,17 @@ public = list(
                 return(FALSE)
             }
         }
-        tryCatch(
-            self$get_backend_from_type(tensor_type),
-            error = function(e) {
-                return(FALSE)
+        tryCatch({
+            self$get_backend_from_type(tensor_type)
+            if (exists(tensor_type, envir = private$loaded_backends)) {
+                rm(list = tensor_type, envir = private$loaded_backends)
             }
-        )
-        rm(list = tensor_type, envir = private$loaded_backends)
-        return(TRUE)
+            TRUE
+        }, warning = function(w) {
+            FALSE
+        }, error = function(e) {
+            FALSE
+        })
     }
 ))
 
@@ -457,6 +462,6 @@ public = list(
     }
 ))
 
-# register_backend("torch_tensor", TorchBackend, "torch")
+register_backend("torch_tensor", TorchBackend, "torch")
 
 # nolint end: indentation_linter, line_length_linter
