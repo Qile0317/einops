@@ -112,7 +112,7 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
     )
 })
 
-tensor_types <- BackendRegistry$new()$get_supported_types()
+tensor_types <- get_backend_registry()$get_supported_types()
 
 create_tensor <- function(type, values, dims) {
     switch(type,
@@ -125,7 +125,7 @@ create_tensor <- function(type, values, dims) {
 
 for (tensor_type in tensor_types) {
 
-    for (pkg in BackendRegistry$new()$get_dependencies(tensor_type)) {
+    for (pkg in get_backend_registry()$get_dependencies(tensor_type)) {
         skip_if_not_installed(pkg)
     }
 

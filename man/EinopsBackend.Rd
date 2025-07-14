@@ -7,15 +7,13 @@
 Abstract base class that defines the interface for tensor operations
 across different frameworks. All backend implementations must inherit
 from this class and implement the required methods.
-
-Important Note: instances are only meant to be initialized in the
-BackendRegistry, which will dynamically add a \code{tensor_type()} method
 }
 \keyword{internal}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
+\item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
 \item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
 \item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
@@ -38,14 +36,27 @@ BackendRegistry, which will dynamically add a \code{tensor_type()} method
 \if{latex}{\out{\hypertarget{method-EinopsBackend-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the backend and check for required packages.
-This will error if the constructor is called directly.
-Instead, register in the BackendRegistry.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$new()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
 A new EinopsBackend instance.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-tensor_type"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-tensor_type}{}}}
+\subsection{Method \code{tensor_type()}}{
+Get the type of tensor this backend supports.
+This method should be overridden in subclasses to return the specific
+tensor type (e.g., "torch_tensor", "array").
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$tensor_type()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A string representing the tensor type.
 }
 }
 \if{html}{\out{<hr>}}

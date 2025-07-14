@@ -9,10 +9,19 @@ test_that("get_backend_registry() returns a singleton instance", {
 test_that("get_backend() return unique singletons", {
 
     for (i in 1:2) { # TODO use some with() like function
-        register_backend(glue("DummyTensor{i}"), R6Class(
-            glue("DummyBackend{i}"), inherit = EinopsBackend, cloneable = FALSE
+        tensor_class <- glue("DummyTensor{i}")
+        register_backend(tensor_class, R6Class(
+            glue("DummyTensorBackend{i}"),
+            inherit = EinopsBackend,
+            cloneable = FALSE,
+            public = list(tensor_type = function() tensor_class)
         ))
     }
+
+    expect_contains(
+        get_backend_registry()$get_supported_types(),
+        c("DummyTensor1", "DummyTensor2")
+    )
 
     backend1_1 <- get_backend(structure(1:10, class = "DummyTensor1"))
     backend2_1 <- get_backend(structure(1:10, class = "DummyTensor2"))

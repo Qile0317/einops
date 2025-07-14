@@ -14,7 +14,6 @@ get_backend_registry <- function() {
     get(".backend_singleton", envir = globalenv())
 }
 
-# TODO document if the local setting of tensor_type() works
 register_backend <- function(
     tensor_type, backend_class, dependencies = character(0)
 ) {
@@ -39,18 +38,18 @@ BackendRegistry <- R6Class("BackendRegistry", cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class generators
-    type2backend = r2r::hashmap(),
+    type2backend = new.env(hash = TRUE),
     # A mapping of types to backend instances
-    loaded_backends = r2r::hashmap(),
+    loaded_backends = new.env(hash = TRUE),
     # A mapping of types to their required dependencies
-    type2dependencies = r2r::hashmap(),
+    type2dependencies = new.env(hash = TRUE),
 
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
-        if (r2r::has_key(private$loaded_backends, tensor_class)) {
+        if (exists(tensor_class, envir = private$loaded_backends)) {
             return(private$loaded_backends[[tensor_class]])
         }
-        if (r2r::has_key(private$type2backend, tensor_class)) {
+        if (exists(tensor_class, envir = private$type2backend)) {
             backend_class <- private$type2backend[[tensor_class]]
             backend_instance <- backend_class$new()
             private$loaded_backends[[tensor_class]] <- backend_instance
@@ -93,9 +92,15 @@ public = list(
     #' @return this object
     unregister_backend = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        r2r::delete(private$type2backend, tensor_type)
-        r2r::delete(private$loaded_backends, tensor_type)
-        r2r::delete(private$type2dependencies, tensor_type)
+        if (exists(tensor_type, envir = private$type2backend)) {
+            rm(list = tensor_type, envir = private$type2backend)
+        }
+        if (exists(tensor_type, envir = private$loaded_backends)) {
+            rm(list = tensor_type, envir = private$loaded_backends)
+        }
+        if (exists(tensor_type, envir = private$type2dependencies)) {
+            rm(list = tensor_type, envir = private$type2dependencies)
+        }
         invisible(self)
     },
 
@@ -103,7 +108,7 @@ public = list(
     #' Get a list of all registered backend types.
     #' @return A character vector of backend types.
     get_supported_types = function() {
-        sort(as.character(r2r::keys(private$type2backend)))
+        sort(ls(envir = private$type2backend))
     },
 
     #' @description
@@ -113,7 +118,7 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        if (r2r::has_key(private$type2dependencies, tensor_type)) {
+        if (exists(tensor_type, envir = private$type2dependencies)) {
             return(private$type2dependencies[[tensor_type]])
         }
         character(0)
@@ -126,9 +131,6 @@ public = list(
 #' Abstract base class that defines the interface for tensor operations
 #' across different frameworks. All backend implementations must inherit
 #' from this class and implement the required methods.
-#' 
-#' Important Note: instances are only meant to be initialized in the
-#' BackendRegistry, which will dynamically add a `tensor_type()` method
 #' @keywords internal
 EinopsBackend <- R6Class("EinopsBackend", cloneable = FALSE,
 
@@ -143,6 +145,15 @@ public = list(
                 stop(glue("Package '{pkg}' is required for this tensor."))
             }
         }
+    },
+
+    #' @description
+    #' Get the type of tensor this backend supports.
+    #' This method should be overridden in subclasses to return the specific
+    #' tensor type (e.g., "torch_tensor", "array").
+    #' @return A string representing the tensor type.
+    tensor_type = function() {
+        stop("Not implemented")
     },
 
     #' @description
@@ -301,6 +312,8 @@ NullEinopsBackend <- R6Class(
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
+    tensor_type = function() "array",
+
     create_tensor = function(values, dims) array(values, dim = dims),
 
     arange = function(start, stop) seq(from = start, to = stop),
@@ -365,6 +378,8 @@ public = list(
             }
         )
     },
+
+    tensor_type = function() "torch_tensor",
 
     create_tensor = function(values, dims, ...) {
         torch::torch_tensor(array(values, dim = dims), ...)
