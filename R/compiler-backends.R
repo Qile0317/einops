@@ -7,8 +7,19 @@ get_backend <- function(tensor) {
     get_backend_registry()$get_backend(tensor)
 }
 
-get_backend_registry <- function() {
-    if (!exists(".backend_singleton", envir = globalenv())) {
+#' Get the singleton backend registry instance
+#'
+#' This function retrieves the singleton instance of the backend registry.
+#' If the instance does not exist, it creates a new one.
+#' If `refresh` is set to TRUE, it will create a new instance even if
+#' one already exists.
+#'
+#' @param refresh Logical flag indicating whether to refresh the registry.
+#' @return A singleton instance of [BackendRegistry()].
+#' @keywords internal
+get_backend_registry <- function(refresh = FALSE) {
+    assert_that(is.flag(refresh))
+    if (!exists(".backend_singleton", envir = globalenv()) || refresh) {
         assign(".backend_singleton", BackendRegistry$new(), envir = globalenv())
     }
     get(".backend_singleton", envir = globalenv())
@@ -38,11 +49,11 @@ BackendRegistry <- R6Class("BackendRegistry", cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class generators
-    type2backend = new.env(hash = TRUE),
+    type2backend = new.env(parent = emptyenv()),
     # A mapping of types to backend instances
-    loaded_backends = new.env(hash = TRUE),
+    loaded_backends = new.env(parent = emptyenv()),
     # A mapping of types to their required dependencies
-    type2dependencies = new.env(hash = TRUE),
+    type2dependencies = new.env(parent = emptyenv()),
 
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
@@ -79,8 +90,9 @@ public = list(
     #' @param dependencies a character vector of required package names
     #' @return this object
     register_backend = function(tensor_type, backend_class, dependencies = character(0)) {
-        assert_that(inherits(backend_class, "R6ClassGenerator"))
-        assert_that(is.character(dependencies))
+        assert_that(
+            inherits(backend_class, "R6ClassGenerator"), is.character(dependencies)
+        )
         private$type2backend[[tensor_type]] <- backend_class
         private$type2dependencies[[tensor_type]] <- dependencies
         invisible(self)
@@ -305,8 +317,8 @@ public = list(
     }
 ))
 
-NullEinopsBackend <- R6Class(
-    "NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE
+NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE,
+    public = list(initialize = function() invisible(self))
 )
 
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
