@@ -2,6 +2,7 @@
 
 S3method("[",AddOnlyOrderedMap)
 S3method("[",OneSidedAstNode)
+S3method("[",image_tensor)
 S3method("[<-",AddOnlyOrderedMap)
 S3method("[[",AddOnlyOrderedMap)
 S3method("[[<-",AddOnlyOrderedMap)

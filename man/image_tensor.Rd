@@ -6,6 +6,7 @@
 \alias{as_image_tensor.default}
 \alias{as_image_tensor.cimg}
 \alias{as.cimg.image_tensor}
+\alias{[.image_tensor}
 \alias{plot.image_tensor}
 \alias{print.image_tensor}
 \title{Image Tensor S3 Class}
@@ -18,6 +19,8 @@ as_image_tensor(x)
 
 \method{as.cimg}{image_tensor}(x)
 
+\method{[}{image_tensor}(x, ...)
+
 \method{plot}{image_tensor}(x, axes = getOption("plot_image_tensor_axes", FALSE), ...)
 
 \method{print}{image_tensor}(x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...)
@@ -25,10 +28,11 @@ as_image_tensor(x)
 \arguments{
 \item{x}{An object to convert to or from \code{image_tensor} format.}
 
+\item{...}{Additional arguments passed to underlying methods. For \code{[} and
+these are indexing arguments.}
+
 \item{axes}{Logical. Whether to show axes in the plot. Default is
 controlled by the option \code{plot_image_tensor_axes} (default: FALSE).}
-
-\item{...}{Additional arguments passed to underlying methods.}
 
 \item{as_image}{Logical. Whether to print the image as a plot. Default is
 controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}
@@ -37,6 +41,8 @@ controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}
 \itemize{
 \item \code{as_image_tensor()}: An object of class \code{image_tensor}
 \item \code{as.cimg()}: A \code{cimg} object (from imager package)
+\item \verb{[.image_tensor()}: A subset of the \code{image_tensor} object, also of class
+\code{image_tensor}
 \item \code{plot()}: Invisibly returns the input object
 \item \code{print()}: Invisibly returns the input object
 }
@@ -61,6 +67,7 @@ The \code{image_tensor} class provides the following methods:
 package) to \code{image_tensor}
 \item \code{as.cimg.image_tensor()}: Method to convert \code{image_tensor} objects back
 to \code{cimg} format
+\item \verb{[.image_tensor()}: Subset method for \code{image_tensor} objects
 \item \code{plot.image_tensor()}: Plot method for \code{image_tensor} objects
 \item \code{print.image_tensor()}: Print method for \code{image_tensor} objects
 }
@@ -86,25 +93,4 @@ TRUE)
 }
 }
 
-\examples{
-\dontrun{
-# Create an image tensor from an array
-arr <- array(runif(2 * 100 * 100 * 3), dim = c(2, 100, 100, 3))
-img_tensor <- as_image_tensor(arr)
-
-# Print the image tensor (will plot by default)
-print(img_tensor)
-
-# Print as array structure instead of plot
-print(img_tensor, as_image = FALSE)
-
-# Plot with axes
-plot(img_tensor, axes = TRUE)
-
-# Convert to cimg format (requires imager package)
-if (requireNamespace("imager", quietly = TRUE)) {
-  cimg_obj <- as.cimg(img_tensor)
-}
-}
-}
 \keyword{internal}

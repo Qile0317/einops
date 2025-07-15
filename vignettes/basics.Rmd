@@ -1,0 +1,31 @@
+---
+title: "basics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+```{r setup}
+library(einops)
+```
+
+## Load a batch of images to play with
+
+```{r}
+ims <- get(data("einops_image"))
+print(dim(ims))
+```
+
+```{r}
+# display the first image (whole 4d tensor can't be rendered)
+ims[0]
+```
