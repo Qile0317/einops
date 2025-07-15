@@ -98,9 +98,9 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] Intermediate Representation generation (`prepare_transformation_recipe(EinopsAst())` -> `TransformRecipe()`)
 - [x] Code generation (`create_execution_plan(TransformRecipe())` -> `EinopsExecutionPlan()`)
 - [x] Execution (`apply_recipe(EinopsExecutionPlan())`, `EinopsBackend()` -> output)
-- [x] `einops:::repeat()`
-- [x] `einops:::rearrange()`
-- [x] `einops:::reduce()`
+- [x] `einops::repeat()`
+- [x] `einops::rearrange()`
+- [x] `einops::reduce()`
 - [x] Make Github Repository Public
 - [ ] [`einops::einop()`](https://github.com/cgarciae/einop)
 - [ ] `TorchBackend()`
