@@ -1,6 +1,6 @@
 #' @name image_tensor
 #' @title
-#' Image Tensor S3 Class
+#' Image Tensor: A thin wrapper around 4D arrays
 #'
 #' @description
 #' The `image_tensor` class provides a convenient way to work with image data
@@ -10,6 +10,9 @@
 #' An `image_tensor` object represents image data in the format "b h w c"
 #' (batch, height, width, channels), which is a common format for deep
 #' learning frameworks.
+#'
+#' The main utility of wrapping image data in the `image_tensor` class is that
+#' printing of the object will automatically display the image as a plot.
 #'
 #' @param x An object to convert to or from `image_tensor` format.
 #' @param ... Additional arguments passed to underlying methods. For `[` and
@@ -56,7 +59,7 @@
 #'   `image_tensor`
 #' - `plot()`: Invisibly returns the input object
 #' - `print()`: Invisibly returns the input object
-#' @keywords internal
+#' @export
 as_image_tensor <- function(x) {
     UseMethod("as_image_tensor", x)
 }

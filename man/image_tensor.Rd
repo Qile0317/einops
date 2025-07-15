@@ -9,7 +9,7 @@
 \alias{[.image_tensor}
 \alias{plot.image_tensor}
 \alias{print.image_tensor}
-\title{Image Tensor S3 Class}
+\title{Image Tensor: A thin wrapper around 4D arrays}
 \usage{
 as_image_tensor(x)
 
@@ -55,6 +55,9 @@ for conversion to/from various image formats, plotting, and printing.
 An \code{image_tensor} object represents image data in the format "b h w c"
 (batch, height, width, channels), which is a common format for deep
 learning frameworks.
+
+The main utility of wrapping image data in the \code{image_tensor} class is that
+printing of the object will automatically display the image as a plot.
 }
 \details{
 The \code{image_tensor} class provides the following methods:
@@ -93,4 +96,3 @@ TRUE)
 }
 }
 
-\keyword{internal}
