@@ -1,5 +1,3 @@
-# TODO actually check values
-
 identity_patterns <- c(
     "...->...",
     "a b c d e-> a b c d e",
@@ -7,8 +5,8 @@ identity_patterns <- c(
     "a b c d e ...-> a ... b c d e",
     "... a b c d e -> ... a b c d e",
     "a ... e-> a ... e",
-    "a ... -> a ... "#,
-    # "a ... c d e -> a (...) c d e" # FIXME this breaks rearrange
+    "a ... -> a ... ",
+    "a ... c d e -> a (...) c d e"
 )
 
 # equivalent_rearrange_patterns <- list(
@@ -41,6 +39,8 @@ test_in_all_tensor_types_that("rearrange() works", {
     )
 
     x <- create_tensor(1:(10 * 20 * 30 * 40), c(10, 20, 30, 40))
+
+    # TODO actually check values
     
     # Test 1: transpose
     y1 <- rearrange(x, "b c h w -> b h w c")

@@ -119,6 +119,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
+        ungroup_singular_brackets() %>%
         expand_ellipsis(ndim)
 
     axis_name2known_length <- AddOnlyOrderedMap(
@@ -273,6 +274,27 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
         added_axes = added_axes,
         output_composite_axes = result_axes_grouping
     )
+}
+
+ungroup_singular_brackets <- function(ast) {
+    UseMethod("ungroup_singular_brackets", ast)
+}
+
+#' @export
+ungroup_singular_brackets.EinopsAst <- function(ast) {
+    ast$input_axes %<>% ungroup_singular_brackets()
+    ast$output_axes %<>% ungroup_singular_brackets()
+    ast
+}
+
+#' @export
+ungroup_singular_brackets.OneSidedAstNode <- function(ast) {
+    for (i in find_node_types_indices(ast, "GroupAstNode")) {
+        if (length(ast[[i]]$children) == 1L) {
+            ast[[i]] <- ast[[i]]$children[[1]]
+        }
+    }
+    ast
 }
 
 #' @title
