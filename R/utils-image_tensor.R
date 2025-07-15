@@ -18,8 +18,6 @@
 #' @param x An object to convert to or from `image_tensor` format.
 #' @param ... Additional arguments passed to underlying methods. For `[` and
 #'   these are indexing arguments.
-#' @param axes Logical. Whether to show axes in the plot. Default is
-#'   controlled by the option `plot_image_tensor_axes` (default: FALSE).
 #' @param as_image Logical. Whether to print the image as a plot. Default is
 #'   controlled by the option `print_image_tensor_as_plot` (default: TRUE).
 #'
@@ -94,6 +92,7 @@ as.cimg <- function(x) { # nolint: object_name_linter.
 #' @export
 as.cimg.image_tensor <- function(x) {
     x_dims <- length(dim(x))
+    x <- unclass(x)
     
     if (x_dims == 3) {
         # For 3D arrays (h w c), add batch dimension before rearranging
@@ -137,19 +136,14 @@ as.cimg.image_tensor <- function(x) {
 
 #' @rdname image_tensor
 #' @export
-plot.image_tensor <- function(
-    x, axes = getOption("plot_image_tensor_axes", FALSE), ...
-) {
+plot.image_tensor <- function(x, ...) {
     x_dims <- length(dim(x))
-    
-    if (x_dims == 4) {
-        # For 4D arrays, plot the first image in the batch
+    if (x_dims == 4L) {
         if (dim(x)[1] > 1) {
             warning("Multiple images in batch, plotting only the first one")
         }
         grid::grid.raster(as.cimg(x[1, , , , drop = FALSE]), ...)
     } else {
-        # For 3D arrays, plot directly
         grid::grid.raster(as.cimg(x), ...)
     }
 }
@@ -160,8 +154,15 @@ print.image_tensor <- function(
     x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...
 ) {
     if (as_image) {
-        plot(x, ...)
+        plot.image_tensor(x, ...)
         return(invisible(x))
     }
-    print(as.cimg(unclass(x)))
+    print(as.cimg(x))
+}
+
+#' @export
+reduce.image_tensor <- function(x, expr, func, ...) {
+    class(x) <- "array"
+    result <- reduce(x, expr, func, ...)
+    as_image_tensor(result)
 }

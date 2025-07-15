@@ -21,7 +21,7 @@ as_image_tensor(x)
 
 \method{[}{image_tensor}(x, ...)
 
-\method{plot}{image_tensor}(x, axes = getOption("plot_image_tensor_axes", FALSE), ...)
+\method{plot}{image_tensor}(x, ...)
 
 \method{print}{image_tensor}(x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...)
 }
@@ -30,9 +30,6 @@ as_image_tensor(x)
 
 \item{...}{Additional arguments passed to underlying methods. For \code{[} and
 these are indexing arguments.}
-
-\item{axes}{Logical. Whether to show axes in the plot. Default is
-controlled by the option \code{plot_image_tensor_axes} (default: FALSE).}
 
 \item{as_image}{Logical. Whether to print the image as a plot. Default is
 controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}

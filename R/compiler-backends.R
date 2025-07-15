@@ -463,7 +463,7 @@ public = list(
 ))
 
 NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE,
-    public = list(initialize = function() invisible(self))
+    public = list(initialize = function() invisible(self), tensor_type = function() "NULL")
 )
 
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
