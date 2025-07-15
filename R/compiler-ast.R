@@ -250,17 +250,9 @@ get_ungrouped_nodes.OneSidedAstNode <- function(ast, ...) {
 #' @return `EinopsAst` object
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
-
-    if (!inherits(input_axes, "OneSidedAstNode")) {
-        input_axes <- OneSidedAstNode(input_axes)
-    }
-    if (!inherits(output_axes, "OneSidedAstNode")) {
-        output_axes <- OneSidedAstNode(output_axes)
-    }
-
     structure(list(
-        input_axes = input_axes,
-        output_axes = output_axes,
+        input_axes = OneSidedAstNode(input_axes),
+        output_axes = OneSidedAstNode(output_axes),
         src = src
     ), class = c("EinopsAst", "AstNode", "s3list"))
 }
