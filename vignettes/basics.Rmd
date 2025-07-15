@@ -1,0 +1,45 @@
+---
+title: "basics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+```{r setup}
+library(einops)
+```
+
+## Load a batch of images to play with
+
+Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor.
+
+```{r load_einops_image}
+ims <- get(data("einops_image"))
+print(dim(ims))
+```
+
+```{r}
+# display the first image (whole 4d tensor can't be rendered)
+ims[1]
+```
+
+```{r}
+# second image in a batch
+ims[2]
+```
+
+```{r}
+# rearrange, as the name suggests, rearranges elements
+# below we swapped height and width.
+# In other words, transposed first two axes (dimensions)
+rearrange(ims[1], "h w c -> w h c")
+```

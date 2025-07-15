@@ -15,6 +15,7 @@ actually required.
 \item \href{#method-BackendRegistry-get_backend_from_type}{\code{BackendRegistry$get_backend_from_type()}}
 \item \href{#method-BackendRegistry-register_backend}{\code{BackendRegistry$register_backend()}}
 \item \href{#method-BackendRegistry-unregister_backend}{\code{BackendRegistry$unregister_backend()}}
+\item \href{#method-BackendRegistry-add_backend_alias}{\code{BackendRegistry$add_backend_alias()}}
 \item \href{#method-BackendRegistry-clear_testing_backends}{\code{BackendRegistry$clear_testing_backends()}}
 \item \href{#method-BackendRegistry-get_supported_types}{\code{BackendRegistry$get_supported_types()}}
 \item \href{#method-BackendRegistry-get_dependencies}{\code{BackendRegistry$get_dependencies()}}
@@ -72,7 +73,8 @@ Register a new backend singleton
   tensor_type,
   backend_class,
   dependencies = character(0),
-  testing = FALSE
+  testing = FALSE,
+  aliases = character(0)
 )}\if{html}{\out{</div>}}
 }
 
@@ -86,6 +88,8 @@ Register a new backend singleton
 \item{\code{dependencies}}{a character vector of required package names}
 
 \item{\code{testing}}{logical flag indicating if this is a testing-only backend}
+
+\item{\code{aliases}}{a character vector of aliases for the tensor type}
 }
 \if{html}{\out{</div>}}
 }
@@ -106,6 +110,28 @@ Unregister a backend for a specific tensor type.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{tensor_type}}{a string with the tensor type}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+this object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BackendRegistry-add_backend_alias"></a>}}
+\if{latex}{\out{\hypertarget{method-BackendRegistry-add_backend_alias}{}}}
+\subsection{Method \code{add_backend_alias()}}{
+Add an alias for a backend type.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$add_backend_alias(alias, tensor_type)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{alias}}{a string with the alias name}
+
+\item{\code{tensor_type}}{a string with the canonical tensor type}
 }
 \if{html}{\out{</div>}}
 }

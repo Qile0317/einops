@@ -8,3 +8,5 @@
 ^dev/
 ^\.vscode/
 ^\.lintr$
+^doc$
+^Meta$

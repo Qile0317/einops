@@ -1,7 +1,6 @@
-# TODO loop test over all backends
 # TODO actually check values
 
-test_that("rearrange() works", {
+test_in_all_tensor_types_that("rearrange() works", {
 
     # test 0: matrix transpose
     x <- as.matrix(mtcars)
@@ -14,7 +13,7 @@ test_that("rearrange() works", {
         t(x)
     )
 
-    x <- array(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
+    x <- create_tensor(1:(10 * 20 * 30 * 40), c(10, 20, 30, 40))
     
     # Test 1: transpose
     y1 <- rearrange(x, "b c h w -> b h w c")
@@ -50,7 +49,7 @@ test_that("rearrange() works", {
     
     # Test 10: stack
     x_list <- lapply(1:10, function(i) {
-        x[i, , , ]
+        x[i, , , ] # TODO this may not work for all tensors in the future - may need to define S3 method for a wrapped version
     })
     y10 <- rearrange(x_list, "b c h w -> b h w c")
     expect_equal(dim(y10), c(10, 30, 40, 20))
