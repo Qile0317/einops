@@ -11,4 +11,12 @@
 #' pixels, with 3 color channels (RGB). The images are stored in a 4D array
 #' with dimensions (6, 96, 96, 3).
 #' @seealso [image_tensor()]
+#' @examples
+#' data("einops_image")
+#' einops_image[1]
+#' einops_image[2]
+#' einops_image[3]
+#' einops_image[4]
+#' einops_image[5]
+#' einops_image[6]
 "einops_image"
