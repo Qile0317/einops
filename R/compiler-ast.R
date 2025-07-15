@@ -133,9 +133,7 @@ OneSidedAstNode <- function(...) {
 }
 
 as_onesided_ast_node <- function(x) {
-    if (inherits(x, "OneSidedAstNode")) {
-        return(x)
-    }
+    if (inherits(x, "OneSidedAstNode")) return(x)
     structure(x, class = c("OneSidedAstNode", "AstNode", "s3list"))
 }
 
@@ -186,6 +184,7 @@ print.OneSidedAstNode <- function(x, ...) {
 
 #' @export
 to_tokens.OneSidedAstNode <- function(x, ...) {
+    if (length(x) == 0L) return(EinopsTokenSequence())
     tokens <- unlist(lapply(x, to_tokens), recursive = FALSE)
     do.call(EinopsTokenSequence, tokens)
 }
