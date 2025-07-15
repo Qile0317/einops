@@ -32,10 +32,10 @@ get_backend_registry <- function(
 }
 
 register_backend <- function(
-    tensor_type, backend_class, dependencies = character(0), testing = FALSE
+    tensor_type, backend_class, dependencies = character(0), testing = FALSE, aliases = character(0)
 ) {
     get_backend_registry()$register_backend(
-        tensor_type, backend_class, dependencies, testing
+        tensor_type, backend_class, dependencies, testing, aliases
     )
 }
 
@@ -61,7 +61,9 @@ private = list(
     # A mapping of types to their required dependencies
     type2dependencies = new.env(parent = emptyenv()),
     # A set of testing-only backend types
-    testing_types = new.env(parent = emptyenv())
+    testing_types = new.env(parent = emptyenv()),
+    # A mapping of aliases to their canonical types
+    alias2type = new.env(parent = emptyenv())
 ),
 
 public = list(
@@ -85,6 +87,12 @@ public = list(
     #' @return An instance of the backend class for the specified tensor type.
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
+        
+        # Check if it's an alias first
+        if (exists(tensor_class, envir = private$alias2type)) {
+            tensor_class <- private$alias2type[[tensor_class]]
+        }
+        
         if (exists(tensor_class, envir = private$loaded_backends)) {
             return(private$loaded_backends[[tensor_class]])
         }
@@ -102,16 +110,30 @@ public = list(
     #' @param backend_class an EinopsBackend subclass generator
     #' @param dependencies a character vector of required package names
     #' @param testing logical flag indicating if this is a testing-only backend
+    #' @param aliases a character vector of aliases for the tensor type
     #' @return this object
-    register_backend = function(tensor_type, backend_class, dependencies = character(0), testing = FALSE) {
+    register_backend = function(
+        tensor_type, backend_class, dependencies = character(0), testing = FALSE, aliases = character(0)
+    ) {
         assert_that(
-            inherits(backend_class, "R6ClassGenerator"), is.character(dependencies), is.flag(testing)
+            inherits(backend_class, "R6ClassGenerator"), 
+            is.character(dependencies), 
+            is.flag(testing),
+            is.character(aliases)
         )
         private$type2backend[[tensor_type]] <- backend_class
         private$type2dependencies[[tensor_type]] <- dependencies
         if (testing) {
             private$testing_types[[tensor_type]] <- TRUE
         }
+        
+        # Add aliases if provided
+        if (length(aliases) > 0) {
+            for (alias in aliases) {
+                self$add_backend_alias(alias, tensor_type)
+            }
+        }
+        
         invisible(self)
     },
 
@@ -133,6 +155,44 @@ public = list(
         if (exists(tensor_type, envir = private$testing_types)) {
             rm(list = tensor_type, envir = private$testing_types)
         }
+        
+        # Remove aliases pointing to this type
+        aliases_to_remove <- character(0)
+        for (alias in ls(envir = private$alias2type)) {
+            if (private$alias2type[[alias]] == tensor_type) {
+                aliases_to_remove <- c(aliases_to_remove, alias)
+            }
+        }
+        if (length(aliases_to_remove) > 0) {
+            rm(list = aliases_to_remove, envir = private$alias2type)
+        }
+        
+        invisible(self)
+    },
+
+    #' @description
+    #' Add an alias for a backend type.
+    #' @param alias a string with the alias name
+    #' @param tensor_type a string with the canonical tensor type
+    #' @return this object
+    #' @keywords internal
+    add_backend_alias = function(alias, tensor_type) {
+        assert_that(is.string(alias), is.string(tensor_type))
+        
+        # Check if the canonical type is registered
+        if (!exists(tensor_type, envir = private$type2backend)) {
+            stop(glue("Cannot add alias '{alias}' for unregistered tensor type '{tensor_type}'"))
+        }
+        
+        # Check if alias already exists
+        if (exists(alias, envir = private$alias2type)) {
+            existing_type <- private$alias2type[[alias]]
+            if (existing_type != tensor_type) {
+                stop(glue("Alias '{alias}' already exists for tensor type '{existing_type}'"))
+            }
+        }
+        
+        private$alias2type[[alias]] <- tensor_type
         invisible(self)
     },
 
@@ -161,6 +221,12 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
+        
+        # Check if it's an alias first
+        if (exists(tensor_type, envir = private$alias2type)) {
+            tensor_type <- private$alias2type[[tensor_type]]
+        }
+        
         if (exists(tensor_type, envir = private$type2dependencies)) {
             return(private$type2dependencies[[tensor_type]])
         }
@@ -176,7 +242,14 @@ public = list(
     #' @return TRUE if the tensor type is loadable, FALSE otherwise.
     is_loadable = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        if (!(tensor_type %in% self$get_supported_types())) {
+        
+        # Check if it's an alias first
+        canonical_type <- tensor_type
+        if (exists(tensor_type, envir = private$alias2type)) {
+            canonical_type <- private$alias2type[[tensor_type]]
+        }
+        
+        if (!(canonical_type %in% self$get_supported_types())) {
             return(FALSE)
         }
         dependencies <- self$get_dependencies(tensor_type)
@@ -187,8 +260,8 @@ public = list(
         }
         tryCatch({
             self$get_backend_from_type(tensor_type)
-            if (exists(tensor_type, envir = private$loaded_backends)) {
-                rm(list = tensor_type, envir = private$loaded_backends)
+            if (exists(canonical_type, envir = private$loaded_backends)) {
+                rm(list = canonical_type, envir = private$loaded_backends)
             }
             TRUE
         }, warning = function(w) {
@@ -440,7 +513,7 @@ public = list(
     }
 ))
 
-register_backend("array", BaseArrayBackend, "abind")
+register_backend("array", BaseArrayBackend, "abind", aliases = "numeric")
 
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
