@@ -128,6 +128,8 @@ test_that("expand_ellipsis works", {
 
     expect_identical(expand_ellipsis(ast, 2L), expected_ast)
 
+    # TODO test " ... ->  "
+
 })
 
 test_that("prepare_transformation_recipe works", {

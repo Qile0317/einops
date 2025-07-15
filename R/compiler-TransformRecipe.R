@@ -311,10 +311,10 @@ expand_ellipsis <- function(einops_ast, ndim) {
         ))
     }
 
-    replace_ellipsis <- function(ast) {
-        ellipsis_index <- get_ellipsis_index(ast)
+    replace_ellipsis <- function(onesided_ast) {
+        ellipsis_index <- get_ellipsis_index(onesided_ast)
         append(
-            x = ast[-ellipsis_index],
+            x = onesided_ast[-ellipsis_index],
             values = lapply(seq_len(ndim - n_other_dims), function(i) {
                 NamedAxisAstNode(paste0("...", i))
             }),
