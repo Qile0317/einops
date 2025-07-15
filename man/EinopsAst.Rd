@@ -7,16 +7,16 @@
 EinopsAst(input_axes, output_axes, src)
 }
 \arguments{
-\item{input_axes}{List of axis nodes for the input pattern, or a
-NothingAstNode, or OneSidedAstNode}
+\item{input_axes}{List of axis nodes for the input pattern, or
+\code{\link[=OneSidedAstNode]{OneSidedAstNode()}}}
 
-\item{output_axes}{List of axis nodes for the input pattern, or a
-NothingAstNode, or OneSidedAstNode}
+\item{output_axes}{List of axis nodes for the input pattern, or
+\code{\link[=OneSidedAstNode]{OneSidedAstNode()}}}
 
 \item{src}{List with start position covering the full pattern}
 }
 \value{
-EinopsAst object
+\code{EinopsAst} object
 }
 \description{
 Create an EinopsAst root node

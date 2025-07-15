@@ -59,19 +59,6 @@ to_tokens.EllipsisAstNode <- function(x, ...) {
     EinopsTokenSequence(EllipsisToken(x$src$start))
 }
 
-#' @title Create a NothingAstNode
-#' @return NothingAstNode object
-#' @keywords internal
-NothingAstNode <- function() {
-    structure(list(), class = c("NothingAstNode", "AstNode", "s3list"))
-}
-
-#' @export
-#' @keywords internal
-to_tokens.NothingAstNode <- function(x, ...) {
-    EinopsTokenSequence()
-}
-
 #' @title Create an UnderscoreAstNode
 #' @param src List with start position
 #' @return UnderscoreAstNode object
@@ -135,15 +122,14 @@ to_tokens.GroupAstNode <- function(x, ...) {
 #' @return OneSidedAstNode object
 #' @keywords internal
 OneSidedAstNode <- function(...) {
-    if (nargs() == 1 && inherits(..1, "OneSidedAstNode")) {
-        return(..1)
+    axes <- list(...)
+    if (nargs() == 1L) {
+        if (inherits(..1, "OneSidedAstNode")) return(..1)
+        if (is.list(..1) && !inherits(..1, "AstNode")) {
+            axes <- ..1
+        }
     }
-    if (nargs() == 1 && is.list(..1) && !inherits(..1, "AstNode")) {
-        axes <- ..1
-    } else {
-        axes <- list(...)
-    }
-    structure(axes, class = c("OneSidedAstNode", "AstNode", "s3list"))
+    as_onesided_ast_node(axes)
 }
 
 as_onesided_ast_node <- function(x) {
@@ -257,12 +243,12 @@ get_ungrouped_nodes.OneSidedAstNode <- function(ast, ...) {
 }
 
 #' @title Create an EinopsAst root node
-#' @param input_axes List of axis nodes for the input pattern, or a
-#' NothingAstNode, or OneSidedAstNode
-#' @param output_axes List of axis nodes for the input pattern, or a
-#' NothingAstNode, or OneSidedAstNode
+#' @param input_axes List of axis nodes for the input pattern, or
+#' [OneSidedAstNode()]
+#' @param output_axes List of axis nodes for the input pattern, or
+#' [OneSidedAstNode()]
 #' @param src List with start position covering the full pattern
-#' @return EinopsAst object
+#' @return `EinopsAst` object
 #' @keywords internal
 EinopsAst <- function(input_axes, output_axes, src) {
 

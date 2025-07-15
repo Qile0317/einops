@@ -35,7 +35,7 @@ parse_einops_ast <- function(tokens) {
         stop("Empty input pattern before arrow")
     }
     if (length(output_tokens) == 0) {
-        output_axes <- list(NothingAstNode())
+        output_axes <- list()
     } else {
         output_axes <- parse_axes_iter(output_tokens)
     }

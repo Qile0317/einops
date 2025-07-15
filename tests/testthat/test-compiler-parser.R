@@ -531,9 +531,7 @@ test_that("parse_onesided_ast handles simple axis names", {
                 src = list(start = 5)
             )
         ),
-        output_axes = OneSidedAstNode(
-            NothingAstNode()
-        ),
+        output_axes = OneSidedAstNode(),
         src = list(start = 1)
     )
     expect_identical(parse_einops_ast(tokens), ast)
