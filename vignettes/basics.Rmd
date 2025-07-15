@@ -43,3 +43,91 @@ ims[2]
 # In other words, transposed first two axes (dimensions)
 rearrange(ims[1], "h w c -> w h c")
 ```
+
+```{r}
+# we could use more verbose names for axes, and result is the same:
+rearrange(ims[1], "height width color -> width height color")
+# when you operate on same set of axes many times,
+# you usually come up with short names.
+# That's what we do throughout tutorial - we'll use b (for batch), h, w, and c
+```
+
+## Composition of axes
+
+Transposition is very common and useful, but let's move to other capabilities provided by einops.
+
+```{r}
+# einops allows seamlessly composing batch and height to a new height dimension
+# We just rendered all images by collapsing to 3d tensor!
+rearrange(ims, "b h w c -> (b h) w c")
+```
+
+```{r}
+# or compose a new dimension of batch and width
+rearrange(ims, "b h w c -> h (b w) c")
+```
+
+```{r}
+# resulting dimensions are computed very simply
+# length of newly composed axis is a product of components
+# [6, 96, 96, 3] -> [96, (6 * 96), 3]
+dim(rearrange(ims, "b h w c -> h (b w) c"))
+```
+
+```{r}
+# we can compose more than two axes.
+# let's flatten 4d array into 1d, resulting array has as many elements as the original
+dim(rearrange(ims, "b h w c -> (b h w c)"))
+```
+
+## Decomposition of axis
+
+```{r}
+# decomposition is the inverse process - represent an axis as a combination of new axes
+# several decompositions possible, so b1=2 is to decompose 6 to b1=2 and b2=3
+dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1=2))
+```
+
+```{r}
+# finally, combine composition and decomposition:
+rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
+```
+
+```{r}
+# slightly different composition: b1 is merged with width, b2 with height
+# ... so letters are ordered by w then by h
+rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
+```
+
+```{r}
+# move part of width dimension to height.
+# we should call this width-to-height as image width shrunk by 2 and height doubled.
+# but all pixels are the same!
+# Can you write reverse operation (height-to-width)?
+rearrange(ims, "b h (w w2) c -> (h w2) (b w) c", w2=2)
+```
+
+## Order of axes matters
+
+```{r}
+# compare with the next example
+rearrange(ims, "b h w c -> h (b w) c")
+```
+
+```{r}
+# order of axes in composition is different
+# rule is just as for digits in the number: leftmost digit is the most significant,
+# while neighboring numbers differ in the rightmost axis.
+
+# you can also think of this as lexicographic sort
+rearrange(ims, "b h w c -> h (w b) c")
+```
+
+```{r}
+# what if b1 and b2 are reordered before composing to width?
+rearrange(ims, "(b1 b2) h w c -> h (b1 b2 w) c ", b1=2)  # produces 'einops'
+```
+
+```{r}
+rearrange(ims, "(b1 b2) h w c -> h (b2 b1 w) c ", b1=2)  # produces 'eoipns'
+```
