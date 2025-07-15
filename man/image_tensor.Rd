@@ -25,8 +25,8 @@ as_image_tensor(x)
 \arguments{
 \item{x}{An object to convert to or from \code{image_tensor} format.}
 
-\item{axes}{Logical. Whether to show axes in the plot. Default is controlled
-by the option \code{plot_image_tensor_axes} (default: FALSE).}
+\item{axes}{Logical. Whether to show axes in the plot. Default is
+controlled by the option \code{plot_image_tensor_axes} (default: FALSE).}
 
 \item{...}{Additional arguments passed to underlying methods.}
 
@@ -47,19 +47,22 @@ in tensor format. It extends the base \code{array} class and provides methods
 for conversion to/from various image formats, plotting, and printing.
 
 An \code{image_tensor} object represents image data in the format "b h w c"
-(batch, height, width, channels), which is a common format for deep learning
-frameworks.
+(batch, height, width, channels), which is a common format for deep
+learning frameworks.
 }
 \details{
 The \code{image_tensor} class provides the following methods:
-
-\describe{
-\item{\code{as_image_tensor()}}{Generic function to convert objects to \code{image_tensor} format}
-\item{\code{as_image_tensor.default()}}{Default method that converts arrays to \code{image_tensor}}
-\item{\code{as_image_tensor.cimg()}}{Method to convert \code{cimg} objects (from imager package) to \code{image_tensor}}
-\item{\code{as.cimg.image_tensor()}}{Method to convert \code{image_tensor} objects back to \code{cimg} format}
-\item{\code{plot.image_tensor()}}{Plot method for \code{image_tensor} objects}
-\item{\code{print.image_tensor()}}{Print method for \code{image_tensor} objects}
+\itemize{
+\item \code{as_image_tensor()}: Generic function to convert objects to
+\code{image_tensor} format
+\item \code{as_image_tensor.default()}: Default method that converts arrays to
+\code{image_tensor}
+\item \code{as_image_tensor.cimg()}: Method to convert \code{cimg} objects (from imager
+package) to \code{image_tensor}
+\item \code{as.cimg.image_tensor()}: Method to convert \code{image_tensor} objects back
+to \code{cimg} format
+\item \code{plot.image_tensor()}: Plot method for \code{image_tensor} objects
+\item \code{print.image_tensor()}: Print method for \code{image_tensor} objects
 }
 }
 \section{Format}{
@@ -78,7 +81,8 @@ An \code{image_tensor} object is an array with dimensions in "b h w c" format:
 The following options control the behavior of \code{image_tensor} methods:
 \itemize{
 \item \code{plot_image_tensor_axes}: Whether to show axes in plots (default: FALSE)
-\item \code{print_image_tensor_as_plot}: Whether to print images as plots (default: TRUE)
+\item \code{print_image_tensor_as_plot}: Whether to print images as plots (default:
+TRUE)
 }
 }
 
