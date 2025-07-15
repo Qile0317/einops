@@ -32,7 +32,11 @@ get_backend_registry <- function(
 }
 
 register_backend <- function(
-    tensor_type, backend_class, dependencies = character(0), testing = FALSE, aliases = character(0)
+    tensor_type,
+    backend_class,
+    dependencies = character(0),
+    testing = FALSE,
+    aliases = character(0)
 ) {
     get_backend_registry()$register_backend(
         tensor_type, backend_class, dependencies, testing, aliases
@@ -113,7 +117,11 @@ public = list(
     #' @param aliases a character vector of aliases for the tensor type
     #' @return this object
     register_backend = function(
-        tensor_type, backend_class, dependencies = character(0), testing = FALSE, aliases = character(0)
+        tensor_type,
+        backend_class,
+        dependencies = character(0),
+        testing = FALSE,
+        aliases = character(0)
     ) {
         assert_that(
             inherits(backend_class, "R6ClassGenerator"), 

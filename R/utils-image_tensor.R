@@ -71,7 +71,7 @@ as_image_tensor.cimg <- function(x) {
     as_image_tensor(rearrange(x, "w h b c -> b h w c"))
 }
 
-as.cimg <- function(x) {
+as.cimg <- function(x) { # nolint: object_name_linter.
     UseMethod("as.cimg", x)
 }
 
