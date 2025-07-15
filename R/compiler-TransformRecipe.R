@@ -119,7 +119,6 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
-        ungroup_singular_brackets() %>%
         expand_ellipsis(ndim)
 
     axis_name2known_length <- AddOnlyOrderedMap(
@@ -276,27 +275,6 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
     )
 }
 
-ungroup_singular_brackets <- function(ast) {
-    UseMethod("ungroup_singular_brackets", ast)
-}
-
-#' @export
-ungroup_singular_brackets.EinopsAst <- function(ast) {
-    ast$input_axes %<>% ungroup_singular_brackets()
-    ast$output_axes %<>% ungroup_singular_brackets()
-    ast
-}
-
-#' @export
-ungroup_singular_brackets.OneSidedAstNode <- function(ast) {
-    for (i in find_node_types_indices(ast, "GroupAstNode")) {
-        if (length(ast[[i]]$children) == 1L) {
-            ast[[i]] <- ast[[i]]$children[[1]]
-        }
-    }
-    ast
-}
-
 #' @title
 #' Expand ellipses of an EinopsAst
 #'
@@ -353,7 +331,7 @@ expand_ellipsis <- function(einops_ast, ndim) {
         return(einops_ast)
     }
 
-    for (i in seq_len(einops_ast$output_axes)) {
+    for (i in seq_along(einops_ast$output_axes)) {
         if (!inherits(einops_ast$output_axes[[i]], "GroupAstNode")) next
         ellipsis_index <- get_ellipsis_index(einops_ast$output_axes[[i]])
         if (length(ellipsis_index) == 0) next

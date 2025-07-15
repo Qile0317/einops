@@ -21,8 +21,9 @@ equivalent_rearrange_patterns <- list(
 for (pattern in identity_patterns) {
     test_in_all_tensor_types_that(glue("rearrange(x, '{pattern}') returns x"), {
         x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
-        expect_no_error(rearrange(x, pattern))
-        expect_identical(rearrange(x,  pattern), x)
+        expect_no_error(y <- rearrange(x, pattern))
+        expect_identical(dim(y), dim(x))
+        expect_identical(y, x)
     })
 }
 
@@ -32,9 +33,10 @@ for (pattern in equivalent_rearrange_patterns) {
         "rearrange(x, '{pattern[[2]]}')"
     ), {
         x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
-        expect_no_error(rearrange(x, pattern[[1]]))
-        expect_no_error(rearrange(x, pattern[[2]]))
-        expect_identical(rearrange(x, pattern[[1]]), rearrange(x, pattern[[2]]))
+        expect_no_error(y1 <- rearrange(x, pattern[[1]]))
+        expect_no_error(y2 <- rearrange(x, pattern[[2]]))
+        expect_identical(dim(y1), dim(y2))
+        expect_identical(y1, y2)
     })
 }
 
