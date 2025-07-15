@@ -12,14 +12,16 @@
 #' For each tensor type, the function:
 #'   - Retrieves dependencies and skips the test if any are missing.
 #'   - Defines a `create_tensor` function for the current backend.
-#'   - Evaluates the provided test code in a local context.
-#' This allows writing tests that are portable across different tensor backends.
+#'   - Evaluates the provided test code in the calling environment context.
+#' This allows writing tests that are portable across different tensor backends
+#' while having access to variables defined in the test frame.
 #' @return [logical()] of length 1 indicating whether the test passed or failed.
 test_in_all_tensor_types_that <- function(desc, code) {
 
     tensor_types <- get_backend_registry()$get_supported_types()
     substituted_code <- substitute(code)
     backend_registry <- get_backend_registry()
+    parent_env <- parent.frame()
 
     for (tensor_type in tensor_types) {
 
@@ -36,12 +38,12 @@ test_in_all_tensor_types_that <- function(desc, code) {
 
             backend <- backend_registry$get_backend_from_type(tensor_type)
             
-            # Define create_tensor in current environment
-            create_tensor <- function(values, dims, ...) { # nolint: object_usage_linter, line_length_linter.
+            eval_env <- new.env(parent = parent_env)
+            eval_env$create_tensor <- function(values, dims, ...) {
                 backend$create_tensor(values, dims, ...)
             }
             
-            eval(substituted_code)
+            eval(substituted_code, envir = eval_env)
         })
     }
 }
