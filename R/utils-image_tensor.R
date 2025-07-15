@@ -1,15 +1,16 @@
 #' @name image_tensor
 #' @title
-#' Image Tensor: A thin wrapper around 4D arrays
+#' Image Tensor: A thin wrapper around 3D and 4D arrays
 #'
 #' @description
 #' The `image_tensor` class provides a convenient way to work with image data
 #' in tensor format. It extends the base `array` class and provides methods
 #' for conversion to/from various image formats, plotting, and printing.
 #'
-#' An `image_tensor` object represents image data in the format "b h w c"
-#' (batch, height, width, channels), which is a common format for deep
-#' learning frameworks.
+#' An `image_tensor` object represents image data in the format "h w c"
+#' (height, width, channels) for single images, or "b h w c"
+#' (batch, height, width, channels) for batches of images, which is a common
+#' format for deep learning frameworks.
 #'
 #' The main utility of wrapping image data in the `image_tensor` class is that
 #' printing of the object will automatically display the image as a plot.
@@ -38,12 +39,13 @@
 #' - `print.image_tensor()`: Print method for `image_tensor` objects
 #'
 #' @section Format:
-#' An `image_tensor` object is an array with dimensions in "b h w c" format:
+#' An `image_tensor` object is an array with dimensions in "h w c" format for
+#' single images, or "b h w c" format for batches of images:
 #'
-#' - **b**: batch dimension (number of images)
 #' - **h**: height dimension (image height in pixels)
 #' - **w**: width dimension (image width in pixels)
 #' - **c**: channel dimension (e.g., 3 for RGB, 1 for grayscale)
+#' - **b**: batch dimension (number of images, only for 4D arrays)
 #'
 #' @section Options:
 #' The following options control the behavior of `image_tensor` methods:
@@ -55,8 +57,8 @@
 #' @return
 #' - `as_image_tensor()`: An object of class `image_tensor`
 #' - `as.cimg()`: A `cimg` object (from imager package)
-#' - `[.image_tensor()`: A subset of the `image_tensor` object, also of class
-#'   `image_tensor`
+#' - `[.image_tensor()`: A subset of the `image_tensor` object. For 4D arrays
+#'   with single index, returns a 3D slice without the batch dimension.
 #' - `plot()`: Invisibly returns the input object
 #' - `print()`: Invisibly returns the input object
 #' @export
@@ -68,6 +70,12 @@ as_image_tensor <- function(x) {
 #' @export
 as_image_tensor.default <- function(x) {
     x <- as.array(x)
+    dims <- length(dim(x))
+    
+    if (dims != 3 && dims != 4) {
+        stop("image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays")
+    }
+    
     class(x) <- c("image_tensor", "array")
     x
 }
@@ -85,7 +93,17 @@ as.cimg <- function(x) { # nolint: object_name_linter.
 #' @rdname image_tensor
 #' @export
 as.cimg.image_tensor <- function(x) {
-    imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
+    x_dims <- length(dim(x))
+    
+    if (x_dims == 3) {
+        # For 3D arrays (h w c), add batch dimension before rearranging
+        imager::as.cimg(rearrange(x, "h w c -> w h 1 c"))
+    } else if (x_dims == 4) {
+        # For 4D arrays (b h w c)
+        imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
+    } else {
+        stop("image_tensor must be 3D or 4D")
+    }
 }
 
 #' @rdname image_tensor
@@ -94,14 +112,22 @@ as.cimg.image_tensor <- function(x) {
 
     original_class <- class(x)
     args <- list(...)
+    x_dims <- length(dim(x))
 
-    if (length(args) == 1) {
-        return(as_image_tensor(unclass(x)[args[[1]], , , , drop = FALSE]))
+    # Handle single argument subsetting for 4D arrays
+    if (length(args) == 1 && x_dims == 4) {
+        # Return 3D slice without batch dimension
+        result <- unclass(x)[args[[1]], , , , drop = FALSE]
+        result <- array(result, dim = dim(result)[-1])  # Remove first dimension
+        class(result) <- original_class
+        return(result)
     }
 
     result <- NextMethod("[", drop = FALSE)
-    result_dims <- dim(result)
-    if (length(result_dims) != 4) {
+    result_dims <- length(dim(result))
+    
+    # Validate dimensionality
+    if (result_dims != 3 && result_dims != 4) {
         stop("Subsetting resulted in unexpected dimensionality")
     }
 
@@ -114,7 +140,18 @@ as.cimg.image_tensor <- function(x) {
 plot.image_tensor <- function(
     x, axes = getOption("plot_image_tensor_axes", FALSE), ...
 ) {
-    grid::grid.raster(as.cimg(x), ...)
+    x_dims <- length(dim(x))
+    
+    if (x_dims == 4) {
+        # For 4D arrays, plot the first image in the batch
+        if (dim(x)[1] > 1) {
+            warning("Multiple images in batch, plotting only the first one")
+        }
+        grid::grid.raster(as.cimg(x[1, , , , drop = FALSE]), ...)
+    } else {
+        # For 3D arrays, plot directly
+        grid::grid.raster(as.cimg(x), ...)
+    }
 }
 
 #' @rdname image_tensor
@@ -126,5 +163,5 @@ print.image_tensor <- function(
         plot(x, ...)
         return(invisible(x))
     }
-    print(imager::as.cimg(unclass(x)))
+    print(as.cimg(unclass(x)))
 }

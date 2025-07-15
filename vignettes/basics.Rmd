@@ -20,6 +20,8 @@ library(einops)
 
 ## Load a batch of images to play with
 
+Here we load a `einops::image_tensor()` object, which is a wrapper around a 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor.
+
 ```{r load_einops_image}
 ims <- get(data("einops_image"))
 print(dim(ims))
@@ -28,4 +30,16 @@ print(dim(ims))
 ```{r}
 # display the first image (whole 4d tensor can't be rendered)
 ims[1]
+```
+
+```{r}
+# second image in a batch
+ims[2]
+```
+
+```{r}
+# rearrange, as the name suggests, rearranges elements
+# below we swapped height and width.
+# In other words, transposed first two axes (dimensions)
+rearrange(ims[1], "h w c -> w h c")
 ```

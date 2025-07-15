@@ -9,7 +9,7 @@
 \alias{[.image_tensor}
 \alias{plot.image_tensor}
 \alias{print.image_tensor}
-\title{Image Tensor: A thin wrapper around 4D arrays}
+\title{Image Tensor: A thin wrapper around 3D and 4D arrays}
 \usage{
 as_image_tensor(x)
 
@@ -41,8 +41,8 @@ controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}
 \itemize{
 \item \code{as_image_tensor()}: An object of class \code{image_tensor}
 \item \code{as.cimg()}: A \code{cimg} object (from imager package)
-\item \verb{[.image_tensor()}: A subset of the \code{image_tensor} object, also of class
-\code{image_tensor}
+\item \verb{[.image_tensor()}: A subset of the \code{image_tensor} object. For 4D arrays
+with single index, returns a 3D slice without the batch dimension.
 \item \code{plot()}: Invisibly returns the input object
 \item \code{print()}: Invisibly returns the input object
 }
@@ -52,9 +52,10 @@ The \code{image_tensor} class provides a convenient way to work with image data
 in tensor format. It extends the base \code{array} class and provides methods
 for conversion to/from various image formats, plotting, and printing.
 
-An \code{image_tensor} object represents image data in the format "b h w c"
-(batch, height, width, channels), which is a common format for deep
-learning frameworks.
+An \code{image_tensor} object represents image data in the format "h w c"
+(height, width, channels) for single images, or "b h w c"
+(batch, height, width, channels) for batches of images, which is a common
+format for deep learning frameworks.
 
 The main utility of wrapping image data in the \code{image_tensor} class is that
 printing of the object will automatically display the image as a plot.
@@ -77,12 +78,13 @@ to \code{cimg} format
 }
 \section{Format}{
 
-An \code{image_tensor} object is an array with dimensions in "b h w c" format:
+An \code{image_tensor} object is an array with dimensions in "h w c" format for
+single images, or "b h w c" format for batches of images:
 \itemize{
-\item \strong{b}: batch dimension (number of images)
 \item \strong{h}: height dimension (image height in pixels)
 \item \strong{w}: width dimension (image width in pixels)
 \item \strong{c}: channel dimension (e.g., 3 for RGB, 1 for grayscale)
+\item \strong{b}: batch dimension (number of images, only for 4D arrays)
 }
 }
 
