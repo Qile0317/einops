@@ -18,6 +18,8 @@
 #' @return [logical()] of length 1 indicating whether the test passed or failed.
 test_in_all_tensor_types_that <- function(desc, code) {
 
+    assert_that(is.string(desc))
+
     tensor_types <- get_backend_registry()$get_supported_types()
     substituted_code <- substitute(code)
     backend_registry <- get_backend_registry()

@@ -67,6 +67,9 @@ einops.reduce <- reduce # nolint: object_name_linter.
 
 #' @export
 reduce.default <- function(x, expr, func, ...) {
+    if (identical(Sys.getenv("TESTTHAT"), "true")) {
+        return(.reduce(x, expr, func, ...))
+    }
     tryCatch(
         .reduce(x, expr, func, ...),
         error = function(e) {

@@ -9,19 +9,32 @@ identity_patterns <- c(
     "a ... c d e -> a (...) c d e"
 )
 
-# equivalent_rearrange_patterns <- list(
-#     list("a b c d e -> (a b) c d e", "a b ... -> (a b) ... "),
-#     list("a b c d e -> a b (c d) e", "... c d e -> ... (c d) e"),
-#     list("a b c d e -> a b c d e", "... -> ... "),
-#     list("a b c d e -> (a b c d e)", "... ->  (...)"),
-#     list("a b c d e -> b (c d e) a", "a b ... -> b (...) a"),
-#     list("a b c d e -> b (a c d) e", "a b ... e -> b (a ...) e")
-# )
+equivalent_rearrange_patterns <- list(
+    list("a b c d e -> (a b) c d e", "a b ... -> (a b) ... "),
+    list("a b c d e -> a b (c d) e", "... c d e -> ... (c d) e"),
+    list("a b c d e -> a b c d e", "... -> ... "),
+    list("a b c d e -> (a b c d e)", "... ->  (...)"),
+    list("a b c d e -> b (c d e) a", "a b ... -> b (...) a"),
+    list("a b c d e -> b (a c d) e", "a b ... e -> b (a ...) e")
+)
 
 for (pattern in identity_patterns) {
-    test_in_all_tensor_types_that(glue("rearrange('{pattern}') works"), {
+    test_in_all_tensor_types_that(glue("rearrange(x, '{pattern}') returns x"), {
         x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        expect_no_error(rearrange(x, pattern))
         expect_identical(rearrange(x,  pattern), x)
+    })
+}
+
+for (pattern in equivalent_rearrange_patterns) {
+    test_in_all_tensor_types_that(glue(
+        "rearrange(x, '{pattern[[1]]}') is equivalent to ",
+        "rearrange(x, '{pattern[[2]]}')"
+    ), {
+        x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        expect_no_error(rearrange(x, pattern[[1]]))
+        expect_no_error(rearrange(x, pattern[[2]]))
+        expect_identical(rearrange(x, pattern[[1]]), rearrange(x, pattern[[2]]))
     })
 }
 
