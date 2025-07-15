@@ -82,6 +82,13 @@ Einops works with ...
 
 Additionally, einops can be used with any framework that supports R's array access S3 generics -->
 
+## Implementations in other languages
+
+- [Python (Original)](https://einops.rocks/)
+- [Julia](https://murrellgroup.github.io/Einops.jl/stable/)
+- [Rust](https://docs.rs/einops/latest/einops/)
+- [C++](https://github.com/dorpxam/einops-cpp)
+
 ## Development Roadmap (Will be deleted after completion)
 
 - [x] Lexical Analysis (`lex("expression")` -> `EinopsTokenSequence()`)
@@ -91,26 +98,20 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] Intermediate Representation generation (`prepare_transformation_recipe(EinopsAst())` -> `TransformRecipe()`)
 - [x] Code generation (`create_execution_plan(TransformRecipe())` -> `EinopsExecutionPlan()`)
 - [x] Execution (`apply_recipe(EinopsExecutionPlan())`, `EinopsBackend()` -> output)
-- [x] `einops:::repeat.array()`
-- [x] `einops:::rearrange.array()`
-- [x] `einops:::reduce.array()`
+- [x] `einops:::repeat()`
+- [x] `einops:::rearrange()`
+- [x] `einops:::reduce()`
 - [x] Make Github Repository Public
-- [x] `einops:::parse_shape.torch_tensor()`
+- [ ] [`einops::einop()`](https://github.com/cgarciae/einop)
 - [ ] `TorchBackend()`
-- [ ] `einops:::repeat.torch_tensor()`
-- [ ] `einops:::rearrange.torch_tensor()`
-- [ ] `einops:::Rearrange.torch()`
-- [ ] `einops:::reduce.torch_tensor()`
-- [ ] `einops:::Reduce.torch()`
+- [ ] `einops:::Rearrange()` (layer)
+- [ ] `einops:::Reduce()` (layer)
 - [ ] packing and unpacking expression interpretation
-- [ ] `einops:::pack.array()`
-- [ ] `einops:::unpack.array()`
-- [ ] `einops:::pack.torch_tensor()`
-- [ ] `einops:::unpack.torch_tensor()`
+- [ ] `einops::pack()`
+- [ ] `einops:::unpack()`
 - [ ] EinMix for torch
-- [ ] `einops::einsum.array()`
-- [ ] `einops::einsum.torch_tensor()`
-- [ ] Expand Roadmp by incorporating more backends 
+- [ ] `einops::einsum()`
+- [ ] Expand Roadmap by incorporating more backends
 
 ### Nice to Haves
 
