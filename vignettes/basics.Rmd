@@ -20,12 +20,12 @@ library(einops)
 
 ## Load a batch of images to play with
 
-```{r}
+```{r load_einops_image}
 ims <- get(data("einops_image"))
 print(dim(ims))
 ```
 
-```{r}
+```{r out.width='100%', fig.align='center'}
 # display the first image (whole 4d tensor can't be rendered)
-ims[0]
+ims[1]
 ```

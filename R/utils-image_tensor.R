@@ -114,7 +114,7 @@ as.cimg.image_tensor <- function(x) {
 plot.image_tensor <- function(
     x, axes = getOption("plot_image_tensor_axes", FALSE), ...
 ) {
-    plot(as.cimg(x), axes = axes, ...)
+    grid::grid.raster(as.cimg(x), ...)
 }
 
 #' @rdname image_tensor

@@ -29,6 +29,7 @@ Imports:
     roperators
 Suggests: 
     abind,
+    grid,
     imager,
     knitr,
     lobstr,
