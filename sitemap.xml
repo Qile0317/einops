@@ -4,6 +4,8 @@
 <url><loc>https://qile0317.github.io/einops/CONTRIBUTING.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/LICENSE-text.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/LICENSE.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/articles/basics.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/articles/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/authors.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/news/index.html</loc></url>
@@ -18,7 +20,6 @@
 <url><loc>https://qile0317.github.io/einops/reference/EllipsisAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/GroupAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/NamedAxisAstNode.html</loc></url>
-<url><loc>https://qile0317.github.io/einops/reference/NothingAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/OneSidedAstNode.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/TransformRecipe.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/UnderscoreAstNode.html</loc></url>
@@ -30,6 +31,7 @@
 <url><loc>https://qile0317.github.io/einops/reference/dot-next_token.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops-package.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/einops.repeat.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/einops_image.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/expand_ellipsis.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/find_top_level_arrow_index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/get_backend.html</loc></url>
@@ -37,6 +39,7 @@
 <url><loc>https://qile0317.github.io/einops/reference/get_identifiers.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/get_ordered_axis_names.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/get_ungrouped_nodes.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/image_tensor.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/index.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/lex.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/parse_axes_iter.html</loc></url>
