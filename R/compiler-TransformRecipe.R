@@ -96,30 +96,35 @@ is_expected_axis_length <- function(x) {
 #' 2. Parsing: converting the tokens into an Abstract Syntax Tree (AST)
 #' 3. Syntactic Analysis:
 #'     - operation-based AST validation pass
-#'     - [TODO] Compile syntactic info for intermediate representation (IR).
-#' 4. [TODO] IR generation: return the [TransformRecipe()] object, acting as
-#'    the IR for the einops.
+#'     - Compile syntactic info for intermediate representation (IR).
+#' 4. IR generation: return the [TransformRecipe()] object.
 #'
 #' @param expr The input einops expression string
 #' @param func The string/function indicating the reduction operation
 #' @param axes_names user defined axis names as a [character()] vector.
 #' @param ndim count for the number of dimensions of the input tensor
+#' @param reverse_groups `r lifecycle::badge("experimental")` logical: whether
+#' to reverse the order of the axes in each group.
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
-prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+prepare_transformation_recipe <- function(
+    expr, func, axes_names, ndim, reverse_groups = FALSE
+) {
 
     assert_that(
         is.character(expr) && length(expr) == 1L,
         is.character(func) || is.function(func),
         is.character(axes_names),
-        is.count(ndim)
+        is.count(ndim),
+        is.flag(reverse_groups)
     )
 
     tokens <- lex(expr)
 
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
-        expand_ellipsis(ndim)
+        expand_ellipsis(ndim) %>%
+        reverse_group_orders_if(reverse_groups)
 
     axis_name2known_length <- AddOnlyOrderedMap(
         key_validator = is_flat_axis_names_element, # TODO I think only characters are needed
@@ -282,7 +287,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 #' @description
 #' Helper for [prepare_transformation_recipe()].
 #'
-#' This function expands each relevant ellipsis ast node inplace into a
+#' This function expands each relevant ellipsis ast node in-place into a
 #' sequence of `NamedAxisAstNode` nodes, where each node will have
 #' a name like `"...1"`, `"...2"`, etc. and an empty `src` list.
 #'
@@ -312,37 +317,54 @@ expand_ellipsis <- function(einops_ast, ndim) {
         ))
     }
 
-    replace_ellipsis <- function(ast) {
-        ellipsis_index <- get_ellipsis_index(ast)
-        append(
-            x = ast[-ellipsis_index],
-            values = lapply(seq_len(ndim - n_other_dims), function(i) {
-                NamedAxisAstNode(paste0("...", i))
-            }),
-            after = ellipsis_index - 1
-        )
+    replace_ellipsis <- function(onesided_ast) {
+
+        expanded_axes <- lapply(seq_len(ndim - n_other_dims), function(i) {
+            NamedAxisAstNode(paste0("...", i))
+        })
+
+        for (i in seq_along(onesided_ast)) {
+            if (inherits(onesided_ast[[i]], "EllipsisAstNode")) {
+                return(append(
+                    onesided_ast[-i],
+                    values = expanded_axes,
+                    after = i - 1
+                ))
+            }
+            if (!inherits(onesided_ast[[i]], "GroupAstNode")) next
+            curr_group_children <- onesided_ast[[i]]$children
+            for (j in seq_along(curr_group_children)) {
+                if (!inherits(curr_group_children[[j]], "EllipsisAstNode")) next
+                onesided_ast[[i]]$children <- append(
+                    curr_group_children[-j],
+                    values = expanded_axes,
+                    after = j - 1
+                )
+                return(onesided_ast)
+            }
+        }
+
+        onesided_ast
     }
 
     einops_ast$input_axes %<>% replace_ellipsis()
+    einops_ast$output_axes %<>% replace_ellipsis()
+    einops_ast
+}
 
-    # expand the output ellipsis
+reverse_group_orders_if <- function(ast, do_reverse) {
+    if (!do_reverse) return(ast)
 
-    if (has_ellipsis(einops_ast$output_axes)) {
-        einops_ast$output_axes %<>% replace_ellipsis()
-        return(einops_ast)
+    reverse_group_orders <- function(axes) {
+        for (i in seq_along(axes)) {
+            if (!inherits(axes[[i]], "GroupAstNode")) next
+            axes[[i]]$children %<>% rev()
+        }
+        axes
     }
 
-    for (i in seq_len(einops_ast$output_axes)) {
-        if (!inherits(einops_ast$output_axes[[i]], "GroupAstNode")) next
-        ellipsis_index <- get_ellipsis_index(einops_ast$output_axes[[i]])
-        if (length(ellipsis_index) == 0) next
-        einops_ast$output_axes[[i]] %<>% replace_ellipsis()
-        return(einops_ast)
-    }
+    ast$input_axes %<>% reverse_group_orders()
+    ast$output_axes %<>% reverse_group_orders()
 
-    stop(
-        "No ellipsis found in the output axes. ",
-        "This is a bug in the einops parser. Please report as issue.",
-    )
-
+    ast
 }

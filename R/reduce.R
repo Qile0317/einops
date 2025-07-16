@@ -11,6 +11,11 @@
 #' 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
 #' prod, etc.)
 #' @param ... either corresponding axes lengths or a single list of them.
+#' @param .row_major `r lifecycle::badge("experimental")` logical: whether to
+#' use row-major order for the output
+#' tensor. If `TRUE`, the *operation* is performed in row-major order, but the
+#' output will be in whatever order the parent framework uses (e.g. column-major
+#' for [base::array()]).
 #'
 #' @return tensor of the same type as input, with dimensions according to output
 #' pattern
@@ -57,7 +62,9 @@
 #' # same as previous, but using empty compositions
 #' y <- x - reduce(x, 'b c h w -> b c () ()', 'mean')
 #'
-reduce <- function(x, expr, func, ...) {
+reduce <- function(
+    x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
     UseMethod("reduce")
 }
 
@@ -66,9 +73,14 @@ reduce <- function(x, expr, func, ...) {
 einops.reduce <- reduce # nolint: object_name_linter.
 
 #' @export
-reduce.default <- function(x, expr, func, ...) {
+reduce.default <- function(
+    x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
+    if (identical(Sys.getenv("TESTTHAT"), "true")) {
+        return(.reduce(x, expr, func, ..., .row_major = .row_major))
+    }
     tryCatch(
-        .reduce(x, expr, func, ...),
+        .reduce(x, expr, func, ..., .row_major = .row_major),
         error = function(e) {
             stop("In Einops - ", conditionMessage(e), call. = FALSE)
         }
@@ -76,15 +88,23 @@ reduce.default <- function(x, expr, func, ...) {
 }
 
 #' @export
-reduce.list <- function(x, expr, func, ...) {
+reduce.list <- function(
+    x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
     if (length(x) == 0) {
         stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
     }
     backend <- get_backend(x[[1]])
-    reduce(backend$stack_on_zeroth_dimension(x), expr, func, ...)
+    reduce(
+        backend$stack_on_zeroth_dimension(x),
+        expr,
+        func,
+        ...,
+        .row_major = .row_major
+    )
 }
 
-.reduce <- function(x, expr, func, ...) {
+.reduce <- function(x, expr, func, ..., .row_major) {
 
     axes_lengths <- list(...)
     if (length(axes_lengths) == 1L && is.list(axes_lengths[[1]])) {
@@ -101,7 +121,11 @@ reduce.list <- function(x, expr, func, ...) {
         names(axes_lengths)
 
     recipe <- prepare_transformation_recipe(
-        expr, func, axes_names = axes_names, ndim = length(backend$shape(x))
+        expr,
+        func,
+        axes_names = axes_names,
+        ndim = length(backend$shape(x)),
+        reverse_groups = .row_major
     )
 
     apply_recipe(

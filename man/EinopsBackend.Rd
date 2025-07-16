@@ -16,6 +16,7 @@ from this class and implement the required methods.
 \item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
 \item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
 \item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
+\item \href{#method-EinopsBackend-as_array}{\code{EinopsBackend$as_array()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
 \item \href{#method-EinopsBackend-shape}{\code{EinopsBackend$shape()}}
 \item \href{#method-EinopsBackend-reshape}{\code{EinopsBackend$reshape()}}
@@ -96,6 +97,26 @@ Create a tensor of the specified type with given values and dimensions.
 }
 \subsection{Returns}{
 A tensor of the specified type.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-as_array"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-as_array}{}}}
+\subsection{Method \code{as_array()}}{
+Convert a tensor to a standard \code{\link[base:array]{base::array()}}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$as_array(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{The input tensor/array.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A standard array representation of the tensor.
 }
 }
 \if{html}{\out{<hr>}}

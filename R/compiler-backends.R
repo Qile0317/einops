@@ -330,11 +330,19 @@ public = list(
         stop("Not implemented")
     },
 
+    #' @description
+    #' Convert a tensor to a standard [base::array()]
+    #' @param x The input tensor/array.
+    #' @return A standard array representation of the tensor.
+    as_array = function(x) {
+        stop("Not implemented")
+    },
+
     #' @param start integer, inclusive
     #' @param stop integer, inclusive
     #' @return a sequence from start to stop
     arange = function(start, stop) {
-        stop("framework doesn't implement arange")
+        stop("Not Implemented")
     },
 
     #' @description
@@ -473,6 +481,8 @@ public = list(
 
     create_tensor = function(values, dims) array(values, dim = dims),
 
+    as_array = identity,
+
     arange = function(start, stop) seq(from = start, to = stop),
 
     reshape = function(x, shape) array(x, dim = shape),
@@ -540,6 +550,10 @@ public = list(
 
     create_tensor = function(values, dims, ...) {
         torch::torch_tensor(array(values, dim = dims), ...)
+    },
+
+    as_array = function(x) {
+        torch::as_array(x)
     }
 ))
 

@@ -77,29 +77,78 @@ test_that("expand_ellipsis works", {
                 name = "a",
                 src = list(start = 1)
             ),
-            NamedAxisAstNode(
-                name = "...1",
-                src = list()
-            ),
-            NamedAxisAstNode(
-                name = "...2",
-                src = list()
-            )
+            NamedAxisAstNode("...1"),
+            NamedAxisAstNode("...2")
         ),
         output_axes = OneSidedAstNode(
-            NamedAxisAstNode(
-                name = "...1",
-                src = list()
-            ),
-            NamedAxisAstNode(
-                name = "...2",
-                src = list()
-            )
+            NamedAxisAstNode("...1"),
+            NamedAxisAstNode("...2")
         ),
         src = list(start = 1)
     )
 
     expect_identical(expand_ellipsis(ast, 3), expected_ast)
+
+    # ... -> (...)
+
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            EllipsisAstNode(
+                src = list(start = 1)
+            )
+        ),
+        output_axes = OneSidedAstNode(
+            GroupAstNode(
+                children = list(
+                    EllipsisAstNode(
+                        src = list(start = 9)
+                    )
+                ),
+                src =  list(start = 8)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expected_ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode("...1"),
+            NamedAxisAstNode("...2")
+        ),
+        output_axes = OneSidedAstNode(
+            GroupAstNode(
+                children = list(
+                    NamedAxisAstNode("...1"),
+                    NamedAxisAstNode("...2")
+                ),
+                src = list(start = 8)
+            )
+        ),
+        src = list(start = 1)
+    )
+
+    expect_identical(expand_ellipsis(ast, 2L), expected_ast)
+
+    # " ... ->  "
+
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            EllipsisAstNode(src = list(start = 1))
+        ),
+        output_axes = OneSidedAstNode(),
+        src = list(start = 1)
+    )
+
+    expected_ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode("...1"),
+            NamedAxisAstNode("...2")
+        ),
+        output_axes = OneSidedAstNode(),
+        src = list(start = 1)
+    )
+
+    expect_identical(expand_ellipsis(ast, 2L), expected_ast)
 
 })
 

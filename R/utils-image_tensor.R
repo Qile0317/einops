@@ -164,5 +164,8 @@ print.image_tensor <- function(
 reduce.image_tensor <- function(x, expr, func, ...) {
     class(x) <- "array"
     result <- reduce(x, expr, func, ...)
-    as_image_tensor(result)
+    if (FastUtils::isBound(length(dim(result)), 3, 4)) {
+        result <- as_image_tensor(result)
+    }
+    result
 }

@@ -1,4 +1,93 @@
-# TODO actually check values
+identity_patterns <- c(
+    "...->...",
+    "a b c d e-> a b c d e",
+    "a b c d e ...-> ... a b c d e",
+    "a b c d e ...-> a ... b c d e",
+    "... a b c d e -> ... a b c d e",
+    "a ... e-> a ... e",
+    "a ... -> a ... ",
+    "a ... c d e -> a (...) c d e"
+)
+
+equivalent_rearrange_patterns <- list(
+    list("a b c d e -> (a b) c d e", "a b ... -> (a b) ... "),
+    list("a b c d e -> a b (c d) e", "... c d e -> ... (c d) e"),
+    list("a b c d e -> a b c d e", "... -> ... "),
+    list("a b c d e -> (a b c d e)", "... ->  (...)"),
+    list("a b c d e -> b (c d e) a", "a b ... -> b (...) a"),
+    list("a b c d e -> b (a c d) e", "a b ... e -> b (a ...) e")
+)
+
+for (pattern in identity_patterns) {
+    test_in_all_tensor_types_that(glue("rearrange(x, '{pattern}') returns x"), {
+        x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        expect_no_error(y <- rearrange(x, pattern))
+        expect_identical(dim(y), dim(x))
+        expect_identical(y, x)
+    })
+}
+
+for (pattern in equivalent_rearrange_patterns) {
+    test_in_all_tensor_types_that(glue(
+        "rearrange(x, '{pattern[[1]]}') is equivalent to ",
+        "rearrange(x, '{pattern[[2]]}')"
+    ), {
+        x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        expect_no_error(y1 <- rearrange(x, pattern[[1]]))
+        expect_no_error(y2 <- rearrange(x, pattern[[2]]))
+        expect_identical(dim(y1), dim(y2))
+        expect_identical(y1, y2)
+    })
+}
+
+test_in_all_tensor_types_that("rearrange() is consistent", {
+    shape <- c(1, 2, 3, 5, 7, 11)
+    x <- create_tensor(1:prod(shape), shape)
+    for (pattern in c(
+        "a b c d e f -> a b c d e f",
+        "b a c d e f -> a b d e f c",
+        "a b c d e f -> f e d c b a",
+        "a b c d e f -> (f e) d (c b a)",
+        "a b c d e f -> (f e d c b a)"
+    )) {
+        expect_no_error(result <- rearrange(x, pattern))
+        expect_identical(
+            length(setdiff(as_base_array(x), as_base_array(result))), 0L
+        )
+    }
+
+    result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
+    expect_identical(
+        as.numeric(as_base_array(result)), as.numeric(as_base_array(x))
+    )
+
+    result <- rearrange(x, "a aa aa1 a1a1 aaaa a11 -> a aa aa1 a1a1 aaaa a11")
+    expect_identical(x, result)
+
+    result1 <- rearrange(x, "a b c d e f -> f e d c b a")
+    result2 <- rearrange(x, "f e d c b a -> a b c d e f")
+    expect_identical(result1, result2)
+
+    result <- rearrange(
+        rearrange(x, "a b c d e f -> (f d) c (e b) a"),
+        "(f d) c (e b) a -> a b c d e f",
+        b = 2,
+        d = 5
+    )
+    expect_identical(x, result)
+
+    sizes <- setNames(as.list(shape), letters[1:6])
+    temp <- rearrange(x, "a b c d e f -> (f d) c (e b) a", sizes)
+    result <- rearrange(temp, "(f d) c (e b) a -> a b c d e f", sizes)
+    expect_identical(x, result)
+
+    x2 <- create_tensor(1:(2 * 3 * 4), c(2, 3, 4))
+    result <- rearrange(x2, "a b c -> b c a")
+    x2_array <- as_base_array(x2)
+    result_array <- as_base_array(result)
+    expect_equal(x2_array[2, 3, 4], result_array[3, 4, 2])
+    expect_equal(x2_array[1, 2, 3], result_array[2, 3, 1])
+})
 
 test_in_all_tensor_types_that("rearrange() works", {
 
@@ -14,6 +103,8 @@ test_in_all_tensor_types_that("rearrange() works", {
     )
 
     x <- create_tensor(1:(10 * 20 * 30 * 40), c(10, 20, 30, 40))
+
+    # TODO actually check values
     
     # Test 1: transpose
     y1 <- rearrange(x, "b c h w -> b h w c")
