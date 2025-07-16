@@ -29,3 +29,4 @@ reference:
 - title: Image Tensor class
   contents:
   - image_tensor
+  - einops_image
