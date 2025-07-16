@@ -7,5 +7,6 @@
 #' @importFrom glue glue
 #' @importFrom magrittr %<>%
 #' @importFrom roperators %+=% %*=%
+#' @importFrom utils tail
 ## usethis namespace: end
 NULL

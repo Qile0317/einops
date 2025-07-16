@@ -26,4 +26,6 @@ reference:
 - title: Utilities
 - contents:
   - parse_shape
-  # TODO image_tensor() and related functions
+- title: Image Tensor class
+- contents:
+  - image_tensor
