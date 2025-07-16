@@ -129,7 +129,26 @@ test_that("expand_ellipsis works", {
 
     expect_identical(expand_ellipsis(ast, 2L), expected_ast)
 
-    # TODO test " ... ->  "
+    # " ... ->  "
+
+    ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            EllipsisAstNode(src = list(start = 1))
+        ),
+        output_axes = OneSidedAstNode(),
+        src = list(start = 1)
+    )
+
+    expected_ast <- EinopsAst(
+        input_axes = OneSidedAstNode(
+            NamedAxisAstNode("...1"),
+            NamedAxisAstNode("...2")
+        ),
+        output_axes = OneSidedAstNode(),
+        src = list(start = 1)
+    )
+
+    expect_identical(expand_ellipsis(ast, 2L), expected_ast)
 
 })
 

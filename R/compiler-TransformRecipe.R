@@ -281,7 +281,7 @@ prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
 #' @description
 #' Helper for [prepare_transformation_recipe()].
 #'
-#' This function expands each relevant ellipsis ast node inplace into a
+#' This function expands each relevant ellipsis ast node in-place into a
 #' sequence of `NamedAxisAstNode` nodes, where each node will have
 #' a name like `"...1"`, `"...2"`, etc. and an empty `src` list.
 #'

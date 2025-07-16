@@ -17,7 +17,7 @@ an expanded EinopsAst with ellipses expanded
 \description{
 Helper for \code{\link[=prepare_transformation_recipe]{prepare_transformation_recipe()}}.
 
-This function expands each relevant ellipsis ast node inplace into a
+This function expands each relevant ellipsis ast node in-place into a
 sequence of \code{NamedAxisAstNode} nodes, where each node will have
 a name like \code{"...1"}, \code{"...2"}, etc. and an empty \code{src} list.
 
