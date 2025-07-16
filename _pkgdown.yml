@@ -19,13 +19,14 @@ development:
 
 reference:
 - title: Core Einops Operations
-- contents:
+  contents:
   - reduce
   - rearrange
   - einops.repeat
 - title: Utilities
-- contents:
+  contents:
   - parse_shape
 - title: Image Tensor class
-- contents:
+  contents:
   - image_tensor
+  - einops_image
