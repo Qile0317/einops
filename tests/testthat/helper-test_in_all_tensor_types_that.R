@@ -44,9 +44,7 @@ test_in_all_tensor_types_that <- function(desc, code) {
             eval_env$create_tensor <- function(values, dims, ...) {
                 backend$create_tensor(values, dims, ...)
             }
-            eval_env$as_base_array <- function(x) {
-                backend$as_array(x)
-            }
+            eval_env$as_base_array <- function(x) backend$as_array(x)
             
             eval(substituted_code, envir = eval_env)
         })

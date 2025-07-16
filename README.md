@@ -33,7 +33,7 @@ devtools::install_github("Qile0317/einops")
 
 ## Tutorials (Python version)
 
-> These links are for the python version, but the R api is essentially identical
+> These links are for the python version, but the R api is essentially identical. However, a ***MAJOR CAVEAT*** is that R's base::arrays are column-major, while Python's multidimensional arrays are row-major. This is reflected in their respective indexing operations.
 
 Tutorials are the most convenient way to see `einops` in action
 
