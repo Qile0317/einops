@@ -44,6 +44,9 @@ test_in_all_tensor_types_that <- function(desc, code) {
             eval_env$create_tensor <- function(values, dims, ...) {
                 backend$create_tensor(values, dims, ...)
             }
+            eval_env$as_base_array <- function(x) {
+                backend$as_array(x)
+            }
             
             eval(substituted_code, envir = eval_env)
         })
@@ -60,5 +63,15 @@ test_in_all_tensor_types_that <- function(desc, code) {
 #' method.
 #' @return A tensor object created by the backend.
 create_tensor <- function(values, dims, ...) {
-    stop("create_tensor must be defined in the test context")
+    stop("create_tensor() must be defined in the test context")
+}
+
+#' Interface function to convert a tensor to a base array
+#'
+#' This function is a placeholder that should be defined in the test context.
+#' It is used to convert a tensor to a base R array.
+#' @param x A tensor object to be converted.
+#' @return A base R array representation of the tensor.
+as_base_array <- function(x) {
+    stop("as_base_array must be defined in the test context")
 }
