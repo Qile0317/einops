@@ -120,7 +120,8 @@ test_that("expand_ellipsis works", {
                 children = list(
                     NamedAxisAstNode("...1"),
                     NamedAxisAstNode("...2")
-                )
+                ),
+                src = list(start = 8)
             )
         ),
         src = list(start = 1)
