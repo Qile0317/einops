@@ -33,7 +33,7 @@ devtools::install_github("Qile0317/einops")
 
 ## Tutorials (Python version)
 
-> These links are for the python version, but the R api is essentially identical. However, a ***MAJOR CAVEAT*** is that R's base::arrays are column-major, while Python's multidimensional arrays are row-major. This is reflected in their respective indexing operations.
+> These links are for the python version, but the R api is essentially identical.
 
 Tutorials are the most convenient way to see `einops` in action
 
@@ -56,10 +56,12 @@ library(einops)
 # rearrange elements according to the pattern
 output_tensor <- rearrange(input_tensor, 't b c -> b c t')
 # combine rearrangement and reduction
-output_tensor <- reduce(input_tensor, 'b c (h h2) (w w2) -> b h w c', 'mean', h2=2, w2=2)
+output_tensor <- reduce(input_tensor, 'b c (h h2) (w w2) -> b h w c', 'mean', h2 = 2, w2 = 2)
 # copy along a new axis (note: repeat is surrounded by ticks. einops.repeat() works too)
 output_tensor <- `repeat`(input_tensor, 'h w -> h w c', c = 3)
 ```
+
+A ***MAJOR CAVEAT*** is that R's `base::arrays` are column-major, while Python's multidimensional arrays are row-major. This is reflected in their respective indexing operations. To fully replicate a python expression using a column-major array, each of the three core functions have a `.row_major` optional argument which replicates the python row-major behaviour during einops operations, while ensuring the output is still column-major.
 
 <!-- TODO pack and unpack -->
 <!-- TODO ### EinMix -->

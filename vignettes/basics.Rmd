@@ -22,7 +22,10 @@ library(einops)
 
 Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor.
 
+Note that we set the option `einops_row_major = TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
+
 ```{r load_einops_image}
+options(einops_row_major = TRUE)
 ims <- get(data("einops_image"))
 print(dim(ims))
 ```
