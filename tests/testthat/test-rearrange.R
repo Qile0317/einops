@@ -55,6 +55,38 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
             length(setdiff(as_base_array(x), as_base_array(result))), 0L
         )
     }
+
+    result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
+    expect_identical(
+        as.numeric(as_base_array(result)), as.numeric(as_base_array(x))
+    )
+
+    result <- rearrange(x, "a aa aa1 a1a1 aaaa a11 -> a aa aa1 a1a1 aaaa a11")
+    expect_identical(x, result)
+
+    result1 <- rearrange(x, "a b c d e f -> f e d c b a")
+    result2 <- rearrange(x, "f e d c b a -> a b c d e f")
+    expect_identical(result1, result2)
+
+    result <- rearrange(
+        rearrange(x, "a b c d e f -> (f d) c (e b) a"),
+        "(f d) c (e b) a -> a b c d e f",
+        b = 2,
+        d = 5
+    )
+    expect_identical(x, result)
+
+    sizes <- setNames(as.list(shape), letters[1:6])
+    temp <- rearrange(x, "a b c d e f -> (f d) c (e b) a", sizes)
+    result <- rearrange(temp, "(f d) c (e b) a -> a b c d e f", sizes)
+    expect_identical(x, result)
+
+    x2 <- create_tensor(1:(2 * 3 * 4), c(2, 3, 4))
+    result <- rearrange(x2, "a b c -> b c a")
+    x2_array <- as_base_array(x2)
+    result_array <- as_base_array(result)
+    expect_equal(x2_array[2, 3, 4], result_array[3, 4, 2])
+    expect_equal(x2_array[1, 2, 3], result_array[2, 3, 1])
 })
 
 test_in_all_tensor_types_that("rearrange() works", {
