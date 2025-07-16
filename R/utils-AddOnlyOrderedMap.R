@@ -12,9 +12,9 @@
 #' behaviour, except that NULL cannot be passed in since removal is not
 #' permitted.
 #'
-#' The [keys()] generic is defined for this class, which will return a list
-#' of the keys in their insertion order. The [has_key()] generic is also defined
-#' for this class, returning TRUE/FALSE if a key exists. Lastly, the [values()]
+#' The `keys()` generic is defined for this class, which will return a list
+#' of the keys in their insertion order. The `has_key()` generic is also defined
+#' for this class, returning TRUE/FALSE if a key exists. Lastly, the `values()`
 #' generic is defined to get all values in insertion order.
 #'
 #' @param keys Optional list. A vector of keys to initialize the map with. Can

@@ -14,7 +14,8 @@ get_backend <- function(tensor) {
 #' If `refresh` is set to TRUE, it will create a new instance even if
 #' one already exists.
 #'
-#' @param refresh Logical flag indicating whether to refresh the registry.
+#' @param clear_testing Logical indicating whether to wipe all backends assigned
+#' from tests
 #' @return A singleton instance of [BackendRegistry()].
 #' @keywords internal
 get_backend_registry <- function(

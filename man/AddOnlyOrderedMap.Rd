@@ -42,9 +42,9 @@ list, possessing methods for \code{[}, \code{[[}, \verb{[<-}, and \verb{[[<-} wi
 behaviour, except that NULL cannot be passed in since removal is not
 permitted.
 
-The \code{\link[=keys]{keys()}} generic is defined for this class, which will return a list
-of the keys in their insertion order. The \code{\link[=has_key]{has_key()}} generic is also defined
-for this class, returning TRUE/FALSE if a key exists. Lastly, the \code{\link[=values]{values()}}
+The \code{keys()} generic is defined for this class, which will return a list
+of the keys in their insertion order. The \code{has_key()} generic is also defined
+for this class, returning TRUE/FALSE if a key exists. Lastly, the \code{values()}
 generic is defined to get all values in insertion order.
 }
 \details{

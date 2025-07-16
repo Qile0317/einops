@@ -283,7 +283,7 @@ repr.R6 <- function(x, ...) {
 print.s3_scalar_constant <- pprint
 
 #' @export
-repr.s3_scalar_constant <- function(x, s3_cons = TRUE, ...) {
+repr.s3_scalar_constant <- function(x, indent = 0L, s3_cons = TRUE, ...) {
 
     if (!s3_cons) return(repr(remove_class(x, "s3_scalar_constant")))
 
@@ -293,7 +293,7 @@ repr.s3_scalar_constant <- function(x, s3_cons = TRUE, ...) {
         return(as_repr(glue("{class_name}()")))
     }
 
-    return(repr(remove_class(x, "s3_scalar_constant")))
+    repr(remove_class(x, "s3_scalar_constant"))
 }
 
 remove_class <- function(x, cls) {
