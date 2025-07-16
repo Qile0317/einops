@@ -9,7 +9,8 @@ get_backend_registry(
 )
 }
 \arguments{
-\item{refresh}{Logical flag indicating whether to refresh the registry.}
+\item{clear_testing}{Logical indicating whether to wipe all backends assigned
+from tests}
 }
 \value{
 A singleton instance of \code{\link[=BackendRegistry]{BackendRegistry()}}.
