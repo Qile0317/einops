@@ -11,7 +11,8 @@
 #' 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
 #' prod, etc.)
 #' @param ... either corresponding axes lengths or a single list of them.
-#' @param .row_major logical: whether to use row-major order for the output
+#' @param .row_major `r lifecycle::badge("experimental")` logical: whether to
+#' use row-major order for the output
 #' tensor. If `TRUE`, the *operation* is performed in row-major order, but the
 #' output will be in whatever order the parent framework uses (e.g. column-major
 #' for [base::array()]).
@@ -120,7 +121,11 @@ reduce.list <- function(
         names(axes_lengths)
 
     recipe <- prepare_transformation_recipe(
-        expr, func, axes_names = axes_names, ndim = length(backend$shape(x))
+        expr,
+        func,
+        axes_names = axes_names,
+        ndim = length(backend$shape(x)),
+        reverse_groups = .row_major
     )
 
     apply_recipe(

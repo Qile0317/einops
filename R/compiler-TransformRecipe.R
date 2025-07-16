@@ -96,30 +96,35 @@ is_expected_axis_length <- function(x) {
 #' 2. Parsing: converting the tokens into an Abstract Syntax Tree (AST)
 #' 3. Syntactic Analysis:
 #'     - operation-based AST validation pass
-#'     - [TODO] Compile syntactic info for intermediate representation (IR).
-#' 4. [TODO] IR generation: return the [TransformRecipe()] object, acting as
-#'    the IR for the einops.
+#'     - Compile syntactic info for intermediate representation (IR).
+#' 4. IR generation: return the [TransformRecipe()] object.
 #'
 #' @param expr The input einops expression string
 #' @param func The string/function indicating the reduction operation
 #' @param axes_names user defined axis names as a [character()] vector.
 #' @param ndim count for the number of dimensions of the input tensor
+#' @param reverse_groups `r lifecycle::badge("experimental")` logical: whether
+#' to reverse the order of the axes in each group.
 #' @return a populated [TransformRecipe()] object
 #' @keywords internal
-prepare_transformation_recipe <- function(expr, func, axes_names, ndim) {
+prepare_transformation_recipe <- function(
+    expr, func, axes_names, ndim, reverse_groups = FALSE
+) {
 
     assert_that(
         is.character(expr) && length(expr) == 1L,
         is.character(func) || is.function(func),
         is.character(axes_names),
-        is.count(ndim)
+        is.count(ndim),
+        is.flag(reverse_groups)
     )
 
     tokens <- lex(expr)
 
     ast <- parse_einops_ast(tokens) %>%
         validate_reduction_operation(func) %>%
-        expand_ellipsis(ndim)
+        expand_ellipsis(ndim) %>%
+        reverse_group_orders_if(reverse_groups)
 
     axis_name2known_length <- AddOnlyOrderedMap(
         key_validator = is_flat_axis_names_element, # TODO I think only characters are needed
@@ -344,4 +349,21 @@ expand_ellipsis <- function(einops_ast, ndim) {
     einops_ast$input_axes %<>% replace_ellipsis()
     einops_ast$output_axes %<>% replace_ellipsis()
     einops_ast
+}
+
+reverse_group_orders_if <- function(ast, do_reverse) {
+    if (!do_reverse) return(ast)
+
+    reverse_group_orders <- function(axes) {
+        for (i in seq_along(axes)) {
+            if (!inherits(axes[[i]], "GroupAstNode")) next
+            axes[[i]]$children %<>% rev()
+        }
+        axes
+    }
+
+    ast$input_axes %<>% reverse_group_orders()
+    ast$output_axes %<>% reverse_group_orders()
+
+    ast
 }
