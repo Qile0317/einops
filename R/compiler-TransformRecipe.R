@@ -312,36 +312,36 @@ expand_ellipsis <- function(einops_ast, ndim) {
     }
 
     replace_ellipsis <- function(onesided_ast) {
-        ellipsis_index <- get_ellipsis_index(onesided_ast)
-        append(
-            x = onesided_ast[-ellipsis_index],
-            values = lapply(seq_len(ndim - n_other_dims), function(i) {
-                NamedAxisAstNode(paste0("...", i))
-            }),
-            after = ellipsis_index - 1
-        )
+
+        expanded_axes <- lapply(seq_len(ndim - n_other_dims), function(i) {
+            NamedAxisAstNode(paste0("...", i))
+        })
+
+        for (i in seq_along(onesided_ast)) {
+            if (inherits(onesided_ast[[i]], "EllipsisAstNode")) {
+                return(append(
+                    onesided_ast[-i],
+                    values = expanded_axes,
+                    after = i - 1
+                ))
+            }
+            if (!inherits(onesided_ast[[i]], "GroupAstNode")) next
+            curr_group_children <- onesided_ast[[i]]$children
+            for (j in seq_along(curr_group_children)) {
+                if (!inherits(curr_group_children[[j]], "EllipsisAstNode")) next
+                onesided_ast[[i]]$children <- append(
+                    curr_group_children[-j],
+                    values = expanded_axes,
+                    after = j - 1
+                )
+                return(onesided_ast)
+            }
+        }
+
+        onesided_ast
     }
 
     einops_ast$input_axes %<>% replace_ellipsis()
-
-    # expand the output ellipsis
-
-    if (has_ellipsis(einops_ast$output_axes)) {
-        einops_ast$output_axes %<>% replace_ellipsis()
-        return(einops_ast)
-    }
-
-    for (i in seq_along(einops_ast$output_axes)) {
-        if (!inherits(einops_ast$output_axes[[i]], "GroupAstNode")) next
-        ellipsis_index <- get_ellipsis_index(einops_ast$output_axes[[i]])
-        if (length(ellipsis_index) == 0) next
-        einops_ast$output_axes[[i]] %<>% replace_ellipsis()
-        return(einops_ast)
-    }
-
-    stop(
-        "No ellipsis found in the output axes. ",
-        "This is a bug in the einops parser. Please report as issue.",
-    )
-
+    einops_ast$output_axes %<>% replace_ellipsis()
+    einops_ast
 }
