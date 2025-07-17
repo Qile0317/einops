@@ -5,9 +5,9 @@
 \alias{repeat}
 \title{Allows reordering elements and repeating them in arbitrary combinations.}
 \usage{
-einops.repeat(x, expr, ...)
+einops.repeat(x, expr, ..., .row_major = getOption("einops_row_major", FALSE))
 
-`repeat`(x, expr, ...)
+`repeat`(x, expr, ..., .row_major = getOption("einops_row_major", FALSE))
 }
 \arguments{
 \item{x}{tensor: array, matrix, or list of arrays of the same shape and type}
@@ -15,6 +15,12 @@ einops.repeat(x, expr, ...)
 \item{expr}{string: reduction pattern}
 
 \item{...}{either corresponding axes lengths or a single list of them.}
+
+\item{.row_major}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} logical: whether to
+use row-major order for the output
+tensor. If \code{TRUE}, the \emph{operation} is performed in row-major order, but the
+output will be in whatever order the parent framework uses (e.g. column-major
+for \code{\link[base:array]{base::array()}}).}
 }
 \value{
 tensor of the same type as input, with dimensions according to output
@@ -55,4 +61,5 @@ einops.repeat(image, 'h w -> (h h2) (w w2)', h2=2, w2=2)
 # 'pixelate' an image first by downsampling by 2x, then upsampling
 # downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
 # einops.repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
+
 }

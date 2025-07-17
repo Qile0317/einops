@@ -35,8 +35,11 @@
 #' # 'pixelate' an image first by downsampling by 2x, then upsampling
 #' # downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
 #' # einops.repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2)
-einops.repeat <- function(x, expr, ...) { # nolint: object_name_linter.
-    reduce(x, expr, "repeat", ...)
+#'
+einops.repeat <- function( # nolint: object_name_linter.
+    x, expr, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
+    reduce(x, expr, "repeat", ..., .row_major = .row_major)
 }
 
 #' @rdname einops.repeat
