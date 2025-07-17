@@ -159,10 +159,16 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
                 ))
             }
         } else {
-            # assert len(unknown_axes) == 1, 'this is enforced when recipe is created'
+            if (length(unknown_axes) != 1L) {
+                stop(
+                    "Unknown axes must be of length 1. This is a bug in ",
+                    "einops. Please report it."
+                )
+            }
             if (shape[input_axis] %% known_product != 0L) {
                 stop(glue(
-                    "Shape mismatch, can't divide axis of length {shape[input_axis]} in chunks of {known_product}"
+                    "Shape mismatch, can't divide axis of length ",
+                    "{shape[input_axis]} in chunks of {known_product}"
                 ))
             }
 

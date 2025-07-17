@@ -411,16 +411,18 @@ public = list(
     #'
     #' @param x The input tensor/array.
     #' @param n_axes The total number of axes after addition.
-    #' @param pos2len A named list or vector mapping axis positions
-    #' (1-based) to their lengths (number of repeats).
+    #' @param pos2len int->int [r2r::hashmap()] mapping positions to lengths.
     #' @return The tensor/array with new axes added and tiled as specified.
     add_axes = function(x, n_axes, pos2len) {
+        assert_that(
+            is.count(n_axes),
+            inherits(pos2len, "r2r_hashmap") &&
+                all(sapply(r2r::keys(pos2len), is.count))
+        )
         repeats <- rep(1, n_axes)
-        if (length(pos2len) > 0) {
-            for (axis_position in as.integer(names(pos2len))) {
-                x <- self$add_axis(x, axis_position)
-                repeats[axis_position] <- pos2len[[as.character(axis_position)]]
-            }
+        for (axis_position in r2r::keys(pos2len)) {
+            x <- self$add_axis(x, axis_position)
+            repeats[axis_position] <- pos2len[[as.character(axis_position)]]
         }
         self$tile(x, repeats)
     },
@@ -514,7 +516,7 @@ public = list(
     },
 
     tile = function(x, repeats) {
-        assert_that(length(dim(x)) == length(repeats))
+        assert_that(length(self$shape(x)) == length(repeats))
         old_dims <- dim(x)
         new_dims <- old_dims * repeats
         x <- array(rep(x, times = prod(repeats)), dim = new_dims)

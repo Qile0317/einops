@@ -1,14 +1,14 @@
 repeat_test_cases = list(
     # all assume that input has shape [2, 3, 5]
     list("a b c -> c a b", list()),
-    list("a b c -> (c copy a b)", list(copy = 2, a = 2, b = 3, c = 5)),
-    list("a b c -> (a copy) b c ", list(copy = 1)),
-    list("a b c -> (c a) (copy1 b copy2)", list(a = 2, copy1 = 1, copy2 = 2)),
-    list("a ...  -> a ... copy", list(copy = 4)),
-    list("... c -> ... (copy1 c copy2)", list(copy1 = 1, copy2 = 2)),
-    list("...  -> ... ", list()),
-    list(" ...  -> copy1 ... copy2 ", list(copy1 = 2, copy2 = 3)),
-    list("a b c  -> copy1 a copy2 b c () ", list(copy1 = 2, copy2 = 1))
+    list("a b c -> (c copy a b)", list(copy = 2, a = 2, b = 3, c = 5))#,
+    # list("a b c -> (a copy) b c ", list(copy = 1)),
+    # list("a b c -> (c a) (copy1 b copy2)", list(a = 2, copy1 = 1, copy2 = 2)),
+    # list("a ...  -> a ... copy", list(copy = 4)),
+    # list("... c -> ... (copy1 c copy2)", list(copy1 = 1, copy2 = 2)),
+    # list("...  -> ... ", list()),
+    # list(" ...  -> copy1 ... copy2 ", list(copy1 = 2, copy2 = 3)),
+    # list("a b c  -> copy1 a copy2 b c () ", list(copy1 = 2, copy2 = 1))
 )
 
 test_cases_repeat_anonymous = list(
@@ -30,7 +30,8 @@ test_in_all_tensor_types_that("repeat() works", {
     for (i in seq_along(repeat_test_cases)) {
         pattern <- repeat_test_cases[[i]][[1]]
         axis_dimensions <- repeat_test_cases[[i]][[2]]
-        # expect_no_error(expected <- einops.repeat(x, pattern, axis_dimensions))
+        expect_no_error(expected <- einops.repeat(x, pattern, axis_dimensions))
+        # FIXME error: replacement has length zero
         # TODO ACTUAL TESTS
     }
 
