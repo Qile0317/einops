@@ -46,9 +46,9 @@ test_that("get_backend() return unique singletons", {
     unregister_backend("DummyTensor2")
 })
 
-test_that("each backend's stack_on_zeroth_dimension() works", {
+test_in_all_tensor_types_that("stack_on_zeroth_dimension() works", {
 
-    x <- array(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
+    x <- create_tensor(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
     x_list <- lapply(1:10, function(i) {
         x[i, , , ]
     })
@@ -70,15 +70,13 @@ test_in_all_tensor_types_that("add_axis() and tile() works", {
 
     expect_identical(
         as_base_array(backend$tile(x, c(1L, 1L, 2L, 1L))),
-        array(
-            as.integer(c(
-                0, 15, 5, 20, 10, 25, 0, 15, 5, 20, 10, 25, 1, 16,
-                6, 21, 11, 26, 1, 16, 6, 21, 11, 26, 2, 17, 7, 22, 12, 27, 2,
-                17, 7, 22, 12, 27, 3, 18, 8, 23, 13, 28, 3, 18, 8, 23, 13, 28,
-                4, 19, 9, 24, 14, 29, 4, 19, 9, 24, 14, 29
-            )),
-            dim = c(2L, 3L, 2L, 5L)
-        )
+        array(c(
+            1L, 2L, 3L, 4L, 5L, 6L, 1L, 2L, 3L, 4L, 5L, 6L, 7L,
+            8L, 9L, 10L, 11L, 12L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L,
+            16L, 17L, 18L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 21L, 22L,
+            23L, 24L, 19L, 20L, 21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L,
+            30L, 25L, 26L, 27L, 28L, 29L, 30L
+        ), dim = c(2L, 3L, 2L, 5L))
     )
 
 })

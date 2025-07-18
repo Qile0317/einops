@@ -515,21 +515,19 @@ public = list(
         unname(abind::abind(tensors, along = 0))
     },
 
-    tile = function(x, repeats) { # FIXME this is wrong
+    tile = function(x, repeats) {
         assert_that(
             is.integer(repeats),
             length(self$shape(x)) == length(repeats),
             all(repeats >= 1L)
         )
-
         for (i in seq_len(length(self$shape(x)))) {
             if (repeats[i] == 1L) next
             x <- abind::abind(
-                replicate(repeats[i], x, simplify = FALSE),
-                along = i
+                replicate(repeats[i], x, simplify = FALSE), along = i
             )
         }
-        x
+        unname(x)
     },
 
     concat = function(tensors, axis) {
