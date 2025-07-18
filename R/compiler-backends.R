@@ -416,8 +416,8 @@ public = list(
     add_axes = function(x, n_axes, pos2len) {
         assert_that(
             is.count(n_axes),
-            inherits(pos2len, "r2r_hashmap") &&
-                all(sapply(r2r::keys(pos2len), is.count))
+            inherits(pos2len, "r2r_hashmap"),
+            all(sapply(r2r::keys(pos2len), is.count))
         )
         repeats <- rep(1, n_axes)
         for (axis_position in r2r::keys(pos2len)) {
@@ -484,7 +484,7 @@ public = list(
 
     create_tensor = function(values, dims) array(values, dim = dims),
 
-    as_array = identity,
+    as_array = function(x) x,
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -515,11 +515,20 @@ public = list(
         unname(abind::abind(tensors, along = 0))
     },
 
-    tile = function(x, repeats) {
-        assert_that(length(self$shape(x)) == length(repeats))
-        old_dims <- dim(x)
-        new_dims <- old_dims * repeats
-        x <- array(rep(x, times = prod(repeats)), dim = new_dims)
+    tile = function(x, repeats) { # FIXME this is wrong
+        assert_that(
+            is.integer(repeats),
+            length(self$shape(x)) == length(repeats),
+            all(repeats >= 1L)
+        )
+
+        for (i in seq_len(length(self$shape(x)))) {
+            if (repeats[i] == 1L) next
+            x <- abind::abind(
+                replicate(repeats[i], x, simplify = FALSE),
+                along = i
+            )
+        }
         x
     },
 
@@ -530,7 +539,9 @@ public = list(
     is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
-        array(x, dim = append(dim(x), 1, after = new_position - 1))
+        assert_that(is.count(new_position))
+        dim(x) %<>% append(1, after = new_position - 1)
+        x
     }
 ))
 

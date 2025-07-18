@@ -202,14 +202,12 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         }
     }
 
-    # Create added_axes hashmap
     added_axes <- r2r::hashmap()
     for (pos in r2r::keys(recipe$added_axes)) {
         pos_in_elementary <- recipe$added_axes[[pos]]
         r2r::insert(added_axes, pos, axes_lengths[pos_in_elementary])
     }
 
-    # this list can be empty
     reduced_axes <- if (recipe$first_reduced_axis <= length(recipe$axes_permutation)) {
         as.integer(seq(recipe$first_reduced_axis, length(recipe$axes_permutation)))
     } else {

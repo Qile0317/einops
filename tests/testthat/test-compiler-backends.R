@@ -55,3 +55,30 @@ test_that("each backend's stack_on_zeroth_dimension() works", {
 
     expect_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
 })
+
+test_in_all_tensor_types_that("add_axis() and tile() works", {
+
+    x <- create_tensor(1:prod(2, 3, 5), c(2, 3, 5))
+    backend <- get_backend(x)
+
+    expect_no_error(x <- backend$add_axis(x, 3))
+
+    expect_identical(
+        as_base_array(backend$tile(x, c(1L, 1L, 1L, 1L))),
+        as_base_array(x)
+    )
+
+    expect_identical(
+        as_base_array(backend$tile(x, c(1L, 1L, 2L, 1L))),
+        array(
+            as.integer(c(
+                0, 15, 5, 20, 10, 25, 0, 15, 5, 20, 10, 25, 1, 16,
+                6, 21, 11, 26, 1, 16, 6, 21, 11, 26, 2, 17, 7, 22, 12, 27, 2,
+                17, 7, 22, 12, 27, 3, 18, 8, 23, 13, 28, 3, 18, 8, 23, 13, 28,
+                4, 19, 9, 24, 14, 29, 4, 19, 9, 24, 14, 29
+            )),
+            dim = c(2L, 3L, 2L, 5L)
+        )
+    )
+
+})
