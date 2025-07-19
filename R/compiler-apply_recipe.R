@@ -26,6 +26,15 @@ apply_recipe <- function(
         recipe, backend$shape(tensor), axes_lengths
     )
 
+    # FIXME: for some reduce cases, added_axes = r2r::hashmap(
+    #     list(
+    #         1,
+    #         integer()
+    #     )
+    # )
+    # which is wrong because second element cannot be empty.
+    # its from find_node_type(groupastnode)
+
     if (length(execution_plan$init_shapes) > 0) {
         tensor %<>% backend$reshape(execution_plan$init_shapes)
     }
@@ -41,7 +50,7 @@ apply_recipe <- function(
             backend = backend
         )
     }
-    # FIXME: for some reduce() cases the second element of the hashmap is an empty integer vector, as a result of not finding certain nodes
+
     if (length(execution_plan$added_axes) > 0) {
         tensor %<>% backend$add_axes(
             n_axes = execution_plan$n_axes_w_added,
@@ -90,6 +99,8 @@ EinopsExecutionPlan <- function(
         is.integer(axes_reordering),
         is.integer(reduced_axes),
         inherits(added_axes, "r2r_hashmap"),
+        all(sapply(r2r::keys(added_axes), is.count)),
+        all(sapply(r2r::values(added_axes), is.count)),
         is.integer(final_shapes),
         is.count(n_axes_w_added)
     )
@@ -204,6 +215,7 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         }
     }
 
+    # FIXME some cases are just a hashmap(1:integer())
     added_axes <- r2r::hashmap()
     for (pos in r2r::keys(recipe$added_axes)) {
         pos_in_elementary <- recipe$added_axes[[pos]]
