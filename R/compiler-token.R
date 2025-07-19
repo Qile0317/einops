@@ -83,11 +83,9 @@ asEinopsTokenSequence <- function(x) {
 }
 
 #' @export
-tail.EinopsTokenSequence <- function(x, n = 1, ...) { # nolint: object_name_linter.
+tail.EinopsTokenSequence <- function(x, n = 1, ...) { # nolint: object_name_linter, line_length_linter.
     assert_that(is.count(n))
-    if (n < 1) {
-        stop("n must be at least 1")
-    }
+    if (n < 1) stop("n must be at least 1")
     result <- utils::tail(unclass(x), n)
     asEinopsTokenSequence(result)
 }
