@@ -43,7 +43,7 @@ apply_recipe <- function(
     }
 
     if (length(execution_plan$added_axes) > 0) {
-        tensor %<>% backend$add_axes( # FIXME for replace(), I get "replacement has length zero"
+        tensor %<>% backend$add_axes( # FIXME: Axis "copy" is not used in transform
             n_axes = execution_plan$n_axes_w_added,
             pos2len = execution_plan$added_axes
         )

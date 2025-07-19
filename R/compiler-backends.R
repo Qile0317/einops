@@ -416,12 +416,12 @@ public = list(
             inherits(pos2len, "r2r_hashmap"),
             all(sapply(r2r::keys(pos2len), is.count))
         )
-        repeats <- rep(1, n_axes)
+        repeats <- rep(1L, n_axes)
         for (axis_position in r2r::keys(pos2len)) {
             x <- self$add_axis(x, axis_position)
             repeats[axis_position] <- pos2len[[axis_position]]
         }
-        self$tile(x, repeats)
+        self$tile(x, as.integer(repeats))
     },
 
     #' @description
