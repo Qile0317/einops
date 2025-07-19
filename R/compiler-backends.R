@@ -419,7 +419,7 @@ public = list(
         repeats <- rep(1, n_axes)
         for (axis_position in r2r::keys(pos2len)) {
             x <- self$add_axis(x, axis_position)
-            repeats[axis_position] <- pos2len[[as.character(axis_position)]]
+            repeats[axis_position] <- pos2len[[axis_position]]
         }
         self$tile(x, repeats)
     },
@@ -535,7 +535,7 @@ public = list(
 
     add_axis = function(x, new_position) {
         assert_that(is.count(new_position))
-        dim(x) %<>% append(1, after = new_position - 1)
+        dim(x) <- append(dim(x), 1, after = new_position - 1)
         x
     }
 ))

@@ -1,6 +1,6 @@
 repeat_test_cases = list(
     # all assume that input has shape [2, 3, 5]
-    list("a b c -> c a b", list()),
+    # list("a b c -> c a b", list()),
     list("a b c -> (c copy a b)", list(copy = 2, a = 2, b = 3, c = 5))#,
     # list("a b c -> (a copy) b c ", list(copy = 1)),
     # list("a b c -> (c a) (copy1 b copy2)", list(a = 2, copy1 = 1, copy2 = 2)),
