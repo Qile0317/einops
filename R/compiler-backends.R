@@ -531,7 +531,7 @@ public = list(
         unname(abind::abind(tensors, along = axis))
     },
 
-    is_float_type = is.numeric,
+    is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
         assert_that(is.count(new_position))
