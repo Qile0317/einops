@@ -238,17 +238,18 @@ prepare_transformation_recipe <- function(
         },
         ordered_axis_left
     ))
-    input_identifiers <- get_identifiers_hashset(
-        ast$input_axes
-    )
-    order_after_transposition <- c(
-        ordered_axis_rght[sapply(
-            ordered_axis_rght,
-            function(axis) r2r::has_key(input_identifiers, axis)
-        )],
-        reduced_axes
-    )
-
+    if (length(ordered_axis_rght) == 0L) {
+        order_after_transposition <- reduced_axes
+    } else {
+        input_identifiers <- get_identifiers_hashset(ast$input_axes)
+        order_after_transposition <- c(
+            ordered_axis_rght[sapply(
+                ordered_axis_rght,
+                function(axis) r2r::has_key(input_identifiers, axis)
+            )],
+            reduced_axes
+        )
+    }
     axes_permutation <- as.integer(sapply(
         order_after_transposition, function(axis) {
             which(sapply(ordered_axis_left, function(x) identical(x, axis)))

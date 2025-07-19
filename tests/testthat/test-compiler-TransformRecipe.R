@@ -317,6 +317,21 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
+    expect_identical(
+        prepare_transformation_recipe(
+            "a b c d e ->", "max", character(), 5L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 5L),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:5),
+            axes_permutation = 1:5,
+            first_reduced_axis = 1L,
+            added_axes = r2r::hashmap(), # FIXME shouldnt be 1:NULL
+            output_composite_axes = list()
+        )
+    )
+
     # TODO complicated test with 1's, anon axes, brackets, ellipses, and axis names
 
 })
