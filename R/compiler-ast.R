@@ -256,6 +256,13 @@ EinopsAst <- function(input_axes, output_axes, src) {
     ), class = c("EinopsAst", "AstNode", "s3list"))
 }
 
+apply_both_axes <- function(einops_ast, fun, ...) {
+    assert_that(inherits(einops_ast, "EinopsAst"), is.function(fun))
+    einops_ast$input_axes %<>% fun(...)
+    einops_ast$output_axes %<>% fun(...)
+    einops_ast
+}
+
 #' @export
 #' @keywords internal
 to_tokens.EinopsAst <- function(x, ...) {
