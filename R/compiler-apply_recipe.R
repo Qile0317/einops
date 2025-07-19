@@ -27,11 +27,11 @@ apply_recipe <- function(
     )
 
     if (length(execution_plan$init_shapes) > 0) {
-        tensor <- backend$reshape(tensor, execution_plan$init_shapes)
+        tensor %<>% backend$reshape(execution_plan$init_shapes)
     }
 
     if (length(execution_plan$axes_reordering) > 0) {
-        tensor <- backend$transpose(tensor, execution_plan$axes_reordering)
+        tensor %<>% backend$transpose(execution_plan$axes_reordering)
     }
 
     if (length(execution_plan$reduced_axes) > 0) {
@@ -50,7 +50,7 @@ apply_recipe <- function(
     }
 
     if (length(execution_plan$final_shapes) > 0) {
-        tensor <- backend$reshape(tensor, execution_plan$final_shapes)
+        tensor %<>% backend$reshape(execution_plan$final_shapes)
     }
 
     tensor
@@ -258,5 +258,4 @@ reduce_axes <- function(tensor, reduction_type, reduced_axes, backend) {
         }
     }
     backend$reduce(tensor, reduction_type, reduced_axes)
-    tensor
 }
