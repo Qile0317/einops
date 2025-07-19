@@ -145,11 +145,10 @@ find_node_types_indices <- function(x, node_type, ...) {
 #' @noRd
 #' @export
 find_node_types_indices.OneSidedAstNode <- function(x, node_type, ...) {
-    indices <- which(sapply(x, function(child) inherits(child, node_type)))
-    if (length(indices) == 0) {
-        return(integer(0))
-    }
-    indices
+    assert_that(is.string(node_type))
+    are_node_type <- sapply(x, function(child) inherits(child, node_type))
+    if (length(are_node_type) == 0L) return(integer())
+    which(are_node_type)
 }
 
 #' @export
