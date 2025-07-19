@@ -293,8 +293,7 @@ provided lengths.
 
 \item{\code{n_axes}}{The total number of axes after addition.}
 
-\item{\code{pos2len}}{A named list or vector mapping axis positions
-(1-based) to their lengths (number of repeats).}
+\item{\code{pos2len}}{int->int \code{\link[r2r:hashtable]{r2r::hashmap()}} mapping positions to lengths.}
 }
 \if{html}{\out{</div>}}
 }

@@ -152,3 +152,17 @@ test_in_all_tensor_types_that("rearrange() works", {
     # TODO rest of tests
 
 })
+
+test_in_all_tensor_types_that("rearrange() works on lists", {
+
+    x <- create_tensor(1:prod(2:6), 2:6)
+    
+    expect_identical(
+        rearrange( # TODO may not be the same for all frameworks - may need a seperate backend + interface function for this
+            lapply(seq_len(dim(x)[1]), function(i) x[i,,,,]),
+            "... -> (...)"
+        ),
+        rearrange(x, "... -> (...)")
+    )
+
+})

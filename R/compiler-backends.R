@@ -230,12 +230,9 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        
-        # Check if it's an alias first
         if (exists(tensor_type, envir = private$alias2type)) {
             tensor_type <- private$alias2type[[tensor_type]]
         }
-        
         if (exists(tensor_type, envir = private$type2dependencies)) {
             return(private$type2dependencies[[tensor_type]])
         }
@@ -411,18 +408,20 @@ public = list(
     #'
     #' @param x The input tensor/array.
     #' @param n_axes The total number of axes after addition.
-    #' @param pos2len A named list or vector mapping axis positions
-    #' (1-based) to their lengths (number of repeats).
+    #' @param pos2len int->int [r2r::hashmap()] mapping positions to lengths.
     #' @return The tensor/array with new axes added and tiled as specified.
     add_axes = function(x, n_axes, pos2len) {
-        repeats <- rep(1, n_axes)
-        if (length(pos2len) > 0) {
-            for (axis_position in as.integer(names(pos2len))) {
-                x <- self$add_axis(x, axis_position)
-                repeats[axis_position] <- pos2len[[as.character(axis_position)]]
-            }
+        assert_that(
+            is.count(n_axes),
+            inherits(pos2len, "r2r_hashmap"),
+            all(sapply(r2r::keys(pos2len), is.count))
+        )
+        repeats <- rep(1L, n_axes)
+        for (axis_position in r2r::keys(pos2len)) {
+            x <- self$add_axis(x, axis_position)
+            repeats[axis_position] <- pos2len[[axis_position]]
         }
-        self$tile(x, repeats)
+        self$tile(x, as.integer(repeats))
     },
 
     #' @description
@@ -482,7 +481,7 @@ public = list(
 
     create_tensor = function(values, dims) array(values, dim = dims),
 
-    as_array = identity,
+    as_array = function(x) x,
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -514,11 +513,18 @@ public = list(
     },
 
     tile = function(x, repeats) {
-        assert_that(length(dim(x)) == length(repeats))
-        old_dims <- dim(x)
-        new_dims <- old_dims * repeats
-        x <- array(rep(x, times = prod(repeats)), dim = new_dims)
-        x
+        assert_that(
+            is.integer(repeats),
+            length(self$shape(x)) == length(repeats),
+            all(repeats >= 1L)
+        )
+        for (i in seq_len(length(self$shape(x)))) {
+            if (repeats[i] == 1L) next
+            x <- abind::abind(
+                replicate(repeats[i], x, simplify = FALSE), along = i
+            )
+        }
+        unname(x)
     },
 
     concat = function(tensors, axis) {
@@ -528,7 +534,9 @@ public = list(
     is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
-        array(x, dim = append(dim(x), 1, after = new_position - 1))
+        assert_that(is.count(new_position))
+        dim(x) <- append(dim(x), 1, after = new_position - 1)
+        x
     }
 ))
 

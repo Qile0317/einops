@@ -156,8 +156,12 @@ prepare_transformation_recipe <- function(
     axis_name2position <- get_key_to_index_map(axis_name2known_length)
 
     for (elementary_axis in axes_names) {
-        # TODO check the axis name which cannot start or
-        # end with an underscore
+        if (grepl("(^_)|(_$)", elementary_axis)) {
+            stop(glue(
+                "Axis name {repr(elementary_axis, indent = 0L)} starts ",
+                "or ends with an underscore. Please use a different name."
+            ))
+        }
         if (!has_key(axis_name2known_length, elementary_axis)) {
             stop(glue(
                 "Axis {repr(elementary_axis, indent = 0L)} is not used in ",

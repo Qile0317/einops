@@ -34,8 +34,11 @@
 #'
 #' # space-to-depth operation
 #' rearrange(images, 'b (h h1) (w w1) c -> b h w (c h1 w1)', h1=2, w1=2)
-rearrange <- function(x, expr, ...) {
-    reduce(x, expr, "rearrange", ...)
+#'
+rearrange <- function(
+    x, expr, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
+    reduce(x, expr, "rearrange", ..., .row_major = .row_major)
 }
 
 #' @rdname rearrange
