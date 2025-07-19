@@ -25,7 +25,7 @@ test_cases_repeat_anonymous = list(
 
 test_in_all_tensor_types_that("repeat() works", {
 
-    x <- create_tensor(1:prod(2, 3, 5), c(2, 3, 5))
+    x <- create_seq_tensor(c(2, 3, 5))
     
     for (i in seq_along(repeat_test_cases)) {
         pattern <- repeat_test_cases[[i]][[1]]
@@ -38,7 +38,7 @@ test_in_all_tensor_types_that("repeat() works", {
 
 test_in_all_tensor_types_that("repeat() works on lists", {
 
-    x <- create_tensor(1:prod(2:6), 2:6)
+    x <- create_seq_tensor(2:6)
     
     expect_identical(
         einops.repeat( # TODO may not be the same for all frameworks - may need a seperate backend + interface function for this
