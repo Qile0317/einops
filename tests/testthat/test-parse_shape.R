@@ -25,8 +25,8 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
                 name = "c",
                 src = list(start = 3)
             ),
-            UnderscoreAstNode(src = list()),
-            UnderscoreAstNode(src = list())
+            UnderscoreAstNode(),
+            UnderscoreAstNode()
         )
     )
 
@@ -75,9 +75,9 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
             UnderscoreAstNode(
                 src = list(start = 9)
             ),
-            UnderscoreAstNode(src = list()),
-            UnderscoreAstNode(src = list()),
-            UnderscoreAstNode(src = list())
+            UnderscoreAstNode(),
+            UnderscoreAstNode(),
+            UnderscoreAstNode()
         )
     )
 
@@ -102,8 +102,8 @@ test_that("preprocess_shape_ast expands ellipsis correctly", {
                 name = "a",
                 src = list(start = 1)
             ),
-            UnderscoreAstNode(src = list()),
-            UnderscoreAstNode(src = list()),
+            UnderscoreAstNode(),
+            UnderscoreAstNode(),
             NamedAxisAstNode(
                 name = "w",
                 src = list(start = 7)

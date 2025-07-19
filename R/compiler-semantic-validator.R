@@ -17,8 +17,12 @@ validate_reduction_operation <- function(einops_ast, operation) {
     left <- einops_ast$input_axes
     rght <- einops_ast$output_axes
 
-    # check for nested brackets
     for (axes in list(left, rght)) {
+        if (inherits(axes, "UnderscoreAstNode")) {
+            stop(glue(
+                "Underscores are not allowed to be used in this expressions"
+            ))
+        }
         for (grp_node in axes[find_node_types_indices(axes, "GroupAstNode")]) {
             if (contains_node(grp_node, "GroupAstNode")) {
                 stop(glue(
