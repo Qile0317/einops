@@ -327,7 +327,7 @@ test_that("prepare_transformation_recipe works", {
             input_composition_known_unknown = make_unknown_composition(1:5),
             axes_permutation = 1:5,
             first_reduced_axis = 1L,
-            added_axes = r2r::hashmap(), # FIXME shouldnt be 1:NULL
+            added_axes = r2r::hashmap(),
             output_composite_axes = list()
         )
     )

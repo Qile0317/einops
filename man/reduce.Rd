@@ -41,6 +41,7 @@ pattern
 reader-friendly notation.
 }
 \examples{
+set.seed(42)
 # Suppose x is a 3D array: 100 x 32 x 64
 x <- array(rnorm(100 * 32 * 64), dim = c(100, 32, 64))
 
@@ -56,15 +57,17 @@ y <- reduce(x, 'time batch channel -> batch channel', 'max')
 x <- array(rnorm(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
 
 # 2d max-pooling with kernel size = 2 * 2 for image processing
-y1 <- reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h2=2, w2=2)
+y1 <- reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h2 = 2, w2 = 2)
+as_image_tensor(y1)
 
 # same as previous, using anonymous axes,
 # note: only reduced axes can be anonymous
 y1 <- reduce(x, 'b c (h1 2) (w1 2) -> b c h1 w1', 'max')
+as_image_tensor(y1)
 
 # adaptive 2d max-pooling to 3 * 4 grid,
 # each element is max of 10x10 tile in the original tensor.
-dim(reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h1=3, w1=4))
+dim(reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h1 = 3, w1 = 4))
 # (10, 20, 3, 4)
 
 # Global average pooling

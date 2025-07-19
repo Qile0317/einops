@@ -25,7 +25,9 @@
 #' The `image_tensor` class provides the following methods:
 #'
 #' - `as_image_tensor()`: Generic function to convert objects to
-#'   `image_tensor` format
+#'   `image_tensor` format. Takes in array-like objects of 2-4 dimensions.
+#'   for 2 dimensional objects, it will convert them to 3D by repeating the
+#'   data across 3 channels, essentially converting grayscale images to RGB.
 #' - `as_image_tensor.default()`: Default method that converts arrays to
 #'   `image_tensor`
 #' - `as_image_tensor.cimg()`: Method to convert `cimg` objects (from imager
@@ -69,7 +71,8 @@ as_image_tensor <- function(x) {
 as_image_tensor.default <- function(x) {
     x <- as.array(x)
     dims <- length(dim(x))
-    
+
+    if (dims == 2L) x %<>% einops.repeat(x, "h w -> h w 3")
     if (dims != 3 && dims != 4) {
         stop("image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays")
     }
