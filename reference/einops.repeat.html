@@ -108,30 +108,24 @@ using backticks as <code>`repeat`()</code>.</p>
 <span class="r-in"><span><span class="va">image</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span> <span class="op">*</span> <span class="fl">40</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># change it to RGB format by repeating in each channel</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; h w c'</span>, c<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; h w c'</span>, c <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Visualize the output</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="einops.repeat-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># repeat image 2 times along height (vertical axis)</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (r h) w'</span>, r<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in as_image_tensor.default(output):</span> image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays</span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (r h) w'</span>, r <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># repeat image 2 times along height and 3 times along width</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (h2 h) (w3 w)'</span>, h2<span class="op">=</span><span class="fl">2</span>, w3<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in as_image_tensor.default(output):</span> image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays</span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (h2 h) (w3 w)'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w3 <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># convert each pixel to a small square 2x2, i.e. upsample an image by 2x</span></span></span>
-<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (h h2) (w w2)'</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in as_image_tensor.default(output):</span> image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays</span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">image</span>, <span class="st">'h w -&gt; (h h2) (w w2)'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 'pixelate' an image first by downsampling by 2x, then upsampling</span></span></span>
-<span class="r-in"><span><span class="co"># downsampled &lt;- reduce(image, '(h h2) (w w2) -&gt; h w', 'mean', h2=2, w2=2)</span></span></span>
-<span class="r-in"><span><span class="co"># output &lt;- einops.repeat(downsampled, 'h w -&gt; (h h2) (w w2)', h2=2, w2=2)</span></span></span>
-<span class="r-in"><span><span class="co"># as_image_tensor(output)</span></span></span>
+<span class="r-in"><span><span class="va">downsampled</span> <span class="op">&lt;-</span> <span class="fu"><a href="reduce.html">reduce</a></span><span class="op">(</span><span class="va">image</span>, <span class="st">'(h h2) (w w2) -&gt; h w'</span>, <span class="st">'mean'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">einops.repeat</span><span class="op">(</span><span class="va">downsampled</span>, <span class="st">'h w -&gt; (h h2) (w w2)'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="fu">einops.repeat</span><span class="op">(</span><span class="va">output</span>, <span class="st">'h w -&gt; h w 3'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="einops.repeat-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

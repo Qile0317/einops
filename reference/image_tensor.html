@@ -125,7 +125,9 @@ with single index, returns a 3D slice without the batch dimension.</p></li>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The <code>image_tensor</code> class provides the following methods:</p><ul><li><p><code>as_image_tensor()</code>: Generic function to convert objects to
-<code>image_tensor</code> format</p></li>
+<code>image_tensor</code> format. Takes in array-like objects of 2-4 dimensions.
+for 2 dimensional objects, it will convert them to 3D by repeating the
+data across 3 channels, essentially converting grayscale images to RGB.</p></li>
 <li><p><code>as_image_tensor.default()</code>: Default method that converts arrays to
 <code>image_tensor</code></p></li>
 <li><p><code>as_image_tensor.cimg()</code>: Method to convert <code>cimg</code> objects (from imager
