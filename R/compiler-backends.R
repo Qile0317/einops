@@ -230,12 +230,9 @@ public = list(
     #' no packages are required.
     get_dependencies = function(tensor_type) {
         assert_that(is.string(tensor_type))
-        
-        # Check if it's an alias first
         if (exists(tensor_type, envir = private$alias2type)) {
             tensor_type <- private$alias2type[[tensor_type]]
         }
-        
         if (exists(tensor_type, envir = private$type2dependencies)) {
             return(private$type2dependencies[[tensor_type]])
         }
@@ -534,7 +531,7 @@ public = list(
         unname(abind::abind(tensors, along = axis))
     },
 
-    is_float_type = function(x) is.numeric(x),
+    is_float_type = is.numeric,
 
     add_axis = function(x, new_position) {
         assert_that(is.count(new_position))

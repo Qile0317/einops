@@ -29,9 +29,11 @@ apply_recipe <- function(
     if (length(execution_plan$init_shapes) > 0) {
         tensor <- backend$reshape(tensor, execution_plan$init_shapes)
     }
+
     if (length(execution_plan$axes_reordering) > 0) {
         tensor <- backend$transpose(tensor, execution_plan$axes_reordering)
     }
+
     if (length(execution_plan$reduced_axes) > 0) {
         tensor %<>% reduce_axes(
             reduction_type = reduction_type,
@@ -39,12 +41,14 @@ apply_recipe <- function(
             backend = backend
         )
     }
+
     if (length(execution_plan$added_axes) > 0) {
-        tensor %<>% backend$add_axes(
+        tensor %<>% backend$add_axes( # FIXME for replace(), I get "replacement has length zero"
             n_axes = execution_plan$n_axes_w_added,
             pos2len = execution_plan$added_axes
         )
     }
+
     if (length(execution_plan$final_shapes) > 0) {
         tensor <- backend$reshape(tensor, execution_plan$final_shapes)
     }
@@ -87,9 +91,7 @@ EinopsExecutionPlan <- function(
         is.integer(reduced_axes),
         inherits(added_axes, "r2r_hashmap"),
         is.integer(final_shapes),
-        is.integer(n_axes_w_added) &&
-            length(n_axes_w_added) == 1L &&
-            n_axes_w_added >= 0L
+        is.count(n_axes_w_added)
     )
 
     structure(
