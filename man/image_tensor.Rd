@@ -61,7 +61,9 @@ printing of the object will automatically display the image as a plot.
 The \code{image_tensor} class provides the following methods:
 \itemize{
 \item \code{as_image_tensor()}: Generic function to convert objects to
-\code{image_tensor} format
+\code{image_tensor} format. Takes in array-like objects of 2-4 dimensions.
+for 2 dimensional objects, it will convert them to 3D by repeating the
+data across 3 channels, essentially converting grayscale images to RGB.
 \item \code{as_image_tensor.default()}: Default method that converts arrays to
 \code{image_tensor}
 \item \code{as_image_tensor.cimg()}: Method to convert \code{cimg} objects (from imager

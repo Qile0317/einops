@@ -41,7 +41,9 @@ have different last axis). Find more examples in the vignettes.
 }
 \examples{
 # suppose we have a set of 32 images in "h w c" format (height-width-channel)
-images <- lapply(1:32, function(i) array(rnorm(30*40*3), dim = c(30, 40, 3)))
+images <- lapply(1:32, function(i) {
+    as_image_tensor(array(rnorm(30*40*3), dim = c(30, 40, 3)))
+})
 
 # stacked and reordered axes to "b c h w" format
 rearrange(images, 'b h w c -> b c h w')

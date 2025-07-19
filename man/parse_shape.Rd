@@ -24,12 +24,6 @@ Use underscore to skip the dimension in parsing.
 # Use underscore to skip the dimension in parsing.
 x <- array(0, dim = c(2, 3, 5, 7))
 parse_shape(x, 'batch _ h w')
-# $batch
-# [1] 2
-# $h
-# [1] 5
-# $w
-# [1] 7
 
 # `parse_shape` output can be used to specify axes_lengths for other
 # operations:

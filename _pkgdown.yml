@@ -23,6 +23,7 @@ reference:
   - reduce
   - rearrange
   - einops.repeat
+  - einop
 - title: Utilities
   contents:
   - parse_shape
