@@ -125,12 +125,12 @@ pattern</p>
 <span class="r-in"><span><span class="co"># adaptive 2d max-pooling to 3 * 4 grid,</span></span></span>
 <span class="r-in"><span><span class="co"># each element is max of 10x10 tile in the original tensor.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 h2) (w1 w2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span>, h1<span class="op">=</span><span class="fl">3</span>, w1<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 20  3  4 10 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 20  3  4</span>
 <span class="r-in"><span><span class="co"># (10, 20, 3, 4)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Global average pooling</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c'</span>, <span class="st">'mean'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 20 30 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 20</span>
 <span class="r-in"><span><span class="co"># (10, 20)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># subtracting mean over batch for each channel;</span></span></span>
