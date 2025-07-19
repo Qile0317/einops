@@ -542,31 +542,79 @@ public = list(
 
 register_backend("array", BaseArrayBackend, "abind", aliases = "numeric")
 
-# TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
-# public = list(
+TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
+public = list(
 
-#     initialize = function() {
-#         super$initialize()
-#         tryCatch(
-#             torch::torch_tensor(0),
-#             error = function(e) {
-#                 stop("Error initializing torch backend. ", conditionMessage(e))
-#             }
-#         )
-#     },
+    initialize = function() {
+        super$initialize()
+        tryCatch(
+            torch::torch_tensor(0),
+            error = function(e) {
+                stop("Error initializing torch backend. ", conditionMessage(e))
+            }
+        )
+    },
 
-#     tensor_type = function() "torch_tensor",
+    tensor_type = function() "torch_tensor",
 
-#     create_tensor = function(values, dims, ...) {
-#         torch::torch_tensor(array(values, dim = dims), ...)
-#     },
+    create_tensor = function(values, dims, ...) {
+        torch::torch_tensor(array(values, dim = dims), ...)
+    },
 
-#     as_array = function(x) {
-#         torch::as_array(x)
-#     }
-# ))
+    as_array = function(x) {
+        torch::as_array(x)
+    },
 
-# register_backend("torch_tensor", TorchBackend, "torch")
+    reshape = function(x, shape) { # TODO: unsure if correct
+        torch::torch_reshape(x, shape)
+    },
+
+    transpose = function(x, axes) { # TODO unsure if correct
+        x$permute(axes)
+    },
+
+    reduce = function(x, operation, axes) {
+        op_fun <- switch(operation,
+            sum  = torch::torch_sum,
+            mean = torch::torch_mean,
+            max  = torch::torch_max,
+            min  = torch::torch_min,
+            prod = torch::torch_prod,
+            operation # TODO this is inconsistent calling w/the array backend
+        )
+        if (length(axes) == 0L) return(op_fun(x))
+        op_fun(x, dim = axes)
+    },
+
+    stack_on_zeroth_dimension = function(tensors) {
+        assert_that(is.list(tensors))
+        if (length(tensors) == 1L) return(tensors[[1]])
+        torch::torch_stack(tensors, dim = 1L)
+    },
+
+    tile = function(x, repeats) {
+        assert_that(
+            is.integer(repeats),
+            length(self$shape(x)) == length(repeats),
+            all(repeats >= 1L)
+        )
+        x$`repeat`(repeats)
+    },
+
+    concat = function(tensors, axis) {
+        torch::torch_cat(tensors, dim = axis)
+    },
+
+    is_float_type = function(x) { # TODO: unsure if correct
+        x$dtype == torch::torch_float()
+    },
+
+    add_axis = function(x, new_position) {
+        torch::torch_unsqueeze(x, dim = new_position)
+    }
+))
+
+register_backend("torch_tensor", TorchBackend, "torch")
 
 # TensorflowBackend <- R6Class("TensorflowBackend", inherit = EinopsBackend, cloneable = FALSE,
 # public = list(
