@@ -104,7 +104,7 @@ Additionally, einops can be used with any framework that supports R's array acce
 - [x] `einops::rearrange()`
 - [x] `einops::reduce()`
 - [x] Make Github Repository Public
-- [ ] [`einops::einop()`](https://github.com/cgarciae/einop)
+- [x] [`einops::einop()`](https://github.com/cgarciae/einop)
 - [ ] `TorchBackend()`
 - [ ] `einops:::Rearrange()` (layer)
 - [ ] `einops:::Reduce()` (layer)
