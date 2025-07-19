@@ -41,9 +41,9 @@ apply_recipe <- function(
             backend = backend
         )
     }
-
+    # FIXME: for some reduce() cases the second element of the hashmap is an empty integer vector, as a result of not finding certain nodes
     if (length(execution_plan$added_axes) > 0) {
-        tensor %<>% backend$add_axes( # FIXME: Axis "copy" is not used in transform
+        tensor %<>% backend$add_axes(
             n_axes = execution_plan$n_axes_w_added,
             pos2len = execution_plan$added_axes
         )
@@ -125,8 +125,8 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
 
     assert_that(
         inherits(recipe, "TransformRecipe"),
-        is.integer(shape),
-        is.list(axes_dims)
+        is.integer(shape) && all(shape > 0L),
+        is.list(axes_dims) && all(sapply(axes_dims, is.count))
     )
 
     need_init_reshape <- FALSE
@@ -210,23 +210,26 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         r2r::insert(added_axes, pos, axes_lengths[pos_in_elementary])
     }
 
-    reduced_axes <- if (recipe$first_reduced_axis <= length(recipe$axes_permutation)) {
-        as.integer(seq(recipe$first_reduced_axis, length(recipe$axes_permutation)))
+    if (recipe$first_reduced_axis <= length(recipe$axes_permutation)) {
+        reduced_axes <- as.integer(seq(
+            recipe$first_reduced_axis, length(recipe$axes_permutation)
+        ))
     } else {
-        integer(0)
+        reduced_axes <- integer()
     }
 
-    n_axes_after_adding_axes <- length(recipe$added_axes) + length(recipe$axes_permutation)
+    n_axes_after_adding_axes <-
+        length(recipe$added_axes) + length(recipe$axes_permutation)
 
     axes_reordering <- recipe$axes_permutation
-    if (identical(recipe$axes_permutation, seq_len(length(recipe$axes_permutation)))) {
+    if (identical(
+        recipe$axes_permutation, seq_along(recipe$axes_permutation)
+    )) {
         axes_reordering <- integer()
     }
 
-    final_shapes_result <- if (need_final_reshape)
-        as.integer(final_shapes)
-    else
-        integer()
+    final_shapes_result <- integer()
+    if (need_final_reshape) final_shapes_result <- as.integer(final_shapes)
 
     EinopsExecutionPlan(
         init_shapes = init_shapes,
