@@ -44,6 +44,7 @@ as_iterables <- function(x, ...) UseMethod("as_iterables")
 
 #' @export
 as_iterables.AxisNames <- function(x, ...) {
+    if (length(x) == 0L) return(list())
     lapply(x, function(y) {
         if (inherits(y, "AxisNames")) return(unclass(y))
         if (inherits(y, "ConstantAstNode")) {
@@ -59,8 +60,6 @@ as_iterables.AxisNames <- function(x, ...) {
         list(y)
     })
 }
-
-
 
 #' @title
 #' Given a `OneSidedAstNode` object, get unique identifiers
@@ -99,12 +98,7 @@ get_identifiers <- function(ast, ...) {
 }
 
 get_identifiers_hashset <- function(ast, ...) {
-    do.call(
-        r2r::hashset,
-        get_identifiers(
-            ast, ...
-        )
-    )
+    do.call(r2r::hashset, get_identifiers(ast, ...))
 }
 
 #' @title Convert an AstNode into an [AxisNames()] object
@@ -130,6 +124,7 @@ as_axis_names.GroupAstNode <- function(ast, ...) {
 
 #' @export
 as_axis_names.OneSidedAstNode <- function(ast, ...) {
+    if (length(ast) == 0L) return(AxisNames())
     AxisNames(lapply(unclass(ast), function(x) {
         if (inherits(x, "ConstantAstNode")) return(x)
         if (inherits(x, "NamedAxisAstNode")) return(x$name)
@@ -146,6 +141,7 @@ as_axis_names.OneSidedAstNode <- function(ast, ...) {
 #' @keywords internal
 get_ordered_axis_names <- function(ast, ...) {
     assert_that(inherits(ast, "OneSidedAstNode"))
+    if (length(ast) == 0L) return(AxisNames())
     AxisNames(unlist(as_iterables(as_axis_names(ast)), recursive = FALSE))
 }
 

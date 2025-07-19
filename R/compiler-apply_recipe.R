@@ -26,12 +26,21 @@ apply_recipe <- function(
         recipe, backend$shape(tensor), axes_lengths
     )
 
+    # FIXME: for some reduce cases, added_axes = r2r::hashmap(
+    #     list(
+    #         1,
+    #         integer()
+    #     )
+    # )
+    # which is wrong because second element cannot be empty.
+    # its from find_node_type(groupastnode)
+
     if (length(execution_plan$init_shapes) > 0) {
-        tensor <- backend$reshape(tensor, execution_plan$init_shapes)
+        tensor %<>% backend$reshape(execution_plan$init_shapes)
     }
 
     if (length(execution_plan$axes_reordering) > 0) {
-        tensor <- backend$transpose(tensor, execution_plan$axes_reordering)
+        tensor %<>% backend$transpose(execution_plan$axes_reordering)
     }
 
     if (length(execution_plan$reduced_axes) > 0) {
@@ -43,14 +52,14 @@ apply_recipe <- function(
     }
 
     if (length(execution_plan$added_axes) > 0) {
-        tensor %<>% backend$add_axes( # FIXME: Axis "copy" is not used in transform
+        tensor %<>% backend$add_axes(
             n_axes = execution_plan$n_axes_w_added,
             pos2len = execution_plan$added_axes
         )
     }
 
     if (length(execution_plan$final_shapes) > 0) {
-        tensor <- backend$reshape(tensor, execution_plan$final_shapes)
+        tensor %<>% backend$reshape(execution_plan$final_shapes)
     }
 
     tensor
@@ -90,6 +99,8 @@ EinopsExecutionPlan <- function(
         is.integer(axes_reordering),
         is.integer(reduced_axes),
         inherits(added_axes, "r2r_hashmap"),
+        all(sapply(r2r::keys(added_axes), is.count)),
+        all(sapply(r2r::values(added_axes), is.count)),
         is.integer(final_shapes),
         is.count(n_axes_w_added)
     )
@@ -125,8 +136,8 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
 
     assert_that(
         inherits(recipe, "TransformRecipe"),
-        is.integer(shape),
-        is.list(axes_dims)
+        is.integer(shape) && all(shape > 0L),
+        is.list(axes_dims) && all(sapply(axes_dims, is.count))
     )
 
     need_init_reshape <- FALSE
@@ -204,29 +215,33 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         }
     }
 
+    # FIXME some cases are just a hashmap(1:integer())
     added_axes <- r2r::hashmap()
     for (pos in r2r::keys(recipe$added_axes)) {
         pos_in_elementary <- recipe$added_axes[[pos]]
         r2r::insert(added_axes, pos, axes_lengths[pos_in_elementary])
     }
 
-    reduced_axes <- if (recipe$first_reduced_axis <= length(recipe$axes_permutation)) {
-        as.integer(seq(recipe$first_reduced_axis, length(recipe$axes_permutation)))
+    if (recipe$first_reduced_axis <= length(recipe$axes_permutation)) {
+        reduced_axes <- as.integer(seq(
+            recipe$first_reduced_axis, length(recipe$axes_permutation)
+        ))
     } else {
-        integer(0)
+        reduced_axes <- integer()
     }
 
-    n_axes_after_adding_axes <- length(recipe$added_axes) + length(recipe$axes_permutation)
+    n_axes_after_adding_axes <-
+        length(recipe$added_axes) + length(recipe$axes_permutation)
 
     axes_reordering <- recipe$axes_permutation
-    if (identical(recipe$axes_permutation, seq_len(length(recipe$axes_permutation)))) {
+    if (identical(
+        recipe$axes_permutation, seq_along(recipe$axes_permutation)
+    )) {
         axes_reordering <- integer()
     }
 
-    final_shapes_result <- if (need_final_reshape)
-        as.integer(final_shapes)
-    else
-        integer()
+    final_shapes_result <- integer()
+    if (need_final_reshape) final_shapes_result <- as.integer(final_shapes)
 
     EinopsExecutionPlan(
         init_shapes = init_shapes,
@@ -255,5 +270,4 @@ reduce_axes <- function(tensor, reduction_type, reduced_axes, backend) {
         }
     }
     backend$reduce(tensor, reduction_type, reduced_axes)
-    tensor
 }

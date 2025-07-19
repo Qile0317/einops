@@ -238,17 +238,18 @@ prepare_transformation_recipe <- function(
         },
         ordered_axis_left
     ))
-    input_identifiers <- get_identifiers_hashset(
-        ast$input_axes
-    )
-    order_after_transposition <- c(
-        ordered_axis_rght[sapply(
-            ordered_axis_rght,
-            function(axis) r2r::has_key(input_identifiers, axis)
-        )],
-        reduced_axes
-    )
-
+    if (length(ordered_axis_rght) == 0L) {
+        order_after_transposition <- reduced_axes
+    } else {
+        input_identifiers <- get_identifiers_hashset(ast$input_axes)
+        order_after_transposition <- c(
+            ordered_axis_rght[sapply(
+                ordered_axis_rght,
+                function(axis) r2r::has_key(input_identifiers, axis)
+            )],
+            reduced_axes
+        )
+    }
     axes_permutation <- as.integer(sapply(
         order_after_transposition, function(axis) {
             which(sapply(ordered_axis_left, function(x) identical(x, axis)))
@@ -272,9 +273,7 @@ prepare_transformation_recipe <- function(
         else
             do.call(
                 r2r::hashmap,
-                FastUtils::zipit(
-                    axes_names, axis_name2position[axes_names]
-                )
+                FastUtils::zipit(axes_names, axis_name2position[axes_names])
             ),
         input_composition_known_unknown = input_axes_known_unknown,
         axes_permutation = axes_permutation,
@@ -321,7 +320,7 @@ expand_ellipsis <- function(einops_ast, ndim) {
         ))
     }
 
-    replace_ellipsis <- function(onesided_ast) {
+    apply_both_axes(einops_ast, function(onesided_ast) {
 
         expanded_axes <- lapply(seq_len(ndim - n_other_dims), function(i) {
             NamedAxisAstNode(paste0("...", i))
@@ -349,26 +348,17 @@ expand_ellipsis <- function(einops_ast, ndim) {
         }
 
         onesided_ast
-    }
-
-    einops_ast$input_axes %<>% replace_ellipsis()
-    einops_ast$output_axes %<>% replace_ellipsis()
-    einops_ast
+    })
 }
 
 reverse_group_orders_if <- function(ast, do_reverse) {
+    assert_that(inherits(ast, "EinopsAst"), is.flag(do_reverse))
     if (!do_reverse) return(ast)
-
-    reverse_group_orders <- function(axes) {
+    apply_both_axes(ast, function(axes) {
         for (i in seq_along(axes)) {
             if (!inherits(axes[[i]], "GroupAstNode")) next
             axes[[i]]$children %<>% rev()
         }
         axes
-    }
-
-    ast$input_axes %<>% reverse_group_orders()
-    ast$output_axes %<>% reverse_group_orders()
-
-    ast
+    })
 }

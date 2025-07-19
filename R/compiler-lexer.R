@@ -23,7 +23,7 @@ lex <- function(pattern) {
         ")" = list(constructor = RParenToken, standalone = FALSE),
         "_" = list(constructor = UnderscoreToken, standalone = TRUE),
         "*" = list(constructor = AsteriskToken, standalone = TRUE),
-        "," = list(constructor = CommaToken, standalone = TRUE) # Added CommaToken
+        "," = list(constructor = CommaToken, standalone = TRUE)
     )
 
     while (pos <= n) {
@@ -50,9 +50,10 @@ lex <- function(pattern) {
         }
 
         # Ellipsis
-        if (char == "." && pos + 2 <= n && 
-            pattern_chars[pos + 1] == "." && 
-            pattern_chars[pos + 2] == ".") {
+        if (char == "." && pos + 2 <= n &&
+            pattern_chars[pos + 1] == "." && # nolint: indentation_linter.
+            pattern_chars[pos + 2] == "."
+        ) {
             ellipsis_count <- ellipsis_count + 1
             tokens <- append(tokens, list(EllipsisToken(start_pos)))
             pos <- pos + 3
@@ -60,7 +61,9 @@ lex <- function(pattern) {
         }
 
         # Handle simple tokens
-        simple_result <- handle_simple_token(char, pos, pattern_chars, n, simple_tokens)
+        simple_result <- handle_simple_token(
+            char, pos, pattern_chars, n, simple_tokens
+        )
         if (!is.null(simple_result)) {
             if (char == "(") paren_stack <- paren_stack + 1
             if (char == ")") paren_stack <- paren_stack - 1
@@ -122,17 +125,4 @@ handle_simple_token <- function(char, pos, pattern_chars, n, token_mapping) {
         return(list(token = token_info$constructor(pos), advance = 1))
     }
     NULL
-}
-
-#' @title .next_token
-#' @description Internal helper to get next token from stream
-#' @param tokens list of tokens
-#' @param pos current position
-#' @return list with token and new position
-#' @keywords internal
-.next_token <- function(tokens, pos) {
-    if (pos > length(tokens)) {
-        return(list(token = NULL, pos = pos))
-    }
-    list(token = tokens[[pos]], pos = pos + 1)
 }

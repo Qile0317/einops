@@ -542,30 +542,56 @@ public = list(
 
 register_backend("array", BaseArrayBackend, "abind", aliases = "numeric")
 
-TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
-public = list(
+# TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
+# public = list(
 
-    initialize = function() {
-        super$initialize()
-        tryCatch(
-            torch::torch_tensor(0),
-            error = function(e) {
-                stop("Error initializing torch backend. ", conditionMessage(e))
-            }
-        )
-    },
+#     initialize = function() {
+#         super$initialize()
+#         tryCatch(
+#             torch::torch_tensor(0),
+#             error = function(e) {
+#                 stop("Error initializing torch backend. ", conditionMessage(e))
+#             }
+#         )
+#     },
 
-    tensor_type = function() "torch_tensor",
+#     tensor_type = function() "torch_tensor",
 
-    create_tensor = function(values, dims, ...) {
-        torch::torch_tensor(array(values, dim = dims), ...)
-    },
+#     create_tensor = function(values, dims, ...) {
+#         torch::torch_tensor(array(values, dim = dims), ...)
+#     },
 
-    as_array = function(x) {
-        torch::as_array(x)
-    }
-))
+#     as_array = function(x) {
+#         torch::as_array(x)
+#     }
+# ))
 
-register_backend("torch_tensor", TorchBackend, "torch")
+# register_backend("torch_tensor", TorchBackend, "torch")
+
+# TensorflowBackend <- R6Class("TensorflowBackend", inherit = EinopsBackend, cloneable = FALSE,
+# public = list(
+
+#     initialize = function() {
+#         super$initialize()
+#         self$tf <- tensorflow::tf
+#     },
+
+#     tensor_type = function() "tensorflow.python.types.core.Tensor"
+# ))
+
+# register_backend(
+#     "tensorflow.python.types.core.Tensor",
+#     TensorflowBackend,
+#     dependencies = c("reticulate", "tensorflow"),
+#     aliases = c(
+#         "tensorflow.tensor",
+#         "tensorflow.python.framework.ops.EagerTensor",
+#         "tensorflow.python.framework.ops._EagerTensorBase",
+#         "tensorflow.python.framework.tensor.Tensor",
+#         "tensorflow.python.types.internal.NativeObject",
+#         "tensorflow.python.types.core.Symbol",
+#         "tensorflow.python.types.core.Value"
+#     )
+# )
 
 # nolint end: indentation_linter, line_length_linter

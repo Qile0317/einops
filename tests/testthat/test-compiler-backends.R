@@ -48,7 +48,7 @@ test_that("get_backend() return unique singletons", {
 
 test_in_all_tensor_types_that("stack_on_zeroth_dimension() works", {
 
-    x <- create_tensor(1:(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
+    x <- create_seq_tensor(10 * 1:4)
     x_list <- lapply(1:10, function(i) {
         x[i, , , ]
     })
@@ -58,7 +58,7 @@ test_in_all_tensor_types_that("stack_on_zeroth_dimension() works", {
 
 test_in_all_tensor_types_that("add_axis() and tile() works", {
 
-    x <- create_tensor(1:prod(2, 3, 5), c(2, 3, 5))
+    x <- create_seq_tensor(c(2, 3, 5))
     backend <- get_backend(x)
 
     expect_no_error(x <- backend$add_axis(x, 3))

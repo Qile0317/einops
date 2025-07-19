@@ -20,7 +20,7 @@ equivalent_rearrange_patterns <- list(
 
 for (pattern in identity_patterns) {
     test_in_all_tensor_types_that(glue("rearrange(x, '{pattern}') returns x"), {
-        x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        x <- create_seq_tensor(10 * 1:5)
         expect_no_error(y <- rearrange(x, pattern))
         expect_identical(dim(y), dim(x))
         expect_identical(y, x)
@@ -32,7 +32,7 @@ for (pattern in equivalent_rearrange_patterns) {
         "rearrange(x, '{pattern[[1]]}') is equivalent to ",
         "rearrange(x, '{pattern[[2]]}')"
     ), {
-        x <- create_tensor(1:(10 * 20 * 30 * 40 * 50), c(10, 20, 30, 40, 50))
+        x <- create_seq_tensor(10 * 1:5)
         expect_no_error(y1 <- rearrange(x, pattern[[1]]))
         expect_no_error(y2 <- rearrange(x, pattern[[2]]))
         expect_identical(dim(y1), dim(y2))
@@ -42,7 +42,7 @@ for (pattern in equivalent_rearrange_patterns) {
 
 test_in_all_tensor_types_that("rearrange() is consistent", {
     shape <- c(1, 2, 3, 5, 7, 11)
-    x <- create_tensor(1:prod(shape), shape)
+    x <- create_seq_tensor(shape)
     for (pattern in c(
         "a b c d e f -> a b c d e f",
         "b a c d e f -> a b d e f c",
@@ -81,7 +81,7 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
     result <- rearrange(temp, "(f d) c (e b) a -> a b c d e f", sizes)
     expect_identical(x, result)
 
-    x2 <- create_tensor(1:(2 * 3 * 4), c(2, 3, 4))
+    x2 <- create_seq_tensor(2:4)
     result <- rearrange(x2, "a b c -> b c a")
     x2_array <- as_base_array(x2)
     result_array <- as_base_array(result)
@@ -102,7 +102,7 @@ test_in_all_tensor_types_that("rearrange() works", {
         t(x)
     )
 
-    x <- create_tensor(1:(10 * 20 * 30 * 40), c(10, 20, 30, 40))
+    x <- create_seq_tensor(10 * 1:4)
 
     # TODO actually check values
     
@@ -155,7 +155,7 @@ test_in_all_tensor_types_that("rearrange() works", {
 
 test_in_all_tensor_types_that("rearrange() works on lists", {
 
-    x <- create_tensor(1:prod(2:6), 2:6)
+    x <- create_seq_tensor(2:6)
     
     expect_identical(
         rearrange( # TODO may not be the same for all frameworks - may need a seperate backend + interface function for this

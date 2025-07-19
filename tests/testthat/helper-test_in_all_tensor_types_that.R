@@ -64,6 +64,18 @@ create_tensor <- function(values, dims, ...) {
     stop("create_tensor() must be defined in the test context")
 }
 
+#' Utility function to create a backend-agnostic tensor, with contents
+#' from 1 to the product of dimensions
+#' @param dims A vector of dimensions for the tensor.
+#' @param ... Additional arguments passed to the backend's tensor creation
+#' method.
+#' @return A tensor object created by the backend, filled with sequential
+#' integers from 1 to the product of `dims`.
+create_seq_tensor <- function(dims, ...) {
+    create_tensor <- get("create_tensor", envir = parent.frame())
+    create_tensor(1:prod(dims), dims, ...)
+}
+
 #' Interface function to convert a tensor to a base array
 #'
 #' This function is a placeholder that should be defined in the test context.

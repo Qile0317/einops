@@ -35,6 +35,7 @@ Suggests:
     lobstr,
     rmarkdown,
     spelling,
+    tensorflow,
     testthat (>= 3.0.0),
     torch
 Config/testthat/edition: 3
