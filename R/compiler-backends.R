@@ -542,6 +542,7 @@ public = list(
 
 register_backend("array", BaseArrayBackend, "abind", aliases = "numeric")
 
+# TODO need to ensure whether returning views/copies is correct, and ensure the gradients are not affected
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
