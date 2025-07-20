@@ -507,7 +507,7 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        assert_that(is.list(tensors))
+        assert_that(is.list(tensors), all(sapply(tensors, is.array)))
         if (length(tensors) == 1L) return(tensors[[1]])
         unname(abind::abind(tensors, along = 0))
     },
@@ -535,12 +535,25 @@ public = list(
 
     add_axis = function(x, new_position) {
         assert_that(is.count(new_position))
-        dim(x) <- append(dim(x), 1, after = new_position - 1)
+        dim(x) %<>% append(1L, after = new_position - 1L)
         x
     }
 ))
 
 register_backend("array", BaseArrayBackend, "abind", aliases = "numeric")
+
+# helper HOF to convert a reducer function that takes in a tensor and
+# a single dimension to a function that takes in a tensor and a vector of
+# dimensions, and applies the reducer to each dimension in turn.
+make_multidim <- function(reducer) {
+    function(x, dims, ...) {
+        assert_that(is.integer(dims), all(dims > 0L))
+        for (d in sort(dims, decreasing = TRUE)) {
+            x %<>% reducer(d, ...)
+        }
+        x
+    }
+}
 
 # TODO need to ensure whether returning views/copies is correct, and ensure the gradients are not affected
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
@@ -578,16 +591,16 @@ public = list(
         op_fun <- switch(operation,
             sum  = torch::torch_sum,
             mean = torch::torch_mean,
-            max  = torch::torch_max,
-            min  = torch::torch_min,
-            prod = torch::torch_prod,
+            max  = make_multidim(torch::torch_max),
+            min  = make_multidim(torch::torch_min),
+            prod = make_multidim(torch::torch_prod),
             operation # TODO this is inconsistent calling w/the array backend
         )
         op_fun(x, axes)
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        assert_that(is.list(tensors))
+        assert_that(is.list(tensors), all(sapply(tensors, inherits, "torch_tensor")))
         if (length(tensors) == 1L) return(tensors[[1]])
         torch::torch_stack(tensors, 1L)
     },
@@ -605,8 +618,8 @@ public = list(
         torch::torch_cat(tensors, axis)
     },
 
-    is_float_type = function(x) { # TODO: unsure if correct
-        identical(x$dtype, torch::torch_float())
+    is_float_type = function(x) {
+        x$dtype$is_floating_point
     },
 
     add_axis = function(x, new_position) {
