@@ -561,12 +561,9 @@ public = list(
 
     initialize = function() {
         super$initialize()
-        tryCatch(
-            torch::torch_tensor(0),
-            error = function(e) {
-                stop("Error initializing torch backend. ", conditionMessage(e))
-            }
-        )
+        if (!torch::torch_is_installed()) {
+            stop("Torch is not installed.")
+        }
     },
 
     tensor_type = function() "torch_tensor",
