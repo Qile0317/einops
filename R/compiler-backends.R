@@ -558,8 +558,8 @@ public = list(
 
     tensor_type = function() "torch_tensor",
 
-    create_tensor = function(values, dims, ...) {
-        torch::torch_tensor(array(values, dim = dims), ...)
+    create_tensor = function(values, dim, ...) {
+        torch::torch_tensor(array(values, dim), ...)
     },
 
     as_array = function(x) {
@@ -583,14 +583,13 @@ public = list(
             prod = torch::torch_prod,
             operation # TODO this is inconsistent calling w/the array backend
         )
-        if (length(axes) == 0L) return(op_fun(x))
-        op_fun(x, dim = axes)
+        op_fun(x, axes)
     },
 
     stack_on_zeroth_dimension = function(tensors) {
         assert_that(is.list(tensors))
         if (length(tensors) == 1L) return(tensors[[1]])
-        torch::torch_stack(tensors, dim = 1L)
+        torch::torch_stack(tensors, 1L)
     },
 
     tile = function(x, repeats) {
@@ -603,15 +602,15 @@ public = list(
     },
 
     concat = function(tensors, axis) {
-        torch::torch_cat(tensors, dim = axis)
+        torch::torch_cat(tensors, axis)
     },
 
     is_float_type = function(x) { # TODO: unsure if correct
-        x$dtype == torch::torch_float()
+        identical(x$dtype, torch::torch_float())
     },
 
     add_axis = function(x, new_position) {
-        torch::torch_unsqueeze(x, dim = new_position)
+        torch::torch_unsqueeze(x, new_position)
     }
 ))
 
