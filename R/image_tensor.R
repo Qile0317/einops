@@ -72,7 +72,7 @@ as_image_tensor.default <- function(x) {
     x <- as.array(x)
     dims <- length(dim(x))
 
-    if (dims == 2L) x %<>% einops.repeat(x, "h w -> h w 3")
+    if (dims == 2L) x %<>% einops.repeat("h w -> h w 3")
     if (dims != 3 && dims != 4) {
         stop("image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays")
     }
@@ -98,10 +98,8 @@ as.cimg.image_tensor <- function(x) {
     x <- unclass(x)
     
     if (x_dims == 3) {
-        # For 3D arrays (h w c), add batch dimension before rearranging
         imager::as.cimg(rearrange(x, "h w c -> w h 1 c"))
     } else if (x_dims == 4) {
-        # For 4D arrays (b h w c)
         imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
     } else {
         stop("image_tensor must be 3D or 4D")

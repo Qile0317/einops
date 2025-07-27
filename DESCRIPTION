@@ -22,6 +22,7 @@ Imports:
     assertthat,
     FastUtils,
     glue,
+    lifecycle,
     magrittr,
     r2r,
     R6,
