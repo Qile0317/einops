@@ -520,7 +520,7 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        assert_that(is.list(tensors))
+        assert_that(is.list(tensors), all(sapply(tensors, is.array)))
         if (length(tensors) == 1L) return(tensors[[1]])
         unname(abind::abind(tensors, along = 0))
     },
@@ -548,7 +548,7 @@ public = list(
 
     add_axis = function(x, new_position) {
         assert_that(is.count(new_position))
-        dim(x) <- append(dim(x), 1, after = new_position - 1)
+        dim(x) %<>% append(1L, after = new_position - 1L)
         x
     }
 ))

@@ -56,6 +56,11 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
         )
     }
 
+    # FIXME: for torch_tensor, this fails but only due to tensor -> array conversion
+    # using x$flatten() we see that they are actually identical, so this either we
+    # need to change the conversion and NOT use torch::as_array() or we need to
+    # change the test to use x$flatten() instead of as_base_array(). Neither feel
+    # right nor intuitive.
     result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
     expect_identical(
         as.numeric(as_base_array(result)), as.numeric(as_base_array(x))

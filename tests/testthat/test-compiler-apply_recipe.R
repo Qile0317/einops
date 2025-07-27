@@ -61,4 +61,28 @@ test_that("create_execution_plan works", {
         )
     )
 
+    # rearrange(x, "a b c d e f -> a (b) (c d e) f")
+
+    recipe <- TransformRecipe(
+        elementary_axes_lengths = rep(unknown_axis_length(), 6L),
+        axis_name2elementary_axis = r2r::hashmap(),
+        input_composition_known_unknown = make_unknown_composition(1:6),
+        axes_permutation = 1:6,
+        first_reduced_axis = 7L,
+        added_axes = r2r::hashmap(),
+        output_composite_axes = list(1L, 2L, 3:5, 6L)
+    )
+
+    expect_identical(
+        create_execution_plan(recipe, c(1L, 2L, 3L, 5L, 7L, 11L), list()),
+        EinopsExecutionPlan(
+            init_shapes = integer(),
+            axes_reordering = integer(),
+            reduced_axes = integer(),
+            added_axes = r2r::hashmap(),
+            final_shapes = c(1L, 2L, 105L, 11L),
+            n_axes_w_added = 6L
+        )
+    )
+
 })
