@@ -115,6 +115,7 @@ reduce.list <- function(
     }
     
     backend <- get_backend(x)
+    x <- backend$preprocess(x)
 
     hashable_axes_lengths <- axes_lengths
 
