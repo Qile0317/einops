@@ -47,9 +47,11 @@ library(einops)
 
 ## Load a batch of images to play with
 
-Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor.
+Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor. The main difference with `base::array`'s are that the print method by default will show the image itself.
 
-Note that we set the option `einops_row_major = TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
+Note that if the `image_tensor` is indexed with a single value, it is equivalent to indexing a regular array with all other indices empty. So when we see `x[i]` its the same as `x[i, , , ]` or `x[i, , , ,]`.
+
+We also set the option `einops_row_major` to `TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
 
 ```{r load_einops_image}
 options(einops_row_major = TRUE)
@@ -175,4 +177,33 @@ if axis is not present in the output — you guessed it — axis was reduced.
 ```{r fig.width = pane_length(1), fig.height = pane_length(1)}
 # average over batch
 reduce(ims, "b h w c -> h w c", "mean")
+```
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# the previous is identical to familiar:
+apply(ims, c(2, 3, 4), mean)
+# but is so much more readable
+```
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# Example of reducing of several axes
+# besides mean, there are also min, max, sum, prod
+reduce(ims, "b h w c -> h w", "min")
+```
+
+```{r, fig.height = pane_length(1)}
+# this is mean-pooling with 2x2 kernel
+# image is split into 2x2 patches, each patch is averaged
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "mean", h2=2, w2=2)
+```
+
+```{r, fig.height = pane_length(1)}
+# max-pooling is similar
+# result is not as smooth as for mean-pooling
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
+```
+
+```{r out.width = "19%", fig.height = 4.5}
+# yet another example. Can you compute result shape?
+reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
 ```
