@@ -204,7 +204,7 @@ reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
 ```
 
 ```{r out.width = "19%", fig.height = 4.5}
-# yet another example. Can you compute result shape?
+# yet another example. Can you compute the resulting shape?
 reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
 ```
 
@@ -226,8 +226,7 @@ dim(rearrange(x, "b h w c -> h w c b"))
 
 ```{r}
 # that's equivalent to array stacking, but written more explicitly
-identical(
-    rearrange(x, "b h w c -> h w c b"),
+all(rearrange(x, "b h w c -> h w c b") ==
     aperm(array(unlist(x), dim = c(dim(x[[1]]), length(x))), 1:4)
 )
 ```
@@ -239,8 +238,6 @@ dim(rearrange(x, "b h w c -> h (b w) c"))
 
 ```{r}
 # which is equivalent to concatenation
-identical(
-    rearrange(unclass(x), "b h w c -> h (b w) c"),
-    abind::abind(x, along = 2)
-)
+all(rearrange(x, "b h w c -> h (b w) c") ==
+    abind::abind(x, along = 2))
 ```
