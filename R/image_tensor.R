@@ -71,12 +71,10 @@ as_image_tensor <- function(x) {
 as_image_tensor.default <- function(x) {
     x <- as.array(x)
     dims <- length(dim(x))
-
-    if (dims == 2L) x %<>% einops.repeat(x, "h w -> h w 3")
-    if (dims != 3 && dims != 4) {
-        stop("image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays")
+    if (!FastUtils::isBound(dims, 2, 4)) {
+        stop("image_tensor objects must be 2D (h w), 3D (h w c) or 4D (b h w c) arrays")
     }
-    
+    if (dims == 2L) x <- einops.repeat(x, "h w -> h w 3")
     class(x) <- c("image_tensor", "array")
     x
 }
@@ -98,10 +96,8 @@ as.cimg.image_tensor <- function(x) {
     x <- unclass(x)
     
     if (x_dims == 3) {
-        # For 3D arrays (h w c), add batch dimension before rearranging
         imager::as.cimg(rearrange(x, "h w c -> w h 1 c"))
     } else if (x_dims == 4) {
-        # For 4D arrays (b h w c)
         imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
     } else {
         stop("image_tensor must be 3D or 4D")
@@ -164,11 +160,20 @@ print.image_tensor <- function(
 }
 
 #' @export
-reduce.image_tensor <- function(x, expr, func, ...) {
+reduce.image_tensor <- function(x, ...) {
     class(x) <- "array"
-    result <- reduce(x, expr, func, ...)
-    if (FastUtils::isBound(length(dim(result)), 3, 4)) {
+    result <- reduce(x, ...)
+    if (FastUtils::isBound(length(dim(result)), 2, 4)) {
         result <- as_image_tensor(result)
     }
     result
+}
+
+#' @export
+reduce.list.image_tensor <- function(
+    x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
+    as_image_tensor(reduce.list.default(
+        x, expr, func, ..., .row_major = .row_major
+    ))
 }

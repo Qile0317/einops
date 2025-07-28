@@ -1,4 +1,4 @@
-test_that("expand_ellipsis works", {
+test_that("expand_ellipsis() works", {
 
     ast <- EinopsAst(
         input_axes = OneSidedAstNode(
@@ -152,7 +152,7 @@ test_that("expand_ellipsis works", {
 
 })
 
-test_that("prepare_transformation_recipe works", {
+test_that("prepare_transformation_recipe() works", {
 
     expect_no_error(prepare_transformation_recipe(
         "a b -> b", "mean", character(), 2L
@@ -240,7 +240,20 @@ test_that("prepare_transformation_recipe works", {
         )
     )
 
-    # TODO some test with brackets
+    expect_identical(
+        prepare_transformation_recipe(
+            "a b c d e f -> a (b) (c d e) f", "rearrange", character(), 6L
+        ),
+        TransformRecipe(
+            elementary_axes_lengths = rep(unknown_axis_length(), 6L),
+            axis_name2elementary_axis = r2r::hashmap(),
+            input_composition_known_unknown = make_unknown_composition(1:6),
+            axes_permutation = 1:6,
+            first_reduced_axis = 7L,
+            added_axes = r2r::hashmap(),
+            output_composite_axes = list(1L, 2L, 3:5, 6L)
+        )
+    )
 
     # TODO some test with 1's, brackets, anonymous axes, ellipses,
     # bracketted axes, etc.

@@ -35,6 +35,7 @@ parse_shape <- function(x, expr, ...) {
 .parse_shape <- function(x, expr, ...) {
 
     backend <- get_backend(x)
+    x <- backend$preprocess(x)
     shape <- backend$shape(x)
     tokens <- lex(expr)
     onesided_ast <- parse_onesided_ast(tokens) %>%

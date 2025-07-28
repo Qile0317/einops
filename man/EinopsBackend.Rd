@@ -13,8 +13,9 @@ from this class and implement the required methods.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
-\item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
 \item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
+\item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
+\item \href{#method-EinopsBackend-preprocess}{\code{EinopsBackend$preprocess()}}
 \item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
 \item \href{#method-EinopsBackend-as_array}{\code{EinopsBackend$as_array()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
@@ -48,6 +49,19 @@ A new EinopsBackend instance.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-repr"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-repr}{}}}
+\subsection{Method \code{repr()}}{
+Get a string representation of this backend.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$repr()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A character string describing the backend.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EinopsBackend-tensor_type"></a>}}
 \if{latex}{\out{\hypertarget{method-EinopsBackend-tensor_type}{}}}
 \subsection{Method \code{tensor_type()}}{
@@ -63,16 +77,26 @@ A string representing the tensor type.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-EinopsBackend-repr"></a>}}
-\if{latex}{\out{\hypertarget{method-EinopsBackend-repr}{}}}
-\subsection{Method \code{repr()}}{
-Get a string representation of this backend.
+\if{html}{\out{<a id="method-EinopsBackend-preprocess"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-preprocess}{}}}
+\subsection{Method \code{preprocess()}}{
+Do any relevant preprocessing of a tensor before any operations are
+done on it. This should always be called before running any backend
+operations on a tensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$repr()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$preprocess(x)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{The input raw tensor-like object}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
-A character string describing the backend.
+A preprocessed version of the input, may or may not have changed
+classes
 }
 }
 \if{html}{\out{<hr>}}

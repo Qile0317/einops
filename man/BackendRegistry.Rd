@@ -71,7 +71,7 @@ Register a new backend singleton
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BackendRegistry$register_backend(
   tensor_type,
-  backend_class,
+  backend_class_thunk,
   dependencies = character(0),
   testing = FALSE,
   aliases = character(0)
@@ -83,7 +83,7 @@ Register a new backend singleton
 \describe{
 \item{\code{tensor_type}}{a string with the tensor type the backend supports}
 
-\item{\code{backend_class}}{an EinopsBackend subclass generator}
+\item{\code{backend_class_thunk}}{a \code{\link[=thunk]{thunk()}}'ed EinopsBackend subclass generator}
 
 \item{\code{dependencies}}{a character vector of required package names}
 

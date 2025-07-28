@@ -1,5 +1,5 @@
 ---
-title: "basics"
+title: basics
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basics}
@@ -18,15 +18,40 @@ pane_length <- function(p) 0.5 * p
 SINGLE_PANE <- "7.142857%"
 ```
 
+## Welcome to einops-land!
+
+We don't write
+
+```R
+y <- aperm(x, c(1, 3, 4, 2))
+```
+
+We write comprehensible code
+
+```R
+y <- rearrange(x, "b c h w -> b h w c")
+```
+
+Currently, `einops` only supports the `base::array`, and extends them.
+In the future, more tensor types will be supported such as `torch::torch_tensor`'s.
+
+## What's in this vignette?
+
+- fundamentals: reordering, composition and decomposition of axes
+- operations: `rearrange`, `reduce`, `repeat`
+- how much you can do with a single operation!
+
 ```{r setup}
 library(einops)
 ```
 
 ## Load a batch of images to play with
 
-Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor.
+Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor. The main difference with `base::array`'s are that the print method by default will show the image itself.
 
-Note that we set the option `einops_row_major = TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
+Note that if the `image_tensor` is indexed with a single value, it is equivalent to indexing a regular array with all other indices empty. So when we see `x[i]` its the same as `x[i, , , ]` or `x[i, , , ,]`.
+
+We also set the option `einops_row_major` to `TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
 
 ```{r load_einops_image}
 options(einops_row_major = TRUE)
@@ -95,18 +120,18 @@ dim(rearrange(ims, "b h w c -> (b h w c)"))
 dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1=2))
 ```
 
-```{r}
+```{r fig.width = pane_length(3), fig.height = pane_length(2)}
 # finally, combine composition and decomposition:
 rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
 ```
 
-```{r}
+```{r fig.width = pane_length(2), fig.height = pane_length(3)}
 # slightly different composition: b1 is merged with width, b2 with height
 # ... so letters are ordered by w then by h
 rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
 ```
 
-```{r, fig.height = pane_length(6)}
+```{r, fig.height = pane_length(4)}
 # move part of width dimension to height.
 # we should call this width-to-height as image width shrunk by 2 and height doubled.
 # but all pixels are the same!
@@ -138,3 +163,237 @@ rearrange(ims, "(b1 b2) h w c -> h (b1 b2 w) c ", b1=2)  # produces 'einops'
 ```{r, fig.height = pane_length(1)}
 rearrange(ims, "(b1 b2) h w c -> h (b2 b1 w) c ", b1=2)  # produces 'eoipns'
 ```
+
+## Meet einops.reduce
+
+In einops-land you don't need to guess what happened
+
+```R
+apply(x, -ncol(x), mean)
+```
+
+if axis is not present in the output — you guessed it — axis was reduced.
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# average over batch
+reduce(ims, "b h w c -> h w c", "mean")
+```
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# the previous is identical to familiar:
+as_image_tensor(apply(ims, c(2, 3, 4), mean))
+# but is so much more readable
+```
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# Example of reducing of several axes
+# besides mean, there are also min, max, sum, prod
+reduce(ims, "b h w c -> h w", "min")
+```
+
+```{r, fig.height = pane_length(1)}
+# this is mean-pooling with 2x2 kernel
+# image is split into 2x2 patches, each patch is averaged
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "mean", h2=2, w2=2)
+```
+
+```{r, fig.height = pane_length(1)}
+# max-pooling is similar
+# result is not as smooth as for mean-pooling
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
+```
+
+```{r fig.width = pane_length(2), fig.height = pane_length(3)}
+# yet another example. Can you compute the resulting shape?
+reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
+```
+
+## Stack and concatenate
+
+```{r}
+# rearrange can also take care of lists of arrays with the same shape
+x <- list(ims[1], ims[2], ims[3], ims[4], ims[5], ims[6])
+cat("list with", length(x), "tensors of shape", paste(dim(x[[1]]), collapse=" "))
+# that's how we can stack inputs
+# "list axis" becomes first ("b" in this case), and we left it there
+dim(rearrange(x, "b h w c -> b h w c"))
+```
+
+```{r}
+# but new axis can appear in the other place:
+dim(rearrange(x, "b h w c -> h w c b"))
+```
+
+```{r}
+# that's equivalent to array stacking, but written more explicitly
+all(rearrange(x, "b h w c -> h w c b") ==
+    aperm(array(unlist(x), dim = c(dim(x[[1]]), length(x))), 1:4)
+)
+```
+
+```{r}
+# ... or we can concatenate along axes
+dim(rearrange(x, "b h w c -> h (b w) c"))
+```
+
+```{r}
+# which is equivalent to concatenation
+all(rearrange(x, "b h w c -> h (b w) c") ==
+    abind::abind(x, along = 2))
+```
+
+## Addition or removal of axes
+
+You can write 1 to create a new axis of length 1. Similarly you can remove such axis.
+
+There is also a synonym `()` that you can use. That's a composition of zero axes and it also has a unit length.
+
+```{r}
+x <- rearrange(ims, "b h w c -> b 1 h w 1 c")  # functionality of array expansion
+print(dim(x))
+print(dim(rearrange(x, "b 1 h w 1 c -> b h w c")))  # functionality of array squeeze
+```
+
+```{r, fig.height = pane_length(1)}
+# compute max in each image individually, then show a difference
+x <- reduce(ims, "b h w c -> b () () c", "max")
+x <- `repeat`(x, "b 1 1 c -> b 96 96 c") - ims # we will learn about this in a sec
+rearrange(x, "b h w c -> h (b w) c")
+```
+
+## Repeating elements
+
+Third operation we introduce is `repeat`, which can be either called as `einops.repeat` or a
+tick enclosed ``repeat``.
+
+```{r}
+# repeat along a new axis. New axis can be placed anywhere
+dim(einops.repeat(ims[1], "h w c -> h new_axis w c", new_axis = 5))
+```
+
+```{r}
+# shortcut
+dim(`repeat`(ims[1], "h w c -> h 5 w c"))
+```
+
+```{r, fig.height = pane_length(1), fig.width = pane_length(3)}
+# repeat along w (existing axis)
+`repeat`(ims[1], "h w c -> h (repeated w) c", repeated=3)
+```
+
+```{r, fig.width = pane_length(2), fig.height = pane_length(2)}
+# repeat along two existing axes
+`repeat`(ims[1], "h w c -> (2 h) (2 w) c")
+```
+
+```{r, fig.width = pane_length(3), fig.height = pane_length(1)}
+# order of axes matters as usual - you can repeat each element (pixel) 3 times
+# by changing order in parenthesis
+`repeat`(ims[1], "h w c -> h (w repeated) c", repeated = 3)
+```
+
+Note: `repeat` operation covers functionality identical to `base::array` and `abind` replication and actually more than that.
+
+## Reduce ⇆ repeat
+
+reduce and repeat are like opposite of each other: first one reduces amount of elements, second one increases.
+
+In the following example each image is repeated first, then we reduce over new axis to get back original tensor. Notice that operation patterns are "reverse" of each other
+
+```{r}
+repeated <- `repeat`(ims, "b h w c -> b h new_axis w c", new_axis = 2)
+reduced <- reduce(repeated, "b h new_axis w c -> b h w c", "min")
+all(ims == reduced)
+```
+
+## Fancy examples in random order
+
+(a.k.a. mad designer gallery)
+
+```{r}
+# interweaving pixels of different pictures
+# all letters are observable
+rearrange(ims, "(b1 b2) h w c -> (h b1) (w b2) c ", b1=2)
+```
+
+```{r}
+# interweaving along vertical for couples of images
+rearrange(ims, "(b1 b2) h w c -> (h b1) (b2 w) c", b1=2)
+```
+
+```{r}
+# interweaving lines for couples of images
+# exercise: achieve the same result without einops in your favourite framework
+reduce(ims, "(b1 b2) h w c -> h (b2 w) c", "max", b1=2)
+```
+
+```{r}
+# color can be also composed into dimension
+# ... while image is downsampled
+reduce(ims, "b (h 2) (w 2) c -> (c h) (b w)", "mean")
+```
+
+```{r, fig.width = pane_length(5/3), fig.height = pane_length(1/4)}
+# disproportionate resize
+reduce(ims, "b (h 4) (w 3) c -> (h) (b w)", "mean")
+```
+
+```{r, fig.height = pane_length(1)}
+# split each image in two halves, compute mean of the two
+reduce(ims, "b (h1 h2) w c -> h2 (b w)", "mean", h1=2)
+```
+
+```{r, fig.height = pane_length(1)}
+# split in small patches and transpose each patch
+rearrange(ims, "b (h1 h2) (w1 w2) c -> (h1 w2) (b w1 h2) c", h2=8, w2=8)
+```
+
+```{r, fig.height = pane_length(1)}
+# stop me someone!
+rearrange(ims, "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c", h2=2, w2=2, w3=2, h3=2)
+```
+
+```{r}
+rearrange(ims, "(b1 b2) (h1 h2) (w1 w2) c -> (h1 b1 h2) (w1 b2 w2) c", h1=3, w1=3, b2=3)
+```
+
+```{r, fig.height = pane_length(1)}
+# patterns can be arbitrarily complicated
+reduce(ims, "(b1 b2) (h1 h2 h3) (w1 w2 w3) c -> (h1 w1 h3) (b1 w2 h2 w3 b2) c", "mean", h2=2, w1=2, w3=2, h3=2, b2=2)
+```
+
+<!--
+# subtract background in each image individually and normalize
+# pay attention to () - this is composition of 0 axis, a dummy axis with 1 element.
+im2 <- reduce(ims, "b h w c -> b () () c", "max")
+im2 <- `repeat`(im2, "b 1 1 c -> b 96 96 c") - ims
+im2 <- im2 / reduce(im2, "b h w c -> b () () c", "max")
+rearrange(im2, "b h w c -> h (b w) c")
+-->
+
+```{r, fig.height = pane_length(1)}
+# pixelate: first downscale by averaging, then upscale back using the same pattern
+averaged <- reduce(ims, "b (h h2) (w w2) c -> b h w c", "mean", h2=6, w2=8)
+`repeat`(averaged, "b h w c -> (h h2) (b w w2) c", h2=6, w2=8)
+```
+
+```{r, fig.height = pane_length(1)}
+rearrange(ims, "b h w c -> w (b h) c")
+```
+
+```{r, fig.height = pane_length(1)}
+# let's bring color dimension as part of horizontal axis
+# at the same time horizontal axis is downsampled by 2x
+reduce(ims, "b (h h2) (w w2) c -> (h w2) (b w c)", "mean", h2=3, w2=3)
+```
+
+## Summary
+
+- `rearrange` doesn't change number of elements and covers different R functions (like `aperm`, `array`, etc.)
+- `reduce` combines same reordering syntax with reductions (`mean`, `min`, `max`, `sum`, `prod`, and any others)
+- `einops.repeat` additionally covers repeating and tiling
+- composition and decomposition of axes are a corner stone, they can and should be used together
+
+## Bonus
+
+The function `einop()` is a shorthand to do any of these operations with this single function. See its docs for more info.

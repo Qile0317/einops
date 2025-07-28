@@ -7,7 +7,6 @@ equivalent_reduction_patterns <- list(
 
 for (pattern in equivalent_reduction_patterns) {
     for (reduction in c("min", "max", "sum")) {
-        # FIXME: Error in `repeats[axis_position] <- pos2len[[axis_position]]`: replacement has length zero
         test_in_all_tensor_types_that(glue(
             "reduce(x, '{pattern[[1]]}', '{reduction}') is equivalent to ",
             "reduce(x, '{pattern[[2]]}', '{reduction}')"

@@ -35,9 +35,7 @@ Suggests:
     lobstr,
     rmarkdown,
     spelling,
-    tensorflow,
-    testthat (>= 3.0.0),
-    torch
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends: 
