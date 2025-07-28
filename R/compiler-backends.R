@@ -47,16 +47,17 @@ thunk <- function(input) {
 #' Register a new backend for a tensor type
 #'
 #' Registers a backend implementation for a specific tensor type, along with any
-#' required dependencies, testing flag, and optional aliases. This function wraps
-#' the backend class in a thunk and registers it with the backend registry.
+#' required dependencies, testing flag, and optional aliases. This function
+#' wraps the backend class in a [thunk()] and registers it with the backend
+#' registry.
 #'
 #' @param tensor_type A string specifying the tensor type the backend supports.
-#' @param backend_class An R6Class generator for the backend (subclass of [EinopsBackend]).
-#' Note that this binding does not nessecarily have to have a defined value at the time
-#' of calling this function.
-#' @param dependencies A character vector of required package names (default: character(0)).
-#' @param testing Logical flag indicating if this is a testing-only backend (default: FALSE).
-#' @param aliases A character vector of aliases for the tensor type (default: character(0)).
+#' @param backend_class An R6Class generator for the backend (subclass of
+#' [EinopsBackend]). Note that this binding does not necessarily have to have a
+#' defined value at the time of calling this function.
+#' @param dependencies Optional character vector of required package names.
+#' @param testing If TRUE, indicates its only used for testing.
+#' @param aliases Optional character vector of aliases for the tensor type.
 #' @return Invisibly returns the backend registry object.
 #' @keywords internal
 register_backend <- function(

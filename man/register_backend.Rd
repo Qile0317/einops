@@ -15,22 +15,23 @@ register_backend(
 \arguments{
 \item{tensor_type}{A string specifying the tensor type the backend supports.}
 
-\item{backend_class}{An R6Class generator for the backend (subclass of \link{EinopsBackend}).
-Note that this binding does not nessecarily have to have a defined value at the time
-of calling this function.}
+\item{backend_class}{An R6Class generator for the backend (subclass of
+\link{EinopsBackend}). Note that this binding does not necessarily have to have a
+defined value at the time of calling this function.}
 
-\item{dependencies}{A character vector of required package names (default: character(0)).}
+\item{dependencies}{Optional character vector of required package names.}
 
-\item{testing}{Logical flag indicating if this is a testing-only backend (default: FALSE).}
+\item{testing}{If TRUE, indicates its only used for testing.}
 
-\item{aliases}{A character vector of aliases for the tensor type (default: character(0)).}
+\item{aliases}{Optional character vector of aliases for the tensor type.}
 }
 \value{
 Invisibly returns the backend registry object.
 }
 \description{
 Registers a backend implementation for a specific tensor type, along with any
-required dependencies, testing flag, and optional aliases. This function wraps
-the backend class in a thunk and registers it with the backend registry.
+required dependencies, testing flag, and optional aliases. This function
+wraps the backend class in a \code{\link[=thunk]{thunk()}} and registers it with the backend
+registry.
 }
 \keyword{internal}
