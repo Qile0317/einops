@@ -72,7 +72,7 @@ as_image_tensor.default <- function(x) {
     x <- as.array(x)
     dims <- length(dim(x))
     if (!FastUtils::isBound(dims, 2, 4)) {
-        stop("image_tensor objects must be 2D (h w), 3D (h w c) or 4D (b h w c) arrays")
+        stop("input must be a 2D (h w), 3D (h w c) or 4D (b h w c) array")
     }
     if (dims == 2L) x <- einops.repeat(x, "h w -> h w 3")
     class(x) <- c("image_tensor", "array")
@@ -107,29 +107,14 @@ as.cimg.image_tensor <- function(x) {
 #' @rdname image_tensor
 #' @export
 "[.image_tensor" <- function(x, ...) {
-
     original_class <- class(x)
-    args <- list(...)
-    x_dims <- length(dim(x))
-
-    # Handle single argument subsetting for 4D arrays
-    if (length(args) == 1 && x_dims == 4) {
-        # Return 3D slice without batch dimension
-        result <- unclass(x)[args[[1]], , , , drop = FALSE]
-        result <- array(result, dim = dim(result)[-1])  # Remove first dimension
-        class(result) <- original_class
-        return(result)
-    }
-
-    result <- NextMethod("[", drop = FALSE)
+    result <- unclass(x)[...]
     result_dims <- length(dim(result))
-    
-    # Validate dimensionality
-    if (result_dims != 3 && result_dims != 4) {
-        stop("Subsetting resulted in unexpected dimensionality")
+    if (result_dims == 3 || result_dims == 4) {
+        class(result) <- original_class
+    } else {
+        result <- unclass(result)
     }
-
-    class(result) <- original_class
     result
 }
 

@@ -49,8 +49,6 @@ library(einops)
 
 Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor. The main difference with `base::array`'s are that the print method by default will show the image itself.
 
-Note that if the `image_tensor` is indexed with a single value, it is equivalent to indexing a regular array with all other indices empty. So when we see `x[i]` its the same as `x[i, , , ]` or `x[i, , , ,]`.
-
 We also set the option `einops_row_major` to `TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
 
 ```{r load_einops_image}
@@ -61,24 +59,24 @@ print(dim(ims))
 
 ```{r, fig.width = pane_length(1), fig.height = pane_length(1)}
 # display the first image (whole 4d tensor can't be rendered)
-ims[1]
+ims[1, , , ]
 ```
 
 ```{r, fig.width = pane_length(1), fig.height = pane_length(1)}
 # second image in a batch
-ims[2]
+ims[2, , , ]
 ```
 
 ```{r, fig.width = pane_length(1), fig.height = pane_length(1)}
 # rearrange, as the name suggests, rearranges elements
 # below we swapped height and width.
 # In other words, transposed first two axes (dimensions)
-rearrange(ims[1], "h w c -> w h c")
+rearrange(ims[1, , , ], "h w c -> w h c")
 ```
 
 ```{r, fig.width = pane_length(1), fig.height = pane_length(1)}
 # we could use more verbose names for axes, and result is the same:
-rearrange(ims[1], "height width color -> width height color")
+rearrange(ims[1, , , ], "height width color -> width height color")
 # when you operate on same set of axes many times,
 # you usually come up with short names.
 # That's what we do throughout tutorial - we'll use b (for batch), h, w, and c
@@ -212,7 +210,7 @@ reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
 
 ```{r}
 # rearrange can also take care of lists of arrays with the same shape
-x <- list(ims[1], ims[2], ims[3], ims[4], ims[5], ims[6])
+x <- lapply(1:6, function(i) ims[i, , , ])
 cat("list with", length(x), "tensors of shape", paste(dim(x[[1]]), collapse=" "))
 # that's how we can stack inputs
 # "list axis" becomes first ("b" in this case), and we left it there
@@ -268,28 +266,28 @@ tick enclosed ``repeat``.
 
 ```{r}
 # repeat along a new axis. New axis can be placed anywhere
-dim(einops.repeat(ims[1], "h w c -> h new_axis w c", new_axis = 5))
+dim(einops.repeat(ims[1, , , ], "h w c -> h new_axis w c", new_axis = 5))
 ```
 
 ```{r}
 # shortcut
-dim(`repeat`(ims[1], "h w c -> h 5 w c"))
+dim(`repeat`(ims[1, , , ], "h w c -> h 5 w c"))
 ```
 
 ```{r, fig.height = pane_length(1), fig.width = pane_length(3)}
 # repeat along w (existing axis)
-`repeat`(ims[1], "h w c -> h (repeated w) c", repeated=3)
+`repeat`(ims[1, , , ], "h w c -> h (repeated w) c", repeated=3)
 ```
 
 ```{r, fig.width = pane_length(2), fig.height = pane_length(2)}
 # repeat along two existing axes
-`repeat`(ims[1], "h w c -> (2 h) (2 w) c")
+`repeat`(ims[1, , , ], "h w c -> (2 h) (2 w) c")
 ```
 
 ```{r, fig.width = pane_length(3), fig.height = pane_length(1)}
 # order of axes matters as usual - you can repeat each element (pixel) 3 times
 # by changing order in parenthesis
-`repeat`(ims[1], "h w c -> h (w repeated) c", repeated = 3)
+`repeat`(ims[1, , , ], "h w c -> h (w repeated) c", repeated = 3)
 ```
 
 Note: `repeat` operation covers functionality identical to `base::array` and `abind` replication and actually more than that.
