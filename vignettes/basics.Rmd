@@ -1,5 +1,5 @@
 ---
-title: "basics"
+title: "Einops tutorial, part 1: basics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basics}
@@ -17,6 +17,29 @@ knitr::opts_chunk$set(
 pane_length <- function(p) 0.5 * p
 SINGLE_PANE <- "7.142857%"
 ```
+
+## Welcome to einops-land!
+
+We don't write
+
+```R
+y <- aperm(x, c(1, 3, 4, 2))
+```
+
+We write comprehensible code
+
+```R
+y <- rearrange(x, "b c h w -> b h w c")
+```
+
+Currently, `einops` only supports the `base::array`, and extends them.
+In the future, more tensor types will be supported such as `torch::torch_tensor`'s.
+
+## What's in this vignette?
+
+- fundamentals: reordering, composition and decomposition of axes
+- operations: `rearrange`, `reduce`, `repeat`
+- how much you can do with a single operation!
 
 ```{r setup}
 library(einops)
@@ -137,4 +160,19 @@ rearrange(ims, "(b1 b2) h w c -> h (b1 b2 w) c ", b1=2)  # produces 'einops'
 
 ```{r, fig.height = pane_length(1)}
 rearrange(ims, "(b1 b2) h w c -> h (b2 b1 w) c ", b1=2)  # produces 'eoipns'
+```
+
+## Meet einops.reduce
+
+In einops-land you don't need to guess what happened
+
+```R
+apply(x, -ncol(x), mean)
+```
+
+if axis is not present in the output — you guessed it — axis was reduced.
+
+```{r fig.width = pane_length(1), fig.height = pane_length(1)}
+# average over batch
+reduce(ims, "b h w c -> h w c", "mean")
 ```
