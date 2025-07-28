@@ -9,7 +9,7 @@
 \alias{[.image_tensor}
 \alias{plot.image_tensor}
 \alias{print.image_tensor}
-\title{Image Tensor: A thin wrapper around 3D and 4D arrays}
+\title{Image Tensor: A thin wrapper around 2-4D arrays}
 \usage{
 as_image_tensor(x)
 

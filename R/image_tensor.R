@@ -1,6 +1,6 @@
 #' @name image_tensor
 #' @title
-#' Image Tensor: A thin wrapper around 3D and 4D arrays
+#' Image Tensor: A thin wrapper around 2-4D arrays
 #'
 #' @description
 #' The `image_tensor` class provides a convenient way to work with image data
@@ -70,11 +70,9 @@ as_image_tensor <- function(x) {
 #' @export
 as_image_tensor.default <- function(x) {
     x <- as.array(x)
-    dims <- length(dim(x))
-    if (!FastUtils::isBound(dims, 2, 4)) {
+    if (!FastUtils::isBound(length(dim(x)), 2, 4)) {
         stop("input must be a 2D (h w), 3D (h w c) or 4D (b h w c) array")
     }
-    if (dims == 2L) x <- einops.repeat(x, "h w -> h w 3")
     class(x) <- c("image_tensor", "array")
     x
 }
@@ -92,12 +90,11 @@ as.cimg <- function(x) { # nolint: object_name_linter.
 #' @rdname image_tensor
 #' @export
 as.cimg.image_tensor <- function(x) {
-    x_dims <- length(dim(x))
     x <- unclass(x)
-    
-    if (x_dims == 3) {
+    if (length(dim(x)) == 2L) x %<>% einops.repeat("h w -> h w 3")
+    if (length(dim(x)) == 3L) {
         imager::as.cimg(rearrange(x, "h w c -> w h 1 c"))
-    } else if (x_dims == 4) {
+    } else if (length(dim(x)) == 4L) {
         imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
     } else {
         stop("image_tensor must be 3D or 4D")

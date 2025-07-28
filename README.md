@@ -50,10 +50,6 @@ output_tensor <- `repeat`(input_tensor, 'h w -> h w c', c = 3)
 
 A ***MAJOR CAVEAT*** is that R's `base::arrays` are column-major, while Python's multidimensional arrays are row-major. This is reflected in their respective indexing operations. To fully replicate a python expression using a column-major array, each of the three core functions have a `.row_major` optional argument which replicates the python row-major behaviour during einops operations, while ensuring the output is still column-major.
 
-<!-- TODO pack and unpack -->
-<!-- TODO ### EinMix -->
-<!-- TODO ### Layers -->
-
 ## Vignettes
 
 The vignette is the most convenient way to see `einops` in action
@@ -69,12 +65,12 @@ Kapil Sachdeva recorded a small [intro to einops](https://www.youtube.com/watch?
 
 Notation was loosely inspired by Einstein summation (in particular by `numpy.einsum` operation).
 
-## Why use `einops` notation?!
+## Why use `einops` notation
 
 ### Semantic information (being verbose in expectations)
 
 ```R
-y = x.view(x.shape[0], -1)
+y <- x; dim(y) <- c(dim(y)[1], prod(dim(y)[-1]))
 y <- rearrange(x, 'b c h w -> b (c h w)')
 ```
 
@@ -98,57 +94,76 @@ Semantic information makes the code easier to read and maintain.
 
 Reconsider the same example:
 
-```python
-y = x.view(x.shape[0], -1) # x: (batch, 256, 19, 19)
-y = rearrange(x, 'b c h w -> b (c h w)')
+```R
+y <- x; dim(y) <- c(dim(y)[1], prod(dim(y)[-1])) # x: (batch, 256, 19, 19)
+y <- rearrange(x, 'b c h w -> b (c h w)')
 ```
+
 The second line checks that the input has four dimensions,
 but you can also specify particular dimensions.
 That's opposed to just writing comments about shapes since comments don't prevent mistakes,
 not tested, and without code review tend to be outdated
-```python
-y = x.view(x.shape[0], -1) # x: (batch, 256, 19, 19)
-y = rearrange(x, 'b c h w -> b (c h w)', c=256, h=19, w=19)
+
+```R
+y <- x; dim(y) <- c(dim(y)[1], prod(dim(y)[-1])) # x: (batch, 256, 19, 19)
+y = rearrange(x, 'b c h w -> b (c h w)', c = 256, h = 19, w = 19)
 ```
 
 ### Result is strictly determined
 
 Below we have at least two ways to define the depth-to-space operation
-```python
+
+```R
 # depth-to-space
-rearrange(x, 'b c (h h2) (w w2) -> b (c h2 w2) h w', h2=2, w2=2)
-rearrange(x, 'b c (h h2) (w w2) -> b (h2 w2 c) h w', h2=2, w2=2)
+rearrange(x, 'b c (h h2) (w w2) -> b (c h2 w2) h w', h2 = 2, w2 = 2)
+rearrange(x, 'b c (h h2) (w w2) -> b (h2 w2 c) h w', h2 = 2, w2 = 2)
 ```
-There are at least four more ways to do it. Which one is used by the framework?
+
+There are at least four more ways to do it. Which one is used by the underlying code?
 
 These details are ignored, since *usually* it makes no difference,
 but it can make a big difference (e.g. if you use grouped convolutions in the next stage),
 and you'd like to specify this in your code.
 
-
 ### Uniformity
 
-```python
-reduce(x, 'b c (x dx) -> b c x', 'max', dx=2)
-reduce(x, 'b c (x dx) (y dy) -> b c x y', 'max', dx=2, dy=3)
-reduce(x, 'b c (x dx) (y dy) (z dz) -> b c x y z', 'max', dx=2, dy=3, dz=4)
+```R
+reduce(x, 'b c (x dx) -> b c x', 'max', dx = 2)
+reduce(x, 'b c (x dx) (y dy) -> b c x y', 'max', dx = 2, dy = 3)
+reduce(x, 'b c (x dx) (y dy) (z dz) -> b c x y z', 'max', dx = 2, dy = 3, dz = 4)
 ```
+
 These examples demonstrated that we don't use separate operations for 1d/2d/3d pooling,
 those are all defined in a uniform way.
 
 Space-to-depth and depth-to space are defined in many frameworks but how about width-to-height? Here you go:
 
-```python
-rearrange(x, 'b c h (w w2) -> b c (h w2) w', w2=2)
+```R
+rearrange(x, 'b c h (w w2) -> b c (h w2) w', w2 = 2)
 ```
 
-<!-- ## Supported frameworks
+## Citing Einops (for R)
 
-Einops works with ...
+If using the R implementation of Einops in your research work, please cite the original ICLR paper, in addition to this package with these bibtex entries:
 
-- `base::array`
+```bibtex
+@Misc{yang2025einops,
+    title = {Einops for R},
+    author = {Qile Yang},
+    year = {2025},
+    url = {https://qile0317.github.io/einops/},
+}
+```
 
-Additionally, einops can be used with any framework that supports R's array access S3 generics -->
+```bibtex
+@inproceedings{rogozhnikov2022einops,
+    title={Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation},
+    author={Alex Rogozhnikov},
+    booktitle={International Conference on Learning Representations},
+    year={2022},
+    url={https://openreview.net/forum?id=oapKSVM2bcj}
+}
+```
 
 ## Implementations in other languages
 

@@ -1,6 +1,16 @@
 citHeader("If using the R implementation of Einops in your research work, please cite the original ICLR paper, in addition to this package:")
 
 bibentry(
+  bibtype  = "misc",
+  title    = "Einops for R",
+  author   = person(given = "Qile", family = "Yang", 
+                    comment = c(ORCID = "https://orcid.org/0009-0005-0148-2499")),
+  year     = 2025,
+  url      = "https://qile0317.github.io/einops/",
+  textVersion = "Yang, Q., (2025). Einops for R. UC Berkeley. https://qile0317.github.io/einops/"
+)
+
+bibentry(
   bibtype  = "inproceedings",
   title    = "Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation",
   author   = "Alex Rogozhnikov",
@@ -8,15 +18,4 @@ bibentry(
   year     = 2022,
   url      = "https://openreview.net/forum?id=oapKSVM2bcj",
   textVersion = "Rogozhnikov, A., (2022). Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation. International Conference on Learning Representations. https://openreview.net/forum?id=oapKSVM2bcj"
-)
-
-bibentry(
-  bibtype  = "misc",
-  title    = "Einops for R",
-  author   = person(given = "Qile", family = "Yang", 
-                    affiliation = "UC Berkeley", 
-                    comment = c(ORCID = "https://orcid.org/0009-0005-0148-2499")),
-  year     = 2025,
-  url      = "https://qile0317.github.io/einops/",
-  textVersion = "Yang, Q., (2025). Einops for R [Computer software]. UC Berkeley. https://qile0317.github.io/einops/"
 )
