@@ -294,3 +294,103 @@ dim(`repeat`(ims[1], "h w c -> h 5 w c"))
 ```
 
 Note: `repeat` operation covers functionality identical to `base::array` and `abind` replication and actually more than that.
+
+## Reduce ⇆ repeat
+
+reduce and repeat are like opposite of each other: first one reduces amount of elements, second one increases.
+
+In the following example each image is repeated first, then we reduce over new axis to get back original tensor. Notice that operation patterns are "reverse" of each other
+
+```{r}
+repeated <- `repeat`(ims, "b h w c -> b h new_axis w c", new_axis = 2)
+reduced <- reduce(repeated, "b h new_axis w c -> b h w c", "min")
+all(ims == reduced)
+```
+
+## Fancy examples in random order
+
+(a.k.a. mad designer gallery)
+
+```{r}
+# interweaving pixels of different pictures
+# all letters are observable
+rearrange(ims, "(b1 b2) h w c -> (h b1) (w b2) c ", b1=2)
+```
+
+```{r}
+# interweaving along vertical for couples of images
+rearrange(ims, "(b1 b2) h w c -> (h b1) (b2 w) c", b1=2)
+```
+
+```{r}
+# interweaving lines for couples of images
+# exercise: achieve the same result without einops in your favourite framework
+reduce(ims, "(b1 b2) h w c -> h (b2 w) c", "max", b1=2)
+```
+
+```{r}
+# color can be also composed into dimension
+# ... while image is downsampled
+reduce(ims, "b (h 2) (w 2) c -> (c h) (b w)", "mean")
+```
+
+```{r, fig.width = pane_length(5/3), fig.height = pane_length(1/4)}
+# disproportionate resize
+reduce(ims, "b (h 4) (w 3) c -> (h) (b w)", "mean")
+```
+
+```{r, fig.height = pane_length(1)}
+# split each image in two halves, compute mean of the two
+reduce(ims, "b (h1 h2) w c -> h2 (b w)", "mean", h1=2)
+```
+
+```{r, fig.height = pane_length(1)}
+# split in small patches and transpose each patch
+rearrange(ims, "b (h1 h2) (w1 w2) c -> (h1 w2) (b w1 h2) c", h2=8, w2=8)
+```
+
+```{r, fig.height = pane_length(1)}
+# stop me someone!
+rearrange(ims, "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c", h2=2, w2=2, w3=2, h3=2)
+```
+
+```{r}
+rearrange(ims, "(b1 b2) (h1 h2) (w1 w2) c -> (h1 b1 h2) (w1 b2 w2) c", h1=3, w1=3, b2=3)
+```
+
+```{r, fig.height = pane_length(1)}
+# patterns can be arbitrarily complicated
+reduce(ims, "(b1 b2) (h1 h2 h3) (w1 w2 w3) c -> (h1 w1 h3) (b1 w2 h2 w3 b2) c", "mean", h2=2, w1=2, w3=2, h3=2, b2=2)
+```
+
+<!--
+# subtract background in each image individually and normalize
+# pay attention to () - this is composition of 0 axis, a dummy axis with 1 element.
+im2 <- reduce(ims, "b h w c -> b () () c", "max")
+im2 <- `repeat`(im2, "b 1 1 c -> b 96 96 c") - ims
+im2 <- im2 / reduce(im2, "b h w c -> b () () c", "max")
+rearrange(im2, "b h w c -> h (b w) c")
+-->
+
+```{r, fig.height = pane_length(1)}
+# pixelate: first downscale by averaging, then upscale back using the same pattern
+averaged <- reduce(ims, "b (h h2) (w w2) c -> b h w c", "mean", h2=6, w2=8)
+`repeat`(averaged, "b h w c -> (h h2) (b w w2) c", h2=6, w2=8)
+```
+
+```{r, fig.height = pane_length(1)}
+rearrange(ims, "b h w c -> w (b h) c")
+```
+
+```{r, fig.height = pane_length(1)}
+# let's bring color dimension as part of horizontal axis
+# at the same time horizontal axis is downsampled by 2x
+reduce(ims, "b (h h2) (w w2) c -> (h w2) (b w c)", "mean", h2=3, w2=3)
+```
+
+## Summary
+
+- `rearrange` doesn't change number of elements and covers different R functions (like `aperm`, `array`, etc.)
+- `reduce` combines same reordering syntax with reductions (`mean`, `min`, `max`, `sum`, `prod`, and any others)
+- `einops.repeat` additionally covers repeating and tiling
+- composition and decomposition of axes are a corner stone, they can and should be used together
