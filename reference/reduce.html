@@ -23,12 +23,14 @@ reader-friendly notation."><!-- Google tag (gtag.js) --><script async src="https
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/basics.html">Tutorial</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/basics.html">basics</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="external-link dropdown-item" href="https://einops.rocks/pages/testimonials/">Testimonials</a></li>
+    <li><a class="external-link dropdown-item" href="https://einops.rocks/pages/projects/">Community/Ecosystem</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/Qile0317/einops/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -120,14 +122,13 @@ pattern</p>
 <span class="r-in"><span><span class="va">y1</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 h2) (w1 w2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">y1</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Multiple images in batch, plotting only the first one</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `[.image_tensor`(x, 1, , , , drop = FALSE):</span> argument is missing, with no default</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># same as previous, using anonymous axes,</span></span></span>
 <span class="r-in"><span><span class="co"># note: only reduced axes can be anonymous</span></span></span>
 <span class="r-in"><span><span class="va">y1</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h1 2) (w1 2) -&gt; b c h1 w1'</span>, <span class="st">'max'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="va">y1</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Multiple images in batch, plotting only the first one</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in `[.image_tensor`(x, 1, , , , drop = FALSE):</span> argument is missing, with no default</span>
+<span class="r-plt img"><img src="reduce-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># adaptive 2d max-pooling to 3 * 4 grid,</span></span></span>
 <span class="r-in"><span><span class="co"># each element is max of 10x10 tile in the original tensor.</span></span></span>

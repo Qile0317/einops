@@ -38,14 +38,16 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/basics.html">Tutorial</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/basics.html">basics</a></li>
+<li><a class="external-link dropdown-item" href="https://einops.rocks/pages/testimonials/">Testimonials</a></li>
+    <li><a class="external-link dropdown-item" href="https://einops.rocks/pages/projects/">Community/Ecosystem</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -89,26 +91,7 @@
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Qile0317/einops"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="tutorials-python-version">Tutorials (Python version)<a class="anchor" aria-label="anchor" href="#tutorials-python-version"></a>
-</h2>
-<blockquote>
-<p>These links are for the python version, but the R api is essentially identical.</p>
-</blockquote>
-<p>Tutorials are the most convenient way to see <code>einops</code> in action</p>
-<ul>
-<li>part 1: <a href="https://github.com/arogozhnikov/einops/blob/main/docs/1-einops-basics.ipynb" class="external-link">einops fundamentals</a>
-</li>
-<li>part 2: <a href="https://github.com/arogozhnikov/einops/blob/main/docs/2-einops-for-deep-learning.ipynb" class="external-link">einops for deep learning</a>
-</li>
-<li>part 3: <a href="https://github.com/arogozhnikov/einops/blob/main/docs/4-pack-and-unpack.ipynb" class="external-link">packing and unpacking</a>
-</li>
-<li>part 4: <a href="http://einops.rocks/pytorch-examples.html" class="external-link">improve pytorch code with einops</a>
-</li>
-</ul>
-<p>Kapil Sachdeva recorded a small <a href="https://www.youtube.com/watch?v=xGy75Pjsqzo" class="external-link">intro to einops</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p><code>einops</code> has a minimalistic yet powerful API.</p>
 <p>Three core operations provided (<a href="https://github.com/arogozhnikov/einops/blob/main/docs/" class="external-link">einops tutorial</a> shows those cover stacking, reshape, transposition, squeeze/unsqueeze, repeat, tile, concatenate, view and numerous reductions)</p>
@@ -121,23 +104,92 @@
 <span><span class="co"># copy along a new axis (note: repeat is surrounded by ticks. einops.repeat() works too)</span></span>
 <span><span class="va">output_tensor</span> <span class="op">&lt;-</span> <span class="fu">`repeat`</span><span class="op">(</span><span class="va">input_tensor</span>, <span class="st">'h w -&gt; h w c'</span>, c <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p>A <strong><em>MAJOR CAVEAT</em></strong> is that R’s <code>base::arrays</code> are column-major, while Python’s multidimensional arrays are row-major. This is reflected in their respective indexing operations. To fully replicate a python expression using a column-major array, each of the three core functions have a <code>.row_major</code> optional argument which replicates the python row-major behaviour during einops operations, while ensuring the output is still column-major.</p>
-<!-- TODO pack and unpack -->
-<!-- TODO ### EinMix -->
-<!-- TODO ### Layers -->
+</div>
+<div class="section level2">
+<h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
+</h2>
+<p>The vignette is the most convenient way to see <code>einops</code> in action</p>
+<ul>
+<li>read it using <a href="https://qile0317.github.io/einops/articles/basics.html"><code>vignette("basics", package = "einops")</code></a>
+</li>
+</ul>
+<p>Kapil Sachdeva recorded a small <a href="https://www.youtube.com/watch?v=xGy75Pjsqzo" class="external-link">intro to einops</a> for the python version.</p>
 </div>
 <div class="section level2">
 <h2 id="naming">Naming<a class="anchor" aria-label="anchor" href="#naming"></a>
 </h2>
 <p><code>einops</code> stands for Einstein-Inspired Notation for operations (though “Einstein operations” is more attractive and easier to remember).</p>
 <p>Notation was loosely inspired by Einstein summation (in particular by <code>numpy.einsum</code> operation).</p>
-<!-- TODO ## Why use `einops` notation?! -->
-<!-- ## Supported frameworks
-
-Einops works with ...
-
-- `base::array`
-
-Additionally, einops can be used with any framework that supports R's array access S3 generics -->
+</div>
+<div class="section level2">
+<h2 id="why-use-einops-notation">Why use <code>einops</code> notation<a class="anchor" aria-label="anchor" href="#why-use-einops-notation"></a>
+</h2>
+<div class="section level3">
+<h3 id="semantic-information-being-verbose-in-expectations">Semantic information (being verbose in expectations)<a class="anchor" aria-label="anchor" href="#semantic-information-being-verbose-in-expectations"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span>; <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b (c h w)'</span><span class="op">)</span></span></code></pre></div>
+<p>While these two lines are doing the same job in <em>some</em> context, the second one provides information about the input and output. In other words, <code>einops</code> focuses on interface: <em>what is the input and output</em>, not <em>how</em> the output is computed.</p>
+<p>The next operation looks similar:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'time c h w -&gt; time (c h w)'</span><span class="op">)</span></span></code></pre></div>
+<p>but it gives the reader a hint: this is not an independent batch of images we are processing, but rather a sequence (video).</p>
+<p>Semantic information makes the code easier to read and maintain.</p>
+</div>
+<div class="section level3">
+<h3 id="convenient-checks">Convenient checks<a class="anchor" aria-label="anchor" href="#convenient-checks"></a>
+</h3>
+<p>Reconsider the same example:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span>; <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># x: (batch, 256, 19, 19)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b (c h w)'</span><span class="op">)</span></span></code></pre></div>
+<p>The second line checks that the input has four dimensions, but you can also specify particular dimensions. That’s opposed to just writing comments about shapes since comments don’t prevent mistakes, not tested, and without code review tend to be outdated</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span>; <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># x: (batch, 256, 19, 19)</span></span>
+<span><span class="va">y</span> <span class="op">=</span> <span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b (c h w)'</span>, c <span class="op">=</span> <span class="fl">256</span>, h <span class="op">=</span> <span class="fl">19</span>, w <span class="op">=</span> <span class="fl">19</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="result-is-strictly-determined">Result is strictly determined<a class="anchor" aria-label="anchor" href="#result-is-strictly-determined"></a>
+</h3>
+<p>Below we have at least two ways to define the depth-to-space operation</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># depth-to-space</span></span>
+<span><span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h h2) (w w2) -&gt; b (c h2 w2) h w'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (h h2) (w w2) -&gt; b (h2 w2 c) h w'</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p>There are at least four more ways to do it. Which one is used by the underlying code?</p>
+<p>These details are ignored, since <em>usually</em> it makes no difference, but it can make a big difference (e.g. if you use grouped convolutions in the next stage), and you’d like to specify this in your code.</p>
+</div>
+<div class="section level3">
+<h3 id="uniformity">Uniformity<a class="anchor" aria-label="anchor" href="#uniformity"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (x dx) -&gt; b c x'</span>, <span class="st">'max'</span>, dx <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (x dx) (y dy) -&gt; b c x y'</span>, <span class="st">'max'</span>, dx <span class="op">=</span> <span class="fl">2</span>, dy <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c (x dx) (y dy) (z dz) -&gt; b c x y z'</span>, <span class="st">'max'</span>, dx <span class="op">=</span> <span class="fl">2</span>, dy <span class="op">=</span> <span class="fl">3</span>, dz <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p>These examples demonstrated that we don’t use separate operations for 1d/2d/3d pooling, those are all defined in a uniform way.</p>
+<p>Space-to-depth and depth-to space are defined in many frameworks but how about width-to-height? Here you go:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h (w w2) -&gt; b c (h w2) w'</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="citing-einops-for-r">Citing Einops (for R)<a class="anchor" aria-label="anchor" href="#citing-einops-for-r"></a>
+</h2>
+<p>If using the R implementation of Einops in your research work, please cite the original ICLR paper, in addition to this package with these bibtex entries:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="va">@Misc</span>{<span class="ot">yang2025einops</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    <span class="dt">title</span> = {Einops for R},</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    <span class="dt">author</span> = {Qile Yang},</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    <span class="dt">year</span> = {2025},</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    <span class="dt">url</span> = {https://qile0317.github.io/einops/},</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="va">@inproceedings</span>{<span class="ot">rogozhnikov2022einops</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>    <span class="dt">title</span>={Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation},</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="dt">author</span>={Alex Rogozhnikov},</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    <span class="dt">booktitle</span>={International Conference on Learning Representations},</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>    <span class="dt">year</span>={2022},</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>    <span class="dt">url</span>={https://openreview.net/forum?id=oapKSVM2bcj}</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="implementations-in-other-languages">Implementations in other languages<a class="anchor" aria-label="anchor" href="#implementations-in-other-languages"></a>
