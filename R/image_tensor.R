@@ -107,7 +107,7 @@ as.cimg.image_tensor <- function(x) {
     original_class <- class(x)
     result <- unclass(x)[...]
     result_dims <- length(dim(result))
-    if (result_dims == 3 || result_dims == 4) {
+    if (FastUtils::isBound(result_dims, 2, 4)) {
         class(result) <- original_class
     } else {
         result <- unclass(result)

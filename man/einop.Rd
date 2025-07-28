@@ -46,21 +46,24 @@ adapted from the python \code{einop} package: https://github.com/cgarciae/einop
 
 Note that there are ongoing debates about the use of this function purely
 from the perspective of code readability and maintainability:
-https://github.com/arogozhnikov/einops/issues/84. Generally, some argue
-that the descriptive names of \code{rearrange}, \code{reduce()}, and \code{repeat}
+\url{https://github.com/arogozhnikov/einops/issues/84}. Generally, some argue
+that the descriptive names of \code{rearrange}, \code{reduce}, and \code{repeat}
 encourage good practices, while others think that semantically \code{einop()}
 actually makes it \emph{clearer} what the operation
 is doing, as opposed to mandating the use of these commonly used function
 names across many packages.
 }
 \examples{
+# load a 3d tensor representing an rgb image
+x <- get(data("einops_image"))[1, , , ]
+
 # Rearrange dimensions
 einop(x, "h w c -> c h w")
 
 # Reduce dimensions
-einop(x, "h w c -> h w", reduction = "mean")
+einop(x, "h w c -> h w", "mean")
 
 # Repeat dimensions
-einop(x, "h w -> h w c", c = 3)
+einop(x[, , 1], "h w -> h w c", c = 3)
 
 }
