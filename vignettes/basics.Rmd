@@ -1,4 +1,5 @@
 ---
+title: basics
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basics}
@@ -16,8 +17,6 @@ knitr::opts_chunk$set(
 pane_length <- function(p) 0.5 * p
 SINGLE_PANE <- "7.142857%"
 ```
-
-# Einops tutorial, part 1: basics
 
 ## Welcome to einops-land!
 
@@ -394,3 +393,7 @@ reduce(ims, "b (h h2) (w w2) c -> (h w2) (b w c)", "mean", h2=3, w2=3)
 - `reduce` combines same reordering syntax with reductions (`mean`, `min`, `max`, `sum`, `prod`, and any others)
 - `einops.repeat` additionally covers repeating and tiling
 - composition and decomposition of axes are a corner stone, they can and should be used together
+
+## Bonus
+
+The function `einop()` is a shorthand to do any of these operations with this single function. See its docs for more info.
