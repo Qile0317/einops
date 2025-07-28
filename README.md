@@ -31,20 +31,7 @@ Supports base R arrays (this includes matrices, a subtype of base arrays), and m
 devtools::install_github("Qile0317/einops")
 ```
 
-## Tutorials (Python version)
-
-> These links are for the python version, but the R api is essentially identical.
-
-Tutorials are the most convenient way to see `einops` in action
-
-- part 1: [einops fundamentals](https://github.com/arogozhnikov/einops/blob/main/docs/1-einops-basics.ipynb)
-- part 2: [einops for deep learning](https://github.com/arogozhnikov/einops/blob/main/docs/2-einops-for-deep-learning.ipynb)
-- part 3: [packing and unpacking](https://github.com/arogozhnikov/einops/blob/main/docs/4-pack-and-unpack.ipynb)
-- part 4: [improve pytorch code with einops](http://einops.rocks/pytorch-examples.html)
-
-Kapil Sachdeva recorded a small [intro to einops](https://www.youtube.com/watch?v=xGy75Pjsqzo).
-
-## API
+## Usage
 
 `einops` has a minimalistic yet powerful API.
 
@@ -66,6 +53,14 @@ A ***MAJOR CAVEAT*** is that R's `base::arrays` are column-major, while Python's
 <!-- TODO pack and unpack -->
 <!-- TODO ### EinMix -->
 <!-- TODO ### Layers -->
+
+## Vignettes
+
+The vignette is the most convenient way to see `einops` in action
+
+- read it using [`vignette("basics", package = "einops")`](https://qile0317.github.io/einops/articles/basics.html)
+
+Kapil Sachdeva recorded a small [intro to einops](https://www.youtube.com/watch?v=xGy75Pjsqzo) for the python version.
 
 ## Naming
 

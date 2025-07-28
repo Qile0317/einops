@@ -13,8 +13,10 @@ bibentry(
 bibentry(
   bibtype  = "misc",
   title    = "Einops for R",
-  author   = "Qile Yang",
+  author   = person(given = "Qile", family = "Yang", 
+                    affiliation = "UC Berkeley", 
+                    comment = c(ORCID = "https://orcid.org/0009-0005-0148-2499")),
   year     = 2025,
-  url      = "https://github.com/Qile0317/einops",
-  textVersion = "Yang, Q., (2025). Einops for R. https://github.com/Qile0317/einops"
+  url      = "https://qile0317.github.io/einops/",
+  textVersion = "Yang, Q., (2025). Einops for R [Computer software]. UC Berkeley. https://qile0317.github.io/einops/"
 )

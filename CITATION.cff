@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: einops for R
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Qile
+    family-names: Yang
+    affiliation: UC Berkeley
+    orcid: 'https://orcid.org/0009-0005-0148-2499'
+repository-code: 'https://github.com/Qile0317/einops'
+url: 'https://qile0317.github.io/einops/'
+abstract: Implementation of einops in R
+keywords:
+  - R
+  - tensor
+  - tensors
+  - linear algebra
+license: MIT
