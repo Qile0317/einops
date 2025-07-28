@@ -47,7 +47,7 @@ library(einops)
 
 ## Load a batch of images to play with
 
-Here we the einops example data, an `image_tensor` object -  a thin wrapper around a 3D and 4D `base::array`. The data 6 images of shape 96x96 with 3 color channels packed into tensor. The main difference with `base::array`'s are that the print method by default will show the image itself.
+Here we the einops example data, an `image_tensor` object - which is just a `base::array` with its class attribute being `c("image_tensor", "array")`. The data consists of six 96x96 images with 3 color channels. The main difference with `base::array`'s are that the print method by default will show the image itself using `imager`.
 
 We also set the option `einops_row_major` to `TRUE`. This is a global option that the package uses because native R arrays are stored in column-major order, which also affects its indexing behaviour to be completely different compared to python's many row-major tensors. Using it here will make the examples much more intuitive, as the images will be indexed by batch, height, width, and color channels, just like in many deep learning frameworks. This option is false by default to preserve the original R behavior, and can be overridden anytime by setting the `.row_major` argument.
 
@@ -79,7 +79,7 @@ rearrange(ims[1, , , ], "h w c -> w h c")
 rearrange(ims[1, , , ], "height width color -> width height color")
 # when you operate on same set of axes many times,
 # you usually come up with short names.
-# That's what we do throughout tutorial - we'll use b (for batch), h, w, and c
+# That's what we do throughout this vignette - we'll use b (for batch), h, w, and c
 ```
 
 ## Composition of axes
