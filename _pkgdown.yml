@@ -17,6 +17,21 @@ template:
 development:
   mode: auto
 
+navbar:
+  left:
+  - text: Tutorial
+    href: articles/basics.html
+  - text: Articles
+    menu:
+    - text: Testimonials
+      href: https://einops.rocks/pages/testimonials/
+    - text: Community/Ecosystem
+      href: https://einops.rocks/pages/projects/
+  - text: Changelog
+    href: news/index.html
+  - text: Reference
+    href: reference/index.html
+
 reference:
 - title: Core Einops Operations
   contents:
