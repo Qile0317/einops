@@ -95,12 +95,12 @@ dim(rearrange(ims, "b h w c -> (b h w c)"))
 dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1=2))
 ```
 
-```{r}
+```{r out.width = "28%", fig.height = 2}
 # finally, combine composition and decomposition:
 rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
 ```
 
-```{r}
+```{r out.width = "19%", fig.height = 4.5}
 # slightly different composition: b1 is merged with width, b2 with height
 # ... so letters are ordered by w then by h
 rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
