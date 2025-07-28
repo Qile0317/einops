@@ -11,3 +11,4 @@
 ^doc$
 ^Meta$
 ^\.markdownlint.json$
+^CITATION\.cff$

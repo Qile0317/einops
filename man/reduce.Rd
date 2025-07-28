@@ -74,14 +74,4 @@ dim(reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h1 = 3, w1 = 4))
 dim(reduce(x, 'b c h w -> b c', 'mean'))
 # (10, 20)
 
-# subtracting mean over batch for each channel;
-# similar to x - apply(x, c(2,3,4), mean)
-y <- x - reduce(x, 'b c h w -> 1 c 1 1', 'mean')
-
-# Subtracting per-image mean for each channel
-y <- x - reduce(x, 'b c h w -> b c 1 1', 'mean')
-
-# same as previous, but using empty compositions
-y <- x - reduce(x, 'b c h w -> b c () ()', 'mean')
-
 }

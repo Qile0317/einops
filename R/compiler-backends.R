@@ -23,7 +23,7 @@ get_backend_registry <- function(
 ) {
     assert_that(is.flag(clear_testing))
     if (!exists(".backend_singleton", envir = globalenv())) {
-        assign(".backend_singleton", BackendRegistry$new(), envir = globalenv())
+        .backend_singleton <<- BackendRegistry$new() # nolint
     }
     registry <- get(".backend_singleton", envir = globalenv())
     if (clear_testing) {
