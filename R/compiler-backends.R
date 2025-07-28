@@ -503,19 +503,22 @@ public = list(
     transpose = function(x, axes) aperm(x, perm = axes),
 
     reduce = function(x, operation, axes) {
-        op_fun <- switch(operation,
-            sum  = sum,
-            mean = mean,
-            max  = max,
-            min  = min,
-            prod = prod,
-            operation
-        )
+        if (is.function(operation)) {
+            op_fun <- operation
+        } else {
+            op_fun <- switch(operation,
+                sum  = sum,
+                mean = mean,
+                max  = max,
+                min  = min,
+                prod = prod,
+                stop("Invalid operation")
+            )
+        }
         keep <- setdiff(seq_along(dim(x)), axes)
         if (length(keep) == 0) return(op_fun(x))
         res <- apply(x, keep, op_fun)
-        if (!is.array(res))
-            res <- array(res, dim = length(res))
+        if (!is.array(res)) res <- array(res, dim = length(res))
         res
     },
 

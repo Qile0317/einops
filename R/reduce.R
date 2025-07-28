@@ -94,9 +94,7 @@ reduce.default <- function(
 reduce.list <- function(
     x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
 ) {
-    if (length(x) == 0) {
-        stop("Rearrange/Reduce/Repeat can't be applied to an empty list")
-    }
+    assert_that(is.count(length(x))) # TODO check all elements inheritance
     backend <- get_backend(x[[1]])
     reduce(
         backend$stack_on_zeroth_dimension(x),

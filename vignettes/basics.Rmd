@@ -207,3 +207,40 @@ reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
 # yet another example. Can you compute result shape?
 reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
 ```
+
+## Stack and concatenate
+
+```{r}
+# rearrange can also take care of lists of arrays with the same shape
+x <- list(ims[1], ims[2], ims[3], ims[4], ims[5], ims[6])
+cat("list with", length(x), "tensors of shape", paste(dim(x[[1]]), collapse=" "))
+# that's how we can stack inputs
+# "list axis" becomes first ("b" in this case), and we left it there
+dim(rearrange(x, "b h w c -> b h w c"))
+```
+
+```{r}
+# but new axis can appear in the other place:
+dim(rearrange(x, "b h w c -> h w c b"))
+```
+
+```{r}
+# that's equivalent to array stacking, but written more explicitly
+identical(
+    rearrange(x, "b h w c -> h w c b"),
+    aperm(array(unlist(x), dim = c(dim(x[[1]]), length(x))), 1:4)
+)
+```
+
+```{r}
+# ... or we can concatenate along axes
+dim(rearrange(x, "b h w c -> h (b w) c"))
+```
+
+```{r}
+# which is equivalent to concatenation
+identical(
+    rearrange(unclass(x), "b h w c -> h (b w) c"),
+    abind::abind(x, along = 2)
+)
+```
