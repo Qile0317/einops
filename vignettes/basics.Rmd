@@ -1,5 +1,4 @@
 ---
-title: "Einops tutorial, part 1: basics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basics}
@@ -17,6 +16,8 @@ knitr::opts_chunk$set(
 pane_length <- function(p) 0.5 * p
 SINGLE_PANE <- "7.142857%"
 ```
+
+# Einops tutorial, part 1: basics
 
 ## Welcome to einops-land!
 
@@ -120,12 +121,12 @@ dim(rearrange(ims, "b h w c -> (b h w c)"))
 dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1=2))
 ```
 
-```{r out.width = "28%", fig.height = 2}
+```{r fig.width = pane_length(3), fig.height = pane_length(2)}
 # finally, combine composition and decomposition:
 rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
 ```
 
-```{r out.width = "19%", fig.height = 4.5}
+```{r fig.width = pane_length(2), fig.height = pane_length(3)}
 # slightly different composition: b1 is merged with width, b2 with height
 # ... so letters are ordered by w then by h
 rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
@@ -203,7 +204,7 @@ reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "mean", h2=2, w2=2)
 reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
 ```
 
-```{r out.width = "19%", fig.height = 4.5}
+```{r fig.width = pane_length(2), fig.height = pane_length(3)}
 # yet another example. Can you compute the resulting shape?
 reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
 ```
@@ -241,3 +242,55 @@ dim(rearrange(x, "b h w c -> h (b w) c"))
 all(rearrange(x, "b h w c -> h (b w) c") ==
     abind::abind(x, along = 2))
 ```
+
+## Addition or removal of axes
+
+You can write 1 to create a new axis of length 1. Similarly you can remove such axis.
+
+There is also a synonym `()` that you can use. That's a composition of zero axes and it also has a unit length.
+
+```{r}
+x <- rearrange(ims, "b h w c -> b 1 h w 1 c")  # functionality of array expansion
+print(dim(x))
+print(dim(rearrange(x, "b 1 h w 1 c -> b h w c")))  # functionality of array squeeze
+```
+
+```{r, fig.height = pane_length(1)}
+# compute max in each image individually, then show a difference
+x <- reduce(ims, "b h w c -> b () () c", "max")
+x <- `repeat`(x, "b 1 1 c -> b 96 96 c") - ims # we will learn about this in a sec
+rearrange(x, "b h w c -> h (b w) c")
+```
+
+## Repeating elements
+
+Third operation we introduce is `repeat`, which can be either called as `einops.repeat` or a
+tick enclosed ``repeat``.
+
+```{r}
+# repeat along a new axis. New axis can be placed anywhere
+dim(einops.repeat(ims[1], "h w c -> h new_axis w c", new_axis = 5))
+```
+
+```{r}
+# shortcut
+dim(`repeat`(ims[1], "h w c -> h 5 w c"))
+```
+
+```{r, fig.height = pane_length(1), fig.width = pane_length(3)}
+# repeat along w (existing axis)
+`repeat`(ims[1], "h w c -> h (repeated w) c", repeated=3)
+```
+
+```{r, fig.width = pane_length(2), fig.height = pane_length(2)}
+# repeat along two existing axes
+`repeat`(ims[1], "h w c -> (2 h) (2 w) c")
+```
+
+```{r, fig.width = pane_length(3), fig.height = pane_length(1)}
+# order of axes matters as usual - you can repeat each element (pixel) 3 times
+# by changing order in parenthesis
+`repeat`(ims[1], "h w c -> h (w repeated) c", repeated = 3)
+```
+
+Note: `repeat` operation covers functionality identical to `base::array` and `abind` replication and actually more than that.
