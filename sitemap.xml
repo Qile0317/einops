@@ -51,8 +51,10 @@
 <url><loc>https://qile0317.github.io/einops/reference/prepare_transformation_recipe.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/rearrange.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/reduce.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/register_backend.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/repr.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/tail.GroupAstNode.html</loc></url>
+<url><loc>https://qile0317.github.io/einops/reference/thunk.html</loc></url>
 <url><loc>https://qile0317.github.io/einops/reference/validate_reduction_operation.html</loc></url>
 </urlset>
 

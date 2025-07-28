@@ -72,52 +72,82 @@
 
     
     
+<div class="section level2">
+<h2 id="welcome-to-einops-land">Welcome to einops-land!<a class="anchor" aria-label="anchor" href="#welcome-to-einops-land"></a>
+</h2>
+<p>We don’t write</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/aperm.html" class="external-link">aperm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>We write comprehensible code</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b c h w -&gt; b h w c"</span><span class="op">)</span></span></code></pre></div>
+<p>Currently, <code>einops</code> only supports the
+<code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>, and extends them. In the future, more tensor
+types will be supported such as <code>torch::torch_tensor</code>’s.</p>
+</div>
+<div class="section level2">
+<h2 id="whats-in-this-vignette">What’s in this vignette?<a class="anchor" aria-label="anchor" href="#whats-in-this-vignette"></a>
+</h2>
+<ul>
+<li>fundamentals: reordering, composition and decomposition of axes</li>
+<li>operations: <code>rearrange</code>, <code>reduce</code>,
+<code>repeat</code>
+</li>
+<li>how much you can do with a single operation!</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Qile0317/einops" class="external-link">einops</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'einops'</span></span>
 <span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     repeat</span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="load-a-batch-of-images-to-play-with">Load a batch of images to play with<a class="anchor" aria-label="anchor" href="#load-a-batch-of-images-to-play-with"></a>
 </h2>
 <p>Here we the einops example data, an <code>image_tensor</code> object
 - a thin wrapper around a 3D and 4D <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>. The data 6
-images of shape 96x96 with 3 color channels packed into tensor.</p>
-<p>Note that we set the option <code>einops_row_major = TRUE</code>.
-This is a global option that the package uses because native R arrays
-are stored in column-major order, which also affects its indexing
-behaviour to be completely different compared to python’s many row-major
-tensors. Using it here will make the examples much more intuitive, as
-the images will be indexed by batch, height, width, and color channels,
-just like in many deep learning frameworks. This option is false by
-default to preserve the original R behavior, and can be overridden
-anytime by setting the <code>.row_major</code> argument.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+images of shape 96x96 with 3 color channels packed into tensor. The main
+difference with <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>’s are that the print method by
+default will show the image itself.</p>
+<p>Note that if the <code>image_tensor</code> is indexed with a single
+value, it is equivalent to indexing a regular array with all other
+indices empty. So when we see <code>x[i]</code> its the same as
+<code>x[i, , , ]</code> or <code>x[i, , , ,]</code>.</p>
+<p>We also set the option <code>einops_row_major</code> to
+<code>TRUE</code>. This is a global option that the package uses because
+native R arrays are stored in column-major order, which also affects its
+indexing behaviour to be completely different compared to python’s many
+row-major tensors. Using it here will make the examples much more
+intuitive, as the images will be indexed by batch, height, width, and
+color channels, just like in many deep learning frameworks. This option
+is false by default to preserve the original R behavior, and can be
+overridden anytime by setting the <code>.row_major</code> argument.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>einops_row_major <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"einops_image"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">ims</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  6 96 96  3</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># display the first image (whole 4d tensor can't be rendered)</span></span>
 <span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-2-1.png" width="48"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># second image in a batch</span></span>
 <span><span class="va">ims</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-3-1.png" width="48"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># rearrange, as the name suggests, rearranges elements</span></span>
 <span><span class="co"># below we swapped height and width.</span></span>
 <span><span class="co"># In other words, transposed first two axes (dimensions)</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; w h c"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-4-1.png" width="48"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># we could use more verbose names for axes, and result is the same:</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"height width color -&gt; width height color"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-5-1.png" width="48"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># when you operate on same set of axes many times,</span></span>
 <span><span class="co"># you usually come up with short names.</span></span>
 <span><span class="co"># That's what we do throughout tutorial - we'll use b (for batch), h, w, and c</span></span></code></pre></div>
@@ -127,22 +157,22 @@ anytime by setting the <code>.row_major</code> argument.</p>
 </h2>
 <p>Transposition is very common and useful, but let’s move to other
 capabilities provided by einops.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># einops allows seamlessly composing batch and height to a new height dimension</span></span>
 <span><span class="co"># We just rendered all images by collapsing to 3d tensor!</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; (b h) w c"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-6-1.png" width="48"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># or compose a new dimension of batch and width</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># resulting dimensions are computed very simply</span></span>
 <span><span class="co"># length of newly composed axis is a product of components</span></span>
 <span><span class="co"># [6, 96, 96, 3] -&gt; [96, (6 * 96), 3]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  96 576   3</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># we can compose more than two axes.</span></span>
 <span><span class="co"># let's flatten 4d array into 1d, resulting array has as many elements as the original</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; (b h w c)"</span><span class="op">)</span><span class="op">)</span></span>
@@ -151,21 +181,21 @@ capabilities provided by einops.</p>
 <div class="section level2">
 <h2 id="decomposition-of-axis">Decomposition of axis<a class="anchor" aria-label="anchor" href="#decomposition-of-axis"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># decomposition is the inverse process - represent an axis as a combination of new axes</span></span>
 <span><span class="co"># several decompositions possible, so b1=2 is to decompose 6 to b1=2 and b2=3</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; b1 b2 h w c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  2  3 96 96  3</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># finally, combine composition and decomposition:</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b1 h) (b2 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="basics_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p><img src="basics_files/figure-html/unnamed-chunk-11-1.png" width="144"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># slightly different composition: b1 is merged with width, b2 with height</span></span>
 <span><span class="co"># ... so letters are ordered by w then by h</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="basics_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p><img src="basics_files/figure-html/unnamed-chunk-12-1.png" width="96"></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># move part of width dimension to height.</span></span>
 <span><span class="co"># we should call this width-to-height as image width shrunk by 2 and height doubled.</span></span>
 <span><span class="co"># but all pixels are the same!</span></span>
@@ -176,11 +206,11 @@ capabilities provided by einops.</p>
 <div class="section level2">
 <h2 id="order-of-axes-matters">Order of axes matters<a class="anchor" aria-label="anchor" href="#order-of-axes-matters"></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare with the next example</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># order of axes in composition is different</span></span>
 <span><span class="co"># rule is just as for digits in the number: leftmost digit is the most significant,</span></span>
 <span><span class="co"># while neighboring numbers differ in the rightmost axis.</span></span>
@@ -188,13 +218,241 @@ capabilities provided by einops.</p>
 <span><span class="co"># you can also think of this as lexicographic sort</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h (w b) c"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># what if b1 and b2 are reordered before composing to width?</span></span>
 <span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b1 b2 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'einops'</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 b1 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'eoipns'</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="meet-einops-reduce">Meet einops.reduce<a class="anchor" aria-label="anchor" href="#meet-einops-reduce"></a>
+</h2>
+<p>In einops-land you don’t need to guess what happened</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">x</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">mean</span><span class="op">)</span></span></code></pre></div>
+<p>if axis is not present in the output — you guessed it — axis was
+reduced.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># average over batch</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h w c"</span>, <span class="st">"mean"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-18-1.png" width="48"></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># the previous is identical to familiar:</span></span>
+<span><span class="fu"><a href="../reference/image_tensor.html">as_image_tensor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">ims</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-19-1.png" width="48"></p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># but is so much more readable</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example of reducing of several axes</span></span>
+<span><span class="co"># besides mean, there are also min, max, sum, prod</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; h w"</span>, <span class="st">"min"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-20-1.png" width="48"></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># this is mean-pooling with 2x2 kernel</span></span>
+<span><span class="co"># image is split into 2x2 patches, each patch is averaged</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># max-pooling is similar</span></span>
+<span><span class="co"># result is not as smooth as for mean-pooling</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"max"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># yet another example. Can you compute the resulting shape?</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w)"</span>, <span class="st">"mean"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-23-1.png" width="96"></p>
+</div>
+<div class="section level2">
+<h2 id="stack-and-concatenate">Stack and concatenate<a class="anchor" aria-label="anchor" href="#stack-and-concatenate"></a>
+</h2>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># rearrange can also take care of lists of arrays with the same shape</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">ims</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">ims</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="va">ims</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, <span class="va">ims</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span>, <span class="va">ims</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"list with"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"tensors of shape"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, collapse<span class="op">=</span><span class="st">" "</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; list with 6 tensors of shape 96 96 3</span></span>
+<span><span class="co"># that's how we can stack inputs</span></span>
+<span><span class="co"># "list axis" becomes first ("b" in this case), and we left it there</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; b h w c"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  6 96 96  3</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># but new axis can appear in the other place:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; h w c b"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 96 96  3  6</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># that's equivalent to array stacking, but written more explicitly</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; h w c b"</span><span class="op">)</span> <span class="op">==</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/aperm.html" class="external-link">aperm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># ... or we can concatenate along axes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  96 576   3</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># which is equivalent to concatenation</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span> <span class="op">==</span></span>
+<span>    <span class="fu">abind</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/abind/man/abind.html" class="external-link">abind</a></span><span class="op">(</span><span class="va">x</span>, along <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="addition-or-removal-of-axes">Addition or removal of axes<a class="anchor" aria-label="anchor" href="#addition-or-removal-of-axes"></a>
+</h2>
+<p>You can write 1 to create a new axis of length 1. Similarly you can
+remove such axis.</p>
+<p>There is also a synonym <code>()</code> that you can use. That’s a
+composition of zero axes and it also has a unit length.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; b 1 h w 1 c"</span><span class="op">)</span>  <span class="co"># functionality of array expansion</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  6  1 96 96  1  3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b 1 h w 1 c -&gt; b h w c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="co"># functionality of array squeeze</span></span>
+<span><span class="co">#&gt; [1]  6 96 96  3</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># compute max in each image individually, then show a difference</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; b () () c"</span>, <span class="st">"max"</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">`repeat`</span><span class="op">(</span><span class="va">x</span>, <span class="st">"b 1 1 c -&gt; b 96 96 c"</span><span class="op">)</span> <span class="op">-</span> <span class="va">ims</span> <span class="co"># we will learn about this in a sec</span></span>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"b h w c -&gt; h (b w) c"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-30-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="repeating-elements">Repeating elements<a class="anchor" aria-label="anchor" href="#repeating-elements"></a>
+</h2>
+<p>Third operation we introduce is <code>repeat</code>, which can be
+either called as <code>einops.repeat</code> or a tick enclosed
+<code>repeat</code>.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># repeat along a new axis. New axis can be placed anywhere</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/einops.repeat.html">einops.repeat</a></span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; h new_axis w c"</span>, new_axis <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 96  5 96  3</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># shortcut</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; h 5 w c"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 96  5 96  3</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># repeat along w (existing axis)</span></span>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; h (repeated w) c"</span>, repeated<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-33-1.png" width="144"></p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># repeat along two existing axes</span></span>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; (2 h) (2 w) c"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-34-1.png" width="96"></p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># order of axes matters as usual - you can repeat each element (pixel) 3 times</span></span>
+<span><span class="co"># by changing order in parenthesis</span></span>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"h w c -&gt; h (w repeated) c"</span>, repeated <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-35-1.png" width="144"></p>
+<p>Note: <code>repeat</code> operation covers functionality identical to
+<code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code> and <code>abind</code> replication and actually
+more than that.</p>
+</div>
+<div class="section level2">
+<h2 id="reduce-repeat">Reduce ⇆ repeat<a class="anchor" aria-label="anchor" href="#reduce-repeat"></a>
+</h2>
+<p>reduce and repeat are like opposite of each other: first one reduces
+amount of elements, second one increases.</p>
+<p>In the following example each image is repeated first, then we reduce
+over new axis to get back original tensor. Notice that operation
+patterns are “reverse” of each other</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">repeated</span> <span class="op">&lt;-</span> <span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; b h new_axis w c"</span>, new_axis <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">repeated</span>, <span class="st">"b h new_axis w c -&gt; b h w c"</span>, <span class="st">"min"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">ims</span> <span class="op">==</span> <span class="va">reduced</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fancy-examples-in-random-order">Fancy examples in random order<a class="anchor" aria-label="anchor" href="#fancy-examples-in-random-order"></a>
+</h2>
+<p>(a.k.a. mad designer gallery)</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># interweaving pixels of different pictures</span></span>
+<span><span class="co"># all letters are observable</span></span>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (w b2) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># interweaving along vertical for couples of images</span></span>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (b2 w) c"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># interweaving lines for couples of images</span></span>
+<span><span class="co"># exercise: achieve the same result without einops in your favourite framework</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 w) c"</span>, <span class="st">"max"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-39-1.png" width="700"></p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># color can be also composed into dimension</span></span>
+<span><span class="co"># ... while image is downsampled</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h 2) (w 2) c -&gt; (c h) (b w)"</span>, <span class="st">"mean"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-40-1.png" width="700"></p>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># disproportionate resize</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h 4) (w 3) c -&gt; (h) (b w)"</span>, <span class="st">"mean"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-41-1.png" width="80"></p>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># split each image in two halves, compute mean of the two</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) w c -&gt; h2 (b w)"</span>, <span class="st">"mean"</span>, h1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-42-1.png" width="700"></p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># split in small patches and transpose each patch</span></span>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) (w1 w2) c -&gt; (h1 w2) (b w1 h2) c"</span>, h2<span class="op">=</span><span class="fl">8</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-43-1.png" width="700"></p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># stop me someone!</span></span>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w2 h3) (b w1 h2 w3) c"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span>, w3<span class="op">=</span><span class="fl">2</span>, h3<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-44-1.png" width="700"></p>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2) (w1 w2) c -&gt; (h1 b1 h2) (w1 b2 w2) c"</span>, h1<span class="op">=</span><span class="fl">3</span>, w1<span class="op">=</span><span class="fl">3</span>, b2<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-45-1.png" width="700"></p>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># patterns can be arbitrarily complicated</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w1 h3) (b1 w2 h2 w3 b2) c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span>, w3<span class="op">=</span><span class="fl">2</span>, h3<span class="op">=</span><span class="fl">2</span>, b2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-46-1.png" width="700"></p>
+<!--
+# subtract background in each image individually and normalize
+# pay attention to () - this is composition of 0 axis, a dummy axis with 1 element.
+im2 <- reduce(ims, "b h w c -> b () () c", "max")
+im2 <- `repeat`(im2, "b 1 1 c -> b 96 96 c") - ims
+im2 <- im2 / reduce(im2, "b h w c -> b () () c", "max")
+rearrange(im2, "b h w c -> h (b w) c")
+-->
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># pixelate: first downscale by averaging, then upscale back using the same pattern</span></span>
+<span><span class="va">averaged</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; b h w c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">6</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">averaged</span>, <span class="st">"b h w c -&gt; (h h2) (b w w2) c"</span>, h2<span class="op">=</span><span class="fl">6</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-47-1.png" width="700"></p>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; w (b h) c"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-48-1.png" width="700"></p>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># let's bring color dimension as part of horizontal axis</span></span>
+<span><span class="co"># at the same time horizontal axis is downsampled by 2x</span></span>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; (h w2) (b w c)"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">3</span>, w2<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="basics_files/figure-html/unnamed-chunk-49-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
+<ul>
+<li>
+<code>rearrange</code> doesn’t change number of elements and covers
+different R functions (like <code>aperm</code>, <code>array</code>,
+etc.)</li>
+<li>
+<code>reduce</code> combines same reordering syntax with reductions
+(<code>mean</code>, <code>min</code>, <code>max</code>,
+<code>sum</code>, <code>prod</code>, and any others)</li>
+<li>
+<code>einops.repeat</code> additionally covers repeating and
+tiling</li>
+<li>composition and decomposition of axes are a corner stone, they can
+and should be used together</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="bonus">Bonus<a class="anchor" aria-label="anchor" href="#bonus"></a>
+</h2>
+<p>The function <code><a href="../reference/einop.html">einop()</a></code> is a shorthand to do any of these
+operations with this single function. See its docs for more info.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

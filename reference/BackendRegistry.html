@@ -108,12 +108,12 @@ If the backend is not loaded, it will be instantiated.</p><div class="section">
 </div>
 
 </div><p></p><hr><a id="method-BackendRegistry-register_backend"></a><div class="section">
-<h3 id="method-register-backend-">Method <code>register_backend()</code><a class="anchor" aria-label="anchor" href="#method-register-backend-"></a></h3>
+<h3 id="method-register-backend-">Method <code><a href="register_backend.html">register_backend()</a></code><a class="anchor" aria-label="anchor" href="#method-register-backend-"></a></h3>
 <p>Register a new backend singleton</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">BackendRegistry</span><span class="op">$</span><span class="fu">register_backend</span><span class="op">(</span></span>
 <span>  <span class="va">tensor_type</span>,</span>
-<span>  <span class="va">backend_class</span>,</span>
+<span>  <span class="va">backend_class_thunk</span>,</span>
 <span>  dependencies <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
 <span>  testing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  aliases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
@@ -126,8 +126,8 @@ If the backend is not loaded, it will be instantiated.</p><div class="section">
 <dd><p>a string with the tensor type the backend supports</p></dd>
 
 
-<dt><code>backend_class</code></dt>
-<dd><p>an EinopsBackend subclass generator</p></dd>
+<dt><code>backend_class_thunk</code></dt>
+<dd><p>a <code><a href="thunk.html">thunk()</a></code>'ed EinopsBackend subclass generator</p></dd>
 
 
 <dt><code>dependencies</code></dt>

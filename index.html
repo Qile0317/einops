@@ -149,47 +149,6 @@ Additionally, einops can be used with any framework that supports R's array acce
 <li><a href="https://github.com/dorpxam/einops-cpp" class="external-link">C++</a></li>
 </ul>
 </div>
-<div class="section level2">
-<h2 id="development-roadmap-will-be-deleted-after-completion">Development Roadmap (Will be deleted after completion)<a class="anchor" aria-label="anchor" href="#development-roadmap-will-be-deleted-after-completion"></a>
-</h2>
-<ul class="task-list">
-<li><label><input type="checkbox" checked>Lexical Analysis (<code>lex("expression")</code> -&gt; <code><a href="reference/EinopsTokenSequence.html">EinopsTokenSequence()</a></code>)</label></li>
-<li><label><input type="checkbox" checked>Parser (<code>parse_einops_ast(EinopsTokenSequence())</code> -&gt; <code><a href="reference/EinopsAst.html">EinopsAst()</a></code>)</label></li>
-<li><label><input type="checkbox" checked><code>einops:::parse_shape.array()</code></label></li>
-<li><label><input type="checkbox" checked>Semantic Analysis (<code>validate_reduction_operation(EinopsAst())</code>, <code>expand_ellipsis(EinopsAst())</code> -&gt; <code><a href="reference/EinopsAst.html">EinopsAst()</a></code>)</label></li>
-<li><label><input type="checkbox" checked>Intermediate Representation generation (<code>prepare_transformation_recipe(EinopsAst())</code> -&gt; <code><a href="reference/TransformRecipe.html">TransformRecipe()</a></code>)</label></li>
-<li><label><input type="checkbox" checked>Code generation (<code>create_execution_plan(TransformRecipe())</code> -&gt; <code><a href="reference/EinopsExecutionPlan.html">EinopsExecutionPlan()</a></code>)</label></li>
-<li><label><input type="checkbox" checked>Execution (<code>apply_recipe(EinopsExecutionPlan())</code>, <code><a href="reference/EinopsBackend.html">EinopsBackend()</a></code> -&gt; output)</label></li>
-<li><label><input type="checkbox" checked><code>einops::repeat()</code></label></li>
-<li><label><input type="checkbox" checked><code><a href="reference/rearrange.html">einops::rearrange()</a></code></label></li>
-<li><label><input type="checkbox" checked><code><a href="reference/reduce.html">einops::reduce()</a></code></label></li>
-<li><label><input type="checkbox" checked>Make Github Repository Public</label></li>
-<li><label><input type="checkbox" checked><a href="https://github.com/cgarciae/einop" class="external-link"><code>einops::einop()</code></a></label></li>
-<li><label><input type="checkbox"><code>TorchBackend()</code></label></li>
-<li><label><input type="checkbox"><code>einops:::Rearrange()</code> (layer)</label></li>
-<li><label><input type="checkbox"><code>einops:::Reduce()</code> (layer)</label></li>
-<li><label><input type="checkbox">packing and unpacking expression interpretation</label></li>
-<li><label><input type="checkbox"><code>einops::pack()</code></label></li>
-<li><label><input type="checkbox"><code>einops:::unpack()</code></label></li>
-<li><label><input type="checkbox">EinMix for torch</label></li>
-<li><label><input type="checkbox"><code>einops::einsum()</code></label></li>
-<li><label><input type="checkbox">Expand Roadmap by incorporating more backends</label></li>
-</ul>
-<div class="section level3">
-<h3 id="nice-to-haves">Nice to Haves<a class="anchor" aria-label="anchor" href="#nice-to-haves"></a>
-</h3>
-<ul class="task-list">
-<li><label><input type="checkbox">Dockerfile &amp; devcontainers.json</label></li>
-<li><label><input type="checkbox" checked>Google Analytics for the docsite</label></li>
-<li><label><input type="checkbox">R-universe upload</label></li>
-<li><label><input type="checkbox">Much better README <!-- - [ ] Rcpp Acceleration if needed --></label></li>
-<li><label><input type="checkbox">Copy the existing einops docs pages as vignettes</label></li>
-<li><label><input type="checkbox">update NEWS.md</label></li>
-<li><label><input type="checkbox">CRAN release</label></li>
-<li><label><input type="checkbox" checked>Spelling check</label></li>
-</ul>
-</div>
-</div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
