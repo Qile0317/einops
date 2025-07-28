@@ -16,8 +16,4 @@ class \code{c("thunk", "function")}
 \description{
 Simple thunk: wraps an input in a no-argument function
 }
-\examples{
-t <- thunk(1 + 2)
-t() # returns 3
-}
 \keyword{internal}

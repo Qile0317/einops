@@ -22,14 +22,10 @@ get_backend_registry <- function(
     clear_testing = !identical(Sys.getenv("TESTTHAT"), "true")
 ) {
     assert_that(is.flag(clear_testing))
-    if (!exists(".backend_singleton", envir = globalenv())) {
-        .backend_singleton <<- BackendRegistry$new() # nolint
-    }
-    registry <- get(".backend_singleton", envir = globalenv())
     if (clear_testing) {
-        registry$clear_testing_backends()
+        BackendRegistry$new()$clear_testing_backends()
     }
-    registry
+    BackendRegistry$new()
 }
 
 #' Simple thunk: wraps an input in a no-argument function
@@ -37,9 +33,6 @@ get_backend_registry <- function(
 #' @return A thunk that returns the object when called with
 #' class `c("thunk", "function")`
 #' @keywords internal
-#' @examples
-#' t <- thunk(1 + 2)
-#' t() # returns 3
 thunk <- function(input) {
     structure(function() input, class = c("thunk", "function"))
 }
@@ -84,7 +77,7 @@ unregister_backend <- function(tensor_type) {
 #' Contains global backend pool, ensuring backends are only loaded if
 #' actually required.
 #' @keywords internal
-BackendRegistry <- R6Class("BackendRegistry", cloneable = FALSE,
+BackendRegistry <- R6Class("BackendRegistry", inherit = R6P::Singleton, cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class thunks
@@ -512,6 +505,9 @@ register_backend(
     aliases = c("integer", "numeric")
 )
 
+# TODO utility function to handle names. abind assigns empty names to each dim
+# if original had no dimnames. so if there were names we shouldn't unname, but
+# for the case that the original array had empty names, they should be untouched.
 BaseArrayBackend <- R6Class("BaseArrayBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
@@ -530,18 +526,16 @@ public = list(
     transpose = function(x, axes) aperm(x, perm = axes),
 
     reduce = function(x, operation, axes) {
-        if (is.function(operation)) {
-            op_fun <- operation
-        } else {
-            op_fun <- switch(operation,
-                sum  = sum,
-                mean = mean,
-                max  = max,
-                min  = min,
-                prod = prod,
-                stop("Invalid operation")
-            )
-        }
+        op_fun <- if (is.function(operation)) {
+            operation
+        } else {switch(operation,
+            sum  = sum,
+            mean = mean,
+            max  = max,
+            min  = min,
+            prod = prod,
+            stop("Invalid operation")
+        )}
         keep <- setdiff(seq_along(dim(x)), axes)
         if (length(keep) == 0) return(op_fun(x))
         res <- apply(x, keep, op_fun)

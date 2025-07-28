@@ -8,6 +8,9 @@ Contains global backend pool, ensuring backends are only loaded if
 actually required.
 }
 \keyword{internal}
+\section{Super class}{
+\code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{BackendRegistry}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -22,6 +25,13 @@ actually required.
 \item \href{#method-BackendRegistry-is_loadable}{\code{BackendRegistry$is_loadable()}}
 }
 }
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="R6P" data-topic="Singleton" data-id="initialize"><a href='../../R6P/html/Singleton.html#method-Singleton-initialize'><code>R6P::Singleton$initialize()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BackendRegistry-get_backend"></a>}}
 \if{latex}{\out{\hypertarget{method-BackendRegistry-get_backend}{}}}
