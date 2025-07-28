@@ -106,7 +106,7 @@ rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
 rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
 ```
 
-```{r, fig.height = pane_length(6)}
+```{r, fig.height = pane_length(4)}
 # move part of width dimension to height.
 # we should call this width-to-height as image width shrunk by 2 and height doubled.
 # but all pixels are the same!
