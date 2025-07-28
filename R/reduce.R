@@ -94,6 +94,14 @@ reduce.default <- function(
 reduce.list <- function(
     x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
 ) {
+    UseMethod("reduce.list", x[[1]])
+}
+
+#' @keywords internal
+#' @export
+reduce.list.default <- function(
+    x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
+) {
     assert_that(is.count(length(x))) # TODO check all elements inheritance
     backend <- get_backend(x[[1]])
     reduce(
