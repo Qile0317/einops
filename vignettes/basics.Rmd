@@ -181,7 +181,7 @@ reduce(ims, "b h w c -> h w c", "mean")
 
 ```{r fig.width = pane_length(1), fig.height = pane_length(1)}
 # the previous is identical to familiar:
-apply(ims, c(2, 3, 4), mean)
+as_image_tensor(apply(ims, c(2, 3, 4), mean))
 # but is so much more readable
 ```
 

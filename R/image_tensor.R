@@ -72,7 +72,7 @@ as_image_tensor.default <- function(x) {
     x <- as.array(x)
     dims <- length(dim(x))
 
-    if (dims == 2L) x %<>% einops.repeat("h w -> h w 3")
+    if (dims == 2L) x <- einops.repeat(x, "h w -> h w 3")
     if (dims != 3 && dims != 4) {
         stop("image_tensor objects must be 3D (h w c) or 4D (b h w c) arrays")
     }
@@ -162,10 +162,10 @@ print.image_tensor <- function(
 }
 
 #' @export
-reduce.image_tensor <- function(x, expr, func, ...) {
+reduce.image_tensor <- function(x, ...) {
     class(x) <- "array"
-    result <- reduce(x, expr, func, ...)
-    if (FastUtils::isBound(length(dim(result)), 3, 4)) {
+    result <- reduce(x, ...)
+    if (FastUtils::isBound(length(dim(result)), 2, 4)) {
         result <- as_image_tensor(result)
     }
     result
