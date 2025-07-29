@@ -141,19 +141,6 @@ pattern</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 20</span>
 <span class="r-in"><span><span class="co"># (10, 20)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># subtracting mean over batch for each channel;</span></span></span>
-<span class="r-in"><span><span class="co"># similar to x - apply(x, c(2,3,4), mean)</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; 1 c 1 1'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in x - reduce(x, "b c h w -&gt; 1 c 1 1", "mean"):</span> non-conformable arrays</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Subtracting per-image mean for each channel</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c 1 1'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in x - reduce(x, "b c h w -&gt; b c 1 1", "mean"):</span> non-conformable arrays</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># same as previous, but using empty compositions</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'b c h w -&gt; b c () ()'</span>, <span class="st">'mean'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in x - reduce(x, "b c h w -&gt; b c () ()", "mean"):</span> non-conformable arrays</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

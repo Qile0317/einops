@@ -11,7 +11,7 @@ einops.repeat() when output contains dimensions not in input
 Note that there are ongoing debates about the use of this function purely
 from the perspective of code readability and maintainability:
 https://github.com/arogozhnikov/einops/issues/84. Generally, some argue
-that the descriptive names of rearrange, reduce(), and repeat
+that the descriptive names of rearrange, reduce, and repeat
 encourage good practices, while others think that semantically einop()
 actually makes it clearer what the operation
 is doing, as opposed to mandating the use of these commonly used function
@@ -27,7 +27,7 @@ einops.repeat() when output contains dimensions not in input
 Note that there are ongoing debates about the use of this function purely
 from the perspective of code readability and maintainability:
 https://github.com/arogozhnikov/einops/issues/84. Generally, some argue
-that the descriptive names of rearrange, reduce(), and repeat
+that the descriptive names of rearrange, reduce, and repeat
 encourage good practices, while others think that semantically einop()
 actually makes it clearer what the operation
 is doing, as opposed to mandating the use of these commonly used function
@@ -86,8 +86,8 @@ adapted from the python <code>einop</code> package: https://github.com/cgarciae/
 <li><p><code><a href="einops.repeat.html">einops.repeat()</a></code> when output contains dimensions not in input</p></li>
 </ul><p>Note that there are ongoing debates about the use of this function purely
 from the perspective of code readability and maintainability:
-https://github.com/arogozhnikov/einops/issues/84. Generally, some argue
-that the descriptive names of <code>rearrange</code>, <code><a href="reduce.html">reduce()</a></code>, and <code>repeat</code>
+<a href="https://github.com/arogozhnikov/einops/issues/84" class="external-link">https://github.com/arogozhnikov/einops/issues/84</a>. Generally, some argue
+that the descriptive names of <code>rearrange</code>, <code>reduce</code>, and <code>repeat</code>
 encourage good practices, while others think that semantically <code>einop()</code>
 actually makes it <em>clearer</em> what the operation
 is doing, as opposed to mandating the use of these commonly used function
@@ -142,17 +142,18 @@ for <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Rearrange dimensions</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load a 3d tensor representing an rgb image</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"einops_image"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, , , <span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Rearrange dimensions</span></span></span>
 <span class="r-in"><span><span class="fu">einop</span><span class="op">(</span><span class="va">x</span>, <span class="st">"h w c -&gt; c h w"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'x' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Reduce dimensions</span></span></span>
-<span class="r-in"><span><span class="fu">einop</span><span class="op">(</span><span class="va">x</span>, <span class="st">"h w c -&gt; h w"</span>, reduction <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'x' not found</span>
+<span class="r-in"><span><span class="fu">einop</span><span class="op">(</span><span class="va">x</span>, <span class="st">"h w c -&gt; h w"</span>, <span class="st">"mean"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Repeat dimensions</span></span></span>
-<span class="r-in"><span><span class="fu">einop</span><span class="op">(</span><span class="va">x</span>, <span class="st">"h w -&gt; h w c"</span>, c <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'x' not found</span>
+<span class="r-in"><span><span class="fu">einop</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span>, <span class="st">"h w -&gt; h w c"</span>, c <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="einop-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

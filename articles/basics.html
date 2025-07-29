@@ -109,10 +109,11 @@ types will be supported such as <code>torch::torch_tensor</code>’s.</p>
 <h2 id="load-a-batch-of-images-to-play-with">Load a batch of images to play with<a class="anchor" aria-label="anchor" href="#load-a-batch-of-images-to-play-with"></a>
 </h2>
 <p>Here we the einops example data, an <code>image_tensor</code> object
-- a thin wrapper around a 3D and 4D <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>. The data 6
-images of shape 96x96 with 3 color channels packed into tensor. The main
-difference with <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>’s are that the print method by
-default will show the image itself.</p>
+- which is just a <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code> with its class attribute
+being <code>c("image_tensor", "array")</code>. The data consists of six
+96x96 images with 3 color channels. The main difference with
+<code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code>’s are that the print method by default will
+show the image itself using <code>imager</code>.</p>
 <p>We also set the option <code>einops_row_major</code> to
 <code>TRUE</code>. This is a global option that the package uses because
 native R arrays are stored in column-major order, which also affects its
@@ -148,7 +149,7 @@ overridden anytime by setting the <code>.row_major</code> argument.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># when you operate on same set of axes many times,</span></span>
 <span><span class="co"># you usually come up with short names.</span></span>
-<span><span class="co"># That's what we do throughout tutorial - we'll use b (for batch), h, w, and c</span></span></code></pre></div>
+<span><span class="co"># That's what we do throughout this vignette - we'll use b (for batch), h, w, and c</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="composition-of-axes">Composition of axes<a class="anchor" aria-label="anchor" href="#composition-of-axes"></a>
