@@ -155,7 +155,7 @@ reduce.image_tensor <- function(x, ...) {
 .reduce.list.image_tensor <- function(
     x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
 ) {
-    as_image_tensor(reduce.list.default(
+    as_image_tensor(.reduce.list.default(
         x, expr, func, ..., .row_major = .row_major
     ))
 }
