@@ -73,7 +73,7 @@
 #'
 #' # create from a 3D array (RGB image)
 #' img_rgb <- as_image_tensor(array(runif(27), dim = c(3, 3, 3)))
-#' plot(img_rgb)
+#' print(img_rgb)
 #'
 as_image_tensor <- function(x) {
     UseMethod("as_image_tensor", x)

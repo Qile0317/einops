@@ -54,6 +54,8 @@ is doing, as opposed to mandating the use of these commonly used function
 names across many packages.
 }
 \examples{
+if (requireNamespace("abind", quietly = TRUE)) {
+
 # load a 3d tensor representing an rgb image
 x <- get(data("einops_image"))[1, , , ]
 
@@ -65,5 +67,7 @@ einop(x, "h w c -> h w", "mean")
 
 # Repeat dimensions
 einop(x[, , 1], "h w -> h w c", c = 3)
+
+}
 
 }

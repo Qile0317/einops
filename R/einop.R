@@ -25,7 +25,10 @@
 #' @inheritParams reduce
 #'
 #' @return A tensor with dimensions transformed according to the expression
+#' @export
 #' @examples
+#' if (requireNamespace("abind", quietly = TRUE)) {
+#'
 #' # load a 3d tensor representing an rgb image
 #' x <- get(data("einops_image"))[1, , , ]
 #'
@@ -38,7 +41,8 @@
 #' # Repeat dimensions
 #' einop(x[, , 1], "h w -> h w c", c = 3)
 #'
-#' @export
+#' }
+#'
 einop <- function(
     x,
     expr,

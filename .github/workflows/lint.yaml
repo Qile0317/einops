@@ -25,6 +25,7 @@ jobs:
         with:
           extra-packages: any::lintr, local::.
           needs: lint
+          install-suggests: true
 
       - name: Lint
         run: lintr::lint_package()
