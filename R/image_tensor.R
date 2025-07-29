@@ -25,7 +25,7 @@
 #'   controlled by the option `print_image_tensor_as_plot` (default: TRUE).
 #'
 #' @details
-#' The `image_tensor` class provides the following methods:
+#' The `image_tensor` class provides the following methods (and more):
 #'
 #' - `as_image_tensor()`: Generic function to convert objects to
 #'   `image_tensor` format. Takes in array-like objects of 2-4 dimensions.
@@ -47,7 +47,7 @@
 #'
 #' - **h**: height dimension (image height in pixels)
 #' - **w**: width dimension (image width in pixels)
-#' - **c**: channel dimension (e.g., 3 for RGB, 1 for grayscale)
+#' - **c**: channel dimension (RGB, only for 3D & 4D arrays)
 #' - **b**: batch dimension (number of images, only for 4D arrays)
 #'
 #' @section Options:
@@ -65,9 +65,23 @@
 #' - `plot()`: Invisibly returns the input object
 #' - `print()`: Invisibly returns the input object
 #' @export
+#' @examples
+#' # create from a matrix (grayscale)
+#' img <- image_tensor(matrix(1:9, 3, 3))
+#' print(img)
+#' print(img[1:2, 1:2])
+#'
+#' # create from a 3D array (RGB image)
+#' img_rgb <- as_image_tensor(array(runif(27), dim = c(3, 3, 3)))
+#' plot(img_rgb)
+#'
 as_image_tensor <- function(x) {
     UseMethod("as_image_tensor", x)
 }
+
+#' @rdname image_tensor
+#' @export
+image_tensor <- as_image_tensor
 
 #' @rdname image_tensor
 #' @export

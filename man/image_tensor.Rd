@@ -13,6 +13,8 @@
 \usage{
 as_image_tensor(x)
 
+image_tensor(x)
+
 \method{as_image_tensor}{default}(x)
 
 \method{as_image_tensor}{cimg}(x)
@@ -61,7 +63,7 @@ as long as the \code{imager} package is installed. Otherwise it will simply
 print the dimension of the image.
 }
 \details{
-The \code{image_tensor} class provides the following methods:
+The \code{image_tensor} class provides the following methods (and more):
 \itemize{
 \item \code{as_image_tensor()}: Generic function to convert objects to
 \code{image_tensor} format. Takes in array-like objects of 2-4 dimensions.
@@ -85,7 +87,7 @@ single images, or "b h w c" format for batches of images:
 \itemize{
 \item \strong{h}: height dimension (image height in pixels)
 \item \strong{w}: width dimension (image width in pixels)
-\item \strong{c}: channel dimension (e.g., 3 for RGB, 1 for grayscale)
+\item \strong{c}: channel dimension (RGB, only for 3D & 4D arrays)
 \item \strong{b}: batch dimension (number of images, only for 4D arrays)
 }
 }
@@ -100,3 +102,14 @@ TRUE)
 }
 }
 
+\examples{
+# create from a matrix (grayscale)
+img <- image_tensor(matrix(1:9, 3, 3))
+print(img)
+print(img[1:2, 1:2])
+
+# create from a 3D array (RGB image)
+img_rgb <- as_image_tensor(array(runif(27), dim = c(3, 3, 3)))
+plot(img_rgb)
+
+}
