@@ -10,13 +10,8 @@
 #' @format An [image_tensor()] object with 6 images, each of size 96 x 96
 #' pixels, with 3 color channels (RGB). The images are stored in a 4D array
 #' with dimensions (6, 96, 96, 3).
-#' @seealso [image_tensor()]
+#' @seealso [as.cimg()]
 #' @examples
 #' data("einops_image")
-#' einops_image[1]
-#' einops_image[2]
-#' einops_image[3]
-#' einops_image[4]
-#' einops_image[5]
-#' einops_image[6]
+#' for (i in seq_len(6)) print(einops_image[i, , , ])
 "einops_image"
