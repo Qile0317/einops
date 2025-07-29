@@ -183,16 +183,16 @@ capabilities provided by einops.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># decomposition is the inverse process - represent an axis as a combination of new axes</span></span>
 <span><span class="co"># several decompositions possible, so b1=2 is to decompose 6 to b1=2 and b2=3</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; b1 b2 h w c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; b1 b2 h w c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  2  3 96 96  3</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># finally, combine composition and decomposition:</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b1 h) (b2 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b1 h) (b2 w) c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-11-1.png" width="144"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># slightly different composition: b1 is merged with width, b2 with height</span></span>
 <span><span class="co"># ... so letters are ordered by w then by h</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w) c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-12-1.png" width="96"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># move part of width dimension to height.</span></span>
@@ -219,10 +219,10 @@ capabilities provided by einops.</p>
 <p><img src="basics_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># what if b1 and b2 are reordered before composing to width?</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b1 b2 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'einops'</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b1 b2 w) c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'einops'</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 b1 w) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'eoipns'</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 b1 w) c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># produces 'eoipns'</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 <div class="section level2">
@@ -251,16 +251,16 @@ reduced.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># this is mean-pooling with 2x2 kernel</span></span>
 <span><span class="co"># image is split into 2x2 patches, each patch is averaged</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"mean"</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># max-pooling is similar</span></span>
 <span><span class="co"># result is not as smooth as for mean-pooling</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"max"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; h (b w) c"</span>, <span class="st">"max"</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># yet another example. Can you compute the resulting shape?</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w)"</span>, <span class="st">"mean"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (b2 h) (b1 w)"</span>, <span class="st">"mean"</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-23-1.png" width="96"></p>
 </div>
 <div class="section level2">
@@ -331,7 +331,7 @@ either called as <code>einops.repeat</code> or a tick enclosed
 <span><span class="co">#&gt; [1] 96  5 96  3</span></span></code></pre></div>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># repeat along w (existing axis)</span></span>
-<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span>, , , <span class="op">]</span>, <span class="st">"h w c -&gt; h (repeated w) c"</span>, repeated<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">ims</span><span class="op">[</span><span class="fl">1</span>, , , <span class="op">]</span>, <span class="st">"h w c -&gt; h (repeated w) c"</span>, repeated <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-33-1.png" width="144"></p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># repeat along two existing axes</span></span>
@@ -367,16 +367,16 @@ patterns are “reverse” of each other</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># interweaving pixels of different pictures</span></span>
 <span><span class="co"># all letters are observable</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (w b2) c "</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (w b2) c "</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># interweaving along vertical for couples of images</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (b2 w) c"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; (h b1) (b2 w) c"</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># interweaving lines for couples of images</span></span>
 <span><span class="co"># exercise: achieve the same result without einops in your favourite framework</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 w) c"</span>, <span class="st">"max"</span>, b1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) h w c -&gt; h (b2 w) c"</span>, <span class="st">"max"</span>, b1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-39-1.png" width="700"></p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># color can be also composed into dimension</span></span>
@@ -389,22 +389,22 @@ patterns are “reverse” of each other</p>
 <p><img src="basics_files/figure-html/unnamed-chunk-41-1.png" width="80"></p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># split each image in two halves, compute mean of the two</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) w c -&gt; h2 (b w)"</span>, <span class="st">"mean"</span>, h1<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) w c -&gt; h2 (b w)"</span>, <span class="st">"mean"</span>, h1 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-42-1.png" width="700"></p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># split in small patches and transpose each patch</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) (w1 w2) c -&gt; (h1 w2) (b w1 h2) c"</span>, h2<span class="op">=</span><span class="fl">8</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2) (w1 w2) c -&gt; (h1 w2) (b w1 h2) c"</span>, h2 <span class="op">=</span> <span class="fl">8</span>, w2 <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-43-1.png" width="700"></p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># stop me someone!</span></span>
-<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w2 h3) (b w1 h2 w3) c"</span>, h2<span class="op">=</span><span class="fl">2</span>, w2<span class="op">=</span><span class="fl">2</span>, w3<span class="op">=</span><span class="fl">2</span>, h3<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w2 h3) (b w1 h2 w3) c"</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w2 <span class="op">=</span> <span class="fl">2</span>, w3 <span class="op">=</span> <span class="fl">2</span>, h3 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-44-1.png" width="700"></p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2) (w1 w2) c -&gt; (h1 b1 h2) (w1 b2 w2) c"</span>, h1<span class="op">=</span><span class="fl">3</span>, w1<span class="op">=</span><span class="fl">3</span>, b2<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2) (w1 w2) c -&gt; (h1 b1 h2) (w1 b2 w2) c"</span>, h1 <span class="op">=</span> <span class="fl">3</span>, w1 <span class="op">=</span> <span class="fl">3</span>, b2 <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-45-1.png" width="700"></p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># patterns can be arbitrarily complicated</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w1 h3) (b1 w2 h2 w3 b2) c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">2</span>, w1<span class="op">=</span><span class="fl">2</span>, w3<span class="op">=</span><span class="fl">2</span>, h3<span class="op">=</span><span class="fl">2</span>, b2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"(b1 b2) (h1 h2 h3) (w1 w2 w3) c -&gt; (h1 w1 h3) (b1 w2 h2 w3 b2) c"</span>, <span class="st">"mean"</span>, h2 <span class="op">=</span> <span class="fl">2</span>, w1 <span class="op">=</span> <span class="fl">2</span>, w3 <span class="op">=</span> <span class="fl">2</span>, h3 <span class="op">=</span> <span class="fl">2</span>, b2 <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-46-1.png" width="700"></p>
 <!--
 # subtract background in each image individually and normalize
@@ -416,8 +416,8 @@ rearrange(im2, "b h w c -> h (b w) c")
 -->
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># pixelate: first downscale by averaging, then upscale back using the same pattern</span></span>
-<span><span class="va">averaged</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; b h w c"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">6</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span>
-<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">averaged</span>, <span class="st">"b h w c -&gt; (h h2) (b w w2) c"</span>, h2<span class="op">=</span><span class="fl">6</span>, w2<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">averaged</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; b h w c"</span>, <span class="st">"mean"</span>, h2 <span class="op">=</span> <span class="fl">6</span>, w2 <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="fu">`repeat`</span><span class="op">(</span><span class="va">averaged</span>, <span class="st">"b h w c -&gt; (h h2) (b w w2) c"</span>, h2 <span class="op">=</span> <span class="fl">6</span>, w2 <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-47-1.png" width="700"></p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rearrange.html">rearrange</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b h w c -&gt; w (b h) c"</span><span class="op">)</span></span></code></pre></div>
@@ -425,7 +425,7 @@ rearrange(im2, "b h w c -> h (b w) c")
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># let's bring color dimension as part of horizontal axis</span></span>
 <span><span class="co"># at the same time horizontal axis is downsampled by 2x</span></span>
-<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; (h w2) (b w c)"</span>, <span class="st">"mean"</span>, h2<span class="op">=</span><span class="fl">3</span>, w2<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/reduce.html">reduce</a></span><span class="op">(</span><span class="va">ims</span>, <span class="st">"b (h h2) (w w2) c -&gt; (h w2) (b w c)"</span>, <span class="st">"mean"</span>, h2 <span class="op">=</span> <span class="fl">3</span>, w2 <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_files/figure-html/unnamed-chunk-49-1.png" width="700"></p>
 </div>
 <div class="section level2">

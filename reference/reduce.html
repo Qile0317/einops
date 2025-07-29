@@ -115,7 +115,7 @@ pattern</p>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="st">'time batch channel -&gt; batch channel'</span>, <span class="st">'max'</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># let's pretend now that x is a batch of images</span></span></span>
-<span class="r-in"><span><span class="co"># with 4 dims: batch=10, height=20, width=30, channel=40</span></span></span>
+<span class="r-in"><span><span class="co"># with 4 dims: batch=10height = 20width = 30channel = 40</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span> <span class="op">*</span> <span class="fl">20</span> <span class="op">*</span> <span class="fl">30</span> <span class="op">*</span> <span class="fl">40</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2d max-pooling with kernel size = 2 * 2 for image processing</span></span></span>
