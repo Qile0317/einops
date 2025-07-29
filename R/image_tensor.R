@@ -10,10 +10,13 @@
 #' An `image_tensor` object represents image data in the format "h w c"
 #' (height, width, channels) for single images, or "b h w c"
 #' (batch, height, width, channels) for batches of images, which is a common
-#' format for deep learning frameworks.
+#' format for deep learning frameworks. It also can be a 2D array, in which
+#' case it is treated as a black and white image and shown as such.
 #'
 #' The main utility of wrapping image data in the `image_tensor` class is that
-#' printing of the object will automatically display the image as a plot.
+#' printing of the object will automatically display the image as a plot,
+#' as long as the `imager` package is installed. Otherwise it will simply
+#' print the dimension of the image.
 #'
 #' @param x An object to convert to or from `image_tensor` format.
 #' @param ... Additional arguments passed to underlying methods. For `[` and
@@ -134,6 +137,10 @@ plot.image_tensor <- function(x, ...) {
 print.image_tensor <- function(
     x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...
 ) {
+    if (!requireNamespace("imager", quietly = TRUE)) {
+        print(glue("<image_tensor array with shape {repr(dim(x))}>"))
+        return(invisible(x))
+    }
     if (as_image) {
         plot.image_tensor(x, ...)
         return(invisible(x))

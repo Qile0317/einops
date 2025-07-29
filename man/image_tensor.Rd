@@ -52,10 +52,13 @@ for conversion to/from various image formats, plotting, and printing.
 An \code{image_tensor} object represents image data in the format "h w c"
 (height, width, channels) for single images, or "b h w c"
 (batch, height, width, channels) for batches of images, which is a common
-format for deep learning frameworks.
+format for deep learning frameworks. It also can be a 2D array, in which
+case it is treated as a black and white image and shown as such.
 
 The main utility of wrapping image data in the \code{image_tensor} class is that
-printing of the object will automatically display the image as a plot.
+printing of the object will automatically display the image as a plot,
+as long as the \code{imager} package is installed. Otherwise it will simply
+print the dimension of the image.
 }
 \details{
 The \code{image_tensor} class provides the following methods:

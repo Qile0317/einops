@@ -4,9 +4,9 @@
 \name{einops-package}
 \alias{einops}
 \alias{einops-package}
-\title{einops: Flexible and powerful tensor operations for readable and reliable code}
+\title{einops: Flexible, Powerful, and Readable Tensor Operations}
 \description{
-R port of the einops library for flexible and powerful array and tensor operations. It provides a concise and readable syntax for reshaping, rearranging, and combination.
+Perform tensor operations using a concise yet expressive syntax inspired by the 'Python' library of the same name. Reshape, rearrange, and combine multidimensional arrays for scientific computing, machine learning, and data analysis. Einops simplifies complex manipulations, making code more maintainable and intuitive.
 }
 \seealso{
 Useful links:
