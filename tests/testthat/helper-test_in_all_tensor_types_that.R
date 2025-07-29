@@ -16,6 +16,7 @@
 #' This allows writing tests that are portable across different tensor backends
 #' while having access to variables defined in the test frame.
 #' @return [logical()] of length 1 indicating whether the test passed or failed.
+#'
 test_in_all_tensor_types_that <- function(desc, code) {
 
     assert_that(is.string(desc))
@@ -25,13 +26,13 @@ test_in_all_tensor_types_that <- function(desc, code) {
 
     for (tensor_type in get_backend_registry()$get_supported_types()) {
 
-        test_that(glue("{desc} for [{tensor_type}]"), {
+        testthat::test_that(glue("{desc} for [{tensor_type}]"), {
 
             for (pkg in get_backend_registry()$get_dependencies(tensor_type)) {
-                skip_if_not_installed(pkg)
+                testthat::skip_if_not_installed(pkg)
             }
 
-            skip_if_not(
+            testthat::skip_if_not(
                 get_backend_registry()$is_loadable(tensor_type),
                 glue("Tensor type {tensor_type}'s backend is not loadable")
             )
