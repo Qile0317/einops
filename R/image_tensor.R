@@ -93,6 +93,7 @@ as.cimg <- function(x) { # nolint: object_name_linter.
 #' @rdname image_tensor
 #' @export
 as.cimg.image_tensor <- function(x) {
+    requireNamespace("imager")
     x <- unclass(x)
     if (length(dim(x)) == 2L) x %<>% einops.repeat("h w -> h w 3")
     if (length(dim(x)) == 3L) {
@@ -100,7 +101,7 @@ as.cimg.image_tensor <- function(x) {
     } else if (length(dim(x)) == 4L) {
         imager::as.cimg(rearrange(x, "b h w c -> w h b c"))
     } else {
-        stop("image_tensor must be 3D or 4D")
+        stop("image_tensor must be 2-4D")
     }
 }
 
