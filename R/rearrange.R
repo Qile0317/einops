@@ -20,22 +20,26 @@
 #' })
 #'
 #' # stacked and reordered axes to "b c h w" format
-#' rearrange(images, 'b h w c -> b c h w')
+#' y <- rearrange(images, 'b h w c -> b c h w')
 #'
 #' # concatenate images along height (vertical axis), 960 = 32 * 30
-#' rearrange(images, 'b h w c -> (b h) w c')
+#' y <- rearrange(images, 'b h w c -> (b h) w c')
 #'
 #' # concatenated images along horizontal axis, 1280 = 32 * 40
-#' rearrange(images, 'b h w c -> h (b w) c')
+#' y <- rearrange(images, 'b h w c -> h (b w) c')
 #'
 #' # flattened each image into a vector, 3600 = 30 * 40 * 3
-#' rearrange(images, 'b h w c -> b (c h w)')
+#' y <- rearrange(images, 'b h w c -> b (c h w)')
 #'
-#' # split each image into 4 smaller (top-left, top-right, bottom-left, bottom-right), 128 = 32 * 2 * 2
-#' rearrange(images, 'b (h1 h) (w1 w) c -> (b h1 w1) h w c', h1=2, w1=2)
+#' # split each image into 4 smaller quadrants, 128 = 32 * 2 * 2
+#' y <- rearrange(
+#'     images, 'b (h1 h) (w1 w) c -> (b h1 w1) h w c', h1 = 2, w1 = 2
+#' )
 #'
 #' # space-to-depth operation
-#' rearrange(images, 'b (h h1) (w w1) c -> b h w (c h1 w1)', h1=2, w1=2)
+#' y <- rearrange(
+#'     images, 'b (h h1) (w w1) c -> b h w (c h1 w1)', h1 = 2, w1 = 2
+#' )
 #'
 rearrange <- function(
     x, expr, ..., .row_major = getOption("einops_row_major", FALSE)

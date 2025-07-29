@@ -62,7 +62,7 @@ validate_reduction_operation <- function(einops_ast, operation) {
     if (operation == "repeat") {
         # TODO throw error on symmetric difference of unique identifier lengths
         # TODO axes_without_size <- set difference of
-        #   {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},
+        # {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},
         #   {*left.identifiers, *axes_names}
         # TODO if (length(axes_without_size) > 0) return error
         return(invisible(einops_ast))
@@ -144,18 +144,3 @@ has_composed_axes.OneSidedAstNode <- function(x, ...) {
         }))
     }))
 }
-
-# #' Get unique identifier set (axes and ellipses, excluding 1 and _)
-# #' as a list
-# #' @noRd
-# identifiers <- function(x, ...) {
-#     UseMethod("identifiers", x)
-# }
-
-# #' @export
-# identifiers.OneSidedAstNode <- function(x, ...) {
-#     ast_node_set <- list()
-#     for (child_node in x) {
-
-#     }
-# }

@@ -89,7 +89,7 @@ test_that("expand_ellipsis() works", {
 
     expect_identical(expand_ellipsis(ast, 3), expected_ast)
 
-    # ... -> (...)
+    # test ... -> (...)
 
     ast <- EinopsAst(
         input_axes = OneSidedAstNode(
@@ -129,7 +129,7 @@ test_that("expand_ellipsis() works", {
 
     expect_identical(expand_ellipsis(ast, 2L), expected_ast)
 
-    # " ... ->  "
+    # test " ... ->  "
 
     ast <- EinopsAst(
         input_axes = OneSidedAstNode(
@@ -345,6 +345,6 @@ test_that("prepare_transformation_recipe() works", {
         )
     )
 
-    # TODO complicated test with 1's, anon axes, brackets, ellipses, and axis names
+    # TODO complicated test with 1's, anon axes, brackets, ellipses, and axes
 
 })

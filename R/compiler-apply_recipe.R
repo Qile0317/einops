@@ -26,15 +26,6 @@ apply_recipe <- function(
         recipe, backend$shape(tensor), axes_lengths
     )
 
-    # FIXME: for some reduce cases, added_axes = r2r::hashmap(
-    #     list(
-    #         1,
-    #         integer()
-    #     )
-    # )
-    # which is wrong because second element cannot be empty.
-    # its from find_node_type(groupastnode)
-
     if (length(execution_plan$init_shapes) > 0) {
         tensor %<>% backend$reshape(execution_plan$init_shapes)
     }

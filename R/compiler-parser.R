@@ -69,7 +69,7 @@ parse_onesided_ast <- function(tokens) {
     OneSidedAstNode(axes)
 }
 
-#' @title Parse a sequence of axis tokens 
+#' @title Parse a sequence of axis tokens
 #' @param tokens List of tokens representing one side of the pattern
 #' @return List of AST nodes
 #' @keywords internal
@@ -85,75 +85,88 @@ parse_axes_iter <- function(tokens) {
     while (i <= length(tokens)) {
         token <- tokens[[i]]
         
-        # nolint start: indentation_linter.
         switch(token$type,
-        NAME = { 
-            src <- list(start = token$start)
-            node <- NamedAxisAstNode(token$value, src)
-            result <- append(result, list(node))
-        },
-        INT = {
-            src <- list(start = token$start)
-            node <- ConstantAstNode(token$value, src)
-            result <- append(result, list(node))
-        },
-        ELLIPSIS = {
-            if (has_ellipsis) {
-                stop("Multiple ellipses found in axis pattern at position ", token$start)
-            }
-            has_ellipsis <- TRUE
-            src <- list(start = token$start)
-            node <- EllipsisAstNode(src)
-            result <- append(result, list(node))
-        },
-        UNDERSCORE = {
-            src <- list(start = token$start)
-            node <- UnderscoreAstNode(src)
-            result <- append(result, list(node))
-        },
-        LPAREN = {
-            # Find matching closing paren
-            paren_depth <- 1
-            group_start <- i + 1
-            group_end <- i + 1
-            while (group_end <= length(tokens) && paren_depth > 0) {
-                if (tokens[[group_end]]$type == "LPAREN") {
-                    paren_depth <- paren_depth + 1
-                    # Check for nesting - not allowed in einops
-                    if (paren_depth > 1) {
-                        stop("Groups cannot be nested at position ", tokens[[group_end]]$start)
+            NAME = {
+                src <- list(start = token$start)
+                node <- NamedAxisAstNode(token$value, src)
+                result <- append(result, list(node))
+            },
+            INT = {
+                src <- list(start = token$start)
+                node <- ConstantAstNode(token$value, src)
+                result <- append(result, list(node))
+            },
+            ELLIPSIS = {
+                if (has_ellipsis) {
+                    stop(
+                        "Multiple ellipses found in axis pattern at position ",
+                        token$start
+                    )
+                }
+                has_ellipsis <- TRUE
+                src <- list(start = token$start)
+                node <- EllipsisAstNode(src)
+                result <- append(result, list(node))
+            },
+            UNDERSCORE = {
+                src <- list(start = token$start)
+                node <- UnderscoreAstNode(src)
+                result <- append(result, list(node))
+            },
+            LPAREN = {
+                # Find matching closing paren
+                paren_depth <- 1
+                group_start <- i + 1
+                group_end <- i + 1
+                while (group_end <= length(tokens) && paren_depth > 0) {
+                    if (tokens[[group_end]]$type == "LPAREN") {
+                        paren_depth <- paren_depth + 1
+                        # Check for nesting - not allowed in einops
+                        if (paren_depth > 1) {
+                            stop(
+                                "Groups cannot be nested at position ",
+                                tokens[[group_end]]$start
+                            )
+                        }
+                    } else if (tokens[[group_end]]$type == "RPAREN") {
+                        paren_depth <- paren_depth - 1
                     }
-                } else if (tokens[[group_end]]$type == "RPAREN") {
-                    paren_depth <- paren_depth - 1
+                    if (paren_depth > 0) {
+                        group_end <- group_end + 1
+                    }
                 }
                 if (paren_depth > 0) {
-                    group_end <- group_end + 1
+                    stop(
+                        "Unmatched opening parenthesis '(' at position ",
+                        token$start
+                    )
                 }
-            }
-            if (paren_depth > 0) {
-                stop("Unmatched opening parenthesis '(' at position ", token$start)
-            }
-            # Parse group contents
-            if (group_start > group_end - 1) {
-                # Empty group
-                group_children <- list()
-            } else {
-                group_tokens <- tokens[group_start:(group_end - 1)]
-                group_children <- parse_axes_iter(group_tokens)
-            }
-            # Use opening paren position as group source
-            src <- list(start = token$start)
-            group_node <- GroupAstNode(group_children, src)
-            result <- append(result, list(group_node))
-            # Skip to after the closing paren
-            i <- group_end
-        },
-        RPAREN = {
-            stop("Unmatched closing parenthesis ')' at position ", token$start)
-        },
-        stop("Unexpected token type '", token$type, "' at position ", token$start)
+                # Parse group contents
+                if (group_start > group_end - 1) {
+                    # Empty group
+                    group_children <- list()
+                } else {
+                    group_tokens <- tokens[group_start:(group_end - 1)]
+                    group_children <- parse_axes_iter(group_tokens)
+                }
+                # Use opening paren position as group source
+                src <- list(start = token$start)
+                group_node <- GroupAstNode(group_children, src)
+                result <- append(result, list(group_node))
+                # Skip to after the closing paren
+                i <- group_end
+            },
+            RPAREN = {
+                stop(
+                    "Unmatched closing parenthesis ')' at position ",
+                    token$start
+                )
+            },
+            stop(
+                "Unexpected token type '",
+                token$type, "' at position ", token$start
+            )
         )
-        # nolint end: indentation_linter.
         
         i <- i + 1
     }

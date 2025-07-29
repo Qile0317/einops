@@ -56,11 +56,13 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
         )
     }
 
-    # FIXME: for torch_tensor, this fails but only due to tensor -> array conversion
-    # using x$flatten() we see that they are actually identical, so this either we
+    # FIXME: for torch_tensor, this fails but only due to tensor -> array
+    # conversion
+    # using x$flatten() we see that they are actually identical, so this either
+    # we
     # need to change the conversion and NOT use torch::as_array() or we need to
-    # change the test to use x$flatten() instead of as_base_array(). Neither feel
-    # right nor intuitive.
+    # change the test to use x$flatten() instead of as_base_array(). Neither
+    # feel that right nor intuitive.
     result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
     expect_identical(
         as.numeric(as_base_array(result)), as.numeric(as_base_array(x))
@@ -139,13 +141,12 @@ test_in_all_tensor_types_that("rearrange() works", {
     expect_equal(dim(y6), c(10, 10, 30, 40))
     
     # Test 7: split of embedding into groups
-    # Note: R doesn't have tuple unpacking like Python, so we need to handle differently
     y7_result <- rearrange(x, "b (c g) h w -> g b c h w", g = 2)
     expect_equal(dim(y7_result), c(2, 10, 10, 30, 40))
     
     # Test 10: stack
     x_list <- lapply(1:10, function(i) {
-        x[i, , , ] # TODO this may not work for all tensors in the future - may need to define S3 method for a wrapped version
+        x[i, , , ]
     })
     y10 <- rearrange(x_list, "b c h w -> b h w c")
     expect_equal(dim(y10), c(10, 30, 40, 20))
@@ -163,8 +164,8 @@ test_in_all_tensor_types_that("rearrange() works on lists", {
     x <- create_seq_tensor(2:6)
     
     expect_identical(
-        rearrange( # TODO may not be the same for all frameworks - may need a seperate backend + interface function for this
-            lapply(seq_len(dim(x)[1]), function(i) x[i,,,,]),
+        rearrange(
+            lapply(seq_len(dim(x)[1]), function(i) x[i, , , , ]),
             "... -> (...)"
         ),
         rearrange(x, "... -> (...)")

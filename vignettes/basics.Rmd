@@ -115,18 +115,18 @@ dim(rearrange(ims, "b h w c -> (b h w c)"))
 ```{r}
 # decomposition is the inverse process - represent an axis as a combination of new axes
 # several decompositions possible, so b1=2 is to decompose 6 to b1=2 and b2=3
-dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1=2))
+dim(rearrange(ims, "(b1 b2) h w c -> b1 b2 h w c ", b1 = 2))
 ```
 
 ```{r fig.width = pane_length(3), fig.height = pane_length(2)}
 # finally, combine composition and decomposition:
-rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1=2)
+rearrange(ims, "(b1 b2) h w c -> (b1 h) (b2 w) c ", b1 = 2)
 ```
 
 ```{r fig.width = pane_length(2), fig.height = pane_length(3)}
 # slightly different composition: b1 is merged with width, b2 with height
 # ... so letters are ordered by w then by h
-rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1=2)
+rearrange(ims, "(b1 b2) h w c -> (b2 h) (b1 w) c ", b1 = 2)
 ```
 
 ```{r, fig.height = pane_length(4)}
@@ -155,11 +155,11 @@ rearrange(ims, "b h w c -> h (w b) c")
 
 ```{r, fig.height = pane_length(1)}
 # what if b1 and b2 are reordered before composing to width?
-rearrange(ims, "(b1 b2) h w c -> h (b1 b2 w) c ", b1=2)  # produces 'einops'
+rearrange(ims, "(b1 b2) h w c -> h (b1 b2 w) c ", b1 = 2)  # produces 'einops'
 ```
 
 ```{r, fig.height = pane_length(1)}
-rearrange(ims, "(b1 b2) h w c -> h (b2 b1 w) c ", b1=2)  # produces 'eoipns'
+rearrange(ims, "(b1 b2) h w c -> h (b2 b1 w) c ", b1 = 2)  # produces 'eoipns'
 ```
 
 ## Meet einops.reduce
@@ -192,18 +192,18 @@ reduce(ims, "b h w c -> h w", "min")
 ```{r, fig.height = pane_length(1)}
 # this is mean-pooling with 2x2 kernel
 # image is split into 2x2 patches, each patch is averaged
-reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "mean", h2=2, w2=2)
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "mean", h2 = 2, w2 = 2)
 ```
 
 ```{r, fig.height = pane_length(1)}
 # max-pooling is similar
 # result is not as smooth as for mean-pooling
-reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2=2, w2=2)
+reduce(ims, "b (h h2) (w w2) c -> h (b w) c", "max", h2 = 2, w2 = 2)
 ```
 
 ```{r fig.width = pane_length(2), fig.height = pane_length(3)}
 # yet another example. Can you compute the resulting shape?
-reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1=2)
+reduce(ims, "(b1 b2) h w c -> (b2 h) (b1 w)", "mean", b1 = 2)
 ```
 
 ## Stack and concatenate
@@ -276,7 +276,7 @@ dim(`repeat`(ims[1, , , ], "h w c -> h 5 w c"))
 
 ```{r, fig.height = pane_length(1), fig.width = pane_length(3)}
 # repeat along w (existing axis)
-`repeat`(ims[1, , , ], "h w c -> h (repeated w) c", repeated=3)
+`repeat`(ims[1, , , ], "h w c -> h (repeated w) c", repeated = 3)
 ```
 
 ```{r, fig.width = pane_length(2), fig.height = pane_length(2)}
@@ -311,18 +311,18 @@ all(ims == reduced)
 ```{r}
 # interweaving pixels of different pictures
 # all letters are observable
-rearrange(ims, "(b1 b2) h w c -> (h b1) (w b2) c ", b1=2)
+rearrange(ims, "(b1 b2) h w c -> (h b1) (w b2) c ", b1 = 2)
 ```
 
 ```{r}
 # interweaving along vertical for couples of images
-rearrange(ims, "(b1 b2) h w c -> (h b1) (b2 w) c", b1=2)
+rearrange(ims, "(b1 b2) h w c -> (h b1) (b2 w) c", b1 = 2)
 ```
 
 ```{r}
 # interweaving lines for couples of images
 # exercise: achieve the same result without einops in your favourite framework
-reduce(ims, "(b1 b2) h w c -> h (b2 w) c", "max", b1=2)
+reduce(ims, "(b1 b2) h w c -> h (b2 w) c", "max", b1 = 2)
 ```
 
 ```{r}
@@ -338,26 +338,26 @@ reduce(ims, "b (h 4) (w 3) c -> (h) (b w)", "mean")
 
 ```{r, fig.height = pane_length(1)}
 # split each image in two halves, compute mean of the two
-reduce(ims, "b (h1 h2) w c -> h2 (b w)", "mean", h1=2)
+reduce(ims, "b (h1 h2) w c -> h2 (b w)", "mean", h1 = 2)
 ```
 
 ```{r, fig.height = pane_length(1)}
 # split in small patches and transpose each patch
-rearrange(ims, "b (h1 h2) (w1 w2) c -> (h1 w2) (b w1 h2) c", h2=8, w2=8)
+rearrange(ims, "b (h1 h2) (w1 w2) c -> (h1 w2) (b w1 h2) c", h2 = 8, w2 = 8)
 ```
 
 ```{r, fig.height = pane_length(1)}
 # stop me someone!
-rearrange(ims, "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c", h2=2, w2=2, w3=2, h3=2)
+rearrange(ims, "b (h1 h2 h3) (w1 w2 w3) c -> (h1 w2 h3) (b w1 h2 w3) c", h2 = 2, w2 = 2, w3 = 2, h3 = 2)
 ```
 
 ```{r}
-rearrange(ims, "(b1 b2) (h1 h2) (w1 w2) c -> (h1 b1 h2) (w1 b2 w2) c", h1=3, w1=3, b2=3)
+rearrange(ims, "(b1 b2) (h1 h2) (w1 w2) c -> (h1 b1 h2) (w1 b2 w2) c", h1 = 3, w1 = 3, b2 = 3)
 ```
 
 ```{r, fig.height = pane_length(1)}
 # patterns can be arbitrarily complicated
-reduce(ims, "(b1 b2) (h1 h2 h3) (w1 w2 w3) c -> (h1 w1 h3) (b1 w2 h2 w3 b2) c", "mean", h2=2, w1=2, w3=2, h3=2, b2=2)
+reduce(ims, "(b1 b2) (h1 h2 h3) (w1 w2 w3) c -> (h1 w1 h3) (b1 w2 h2 w3 b2) c", "mean", h2 = 2, w1 = 2, w3 = 2, h3 = 2, b2 = 2)
 ```
 
 <!--
@@ -371,8 +371,8 @@ rearrange(im2, "b h w c -> h (b w) c")
 
 ```{r, fig.height = pane_length(1)}
 # pixelate: first downscale by averaging, then upscale back using the same pattern
-averaged <- reduce(ims, "b (h h2) (w w2) c -> b h w c", "mean", h2=6, w2=8)
-`repeat`(averaged, "b h w c -> (h h2) (b w w2) c", h2=6, w2=8)
+averaged <- reduce(ims, "b (h h2) (w w2) c -> b h w c", "mean", h2 = 6, w2 = 8)
+`repeat`(averaged, "b h w c -> (h h2) (b w w2) c", h2 = 6, w2 = 8)
 ```
 
 ```{r, fig.height = pane_length(1)}
@@ -382,7 +382,7 @@ rearrange(ims, "b h w c -> w (b h) c")
 ```{r, fig.height = pane_length(1)}
 # let's bring color dimension as part of horizontal axis
 # at the same time horizontal axis is downsampled by 2x
-reduce(ims, "b (h h2) (w w2) c -> (h w2) (b w c)", "mean", h2=3, w2=3)
+reduce(ims, "b (h h2) (w w2) c -> (h w2) (b w c)", "mean", h2 = 3, w2 = 3)
 ```
 
 ## Summary

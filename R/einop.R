@@ -52,7 +52,10 @@ einop <- function(
 
     if (op == "rearrange") {
         if (!is.null(reduction)) {
-            stop("Got reduction operation but there is no dimension to reduce in pattern: ", expr)
+            stop(
+                "Got reduction operation but there is no dimension to reduce ",
+                "in pattern: ", expr
+            )
         }
         return(rearrange(x, expr, ..., .row_major = .row_major))
     } else if (op == "reduce") {

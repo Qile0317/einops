@@ -61,7 +61,7 @@ test_that("create_execution_plan works", {
         )
     )
 
-    # rearrange(x, "a b c d e f -> a (b) (c d e) f")
+    # test for rearrange(x, "a b c d e f -> a (b) (c d e) f")
 
     recipe <- TransformRecipe(
         elementary_axes_lengths = rep(unknown_axis_length(), 6L),

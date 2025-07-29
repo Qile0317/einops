@@ -41,8 +41,8 @@ test_in_all_tensor_types_that("repeat() works on lists", {
     x <- create_seq_tensor(2:6)
     
     expect_identical(
-        einops.repeat( # TODO may not be the same for all frameworks - may need a seperate backend + interface function for this
-            lapply(seq_len(dim(x)[1]), function(i) x[i,,,,]),
+        einops.repeat(
+            lapply(seq_len(dim(x)[1]), function(i) x[i, , , , ]),
             "... -> b (...)",
             b = 3
         ),

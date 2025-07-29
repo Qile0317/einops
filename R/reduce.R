@@ -34,7 +34,7 @@
 #' y <- reduce(x, 'time batch channel -> batch channel', 'max')
 #'
 #' # let's pretend now that x is a batch of images
-#' # with 4 dims: batch=10, height=20, width=30, channel=40
+#' # with 4 dims: batch=10height = 20width = 30channel = 40
 #' x <- array(rnorm(10 * 20 * 30 * 40), dim = c(10, 20, 30, 40))
 #'
 #' # 2d max-pooling with kernel size = 2 * 2 for image processing
@@ -87,7 +87,7 @@ reduce.list <- function(
     .reduce.list(x, expr, func, ..., .row_major = .row_major)
 }
 
-.reduce.list <- function(
+.reduce.list <- function( # nolint: object_name_linter.
     x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
 ) {
     UseMethod(".reduce.list", x[[1]])

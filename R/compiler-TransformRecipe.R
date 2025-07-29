@@ -127,7 +127,7 @@ prepare_transformation_recipe <- function(
         reverse_group_orders_if(reverse_groups)
 
     axis_name2known_length <- AddOnlyOrderedMap(
-        key_validator = is_flat_axis_names_element, # TODO I think only characters are needed
+        key_validator = is_flat_axis_names_element, # TODO check
         val_validator = function(x) {
             if (!(is.integer(x) && length(x) == 1L)) return(FALSE)
             x > 0L || is_unknown_axis_length(x) || is_expected_axis_length(x)

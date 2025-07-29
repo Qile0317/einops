@@ -1,5 +1,5 @@
 test_that("lex produces exact ordered token objects with positions", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("h", 3),
         NameToken("w", 5),
@@ -11,12 +11,12 @@ test_that("lex produces exact ordered token objects with positions", {
         RParenToken(16)
     )
     tokens <- lex("b h w -> b (h w)")
-    expect_equal(tokens, expectedTokens)
+    expect_equal(tokens, expected_tokens)
     expect_equal(to_expression(tokens), "b h w -> b (h w)")
 })
 
 test_that("lex handles whitespace insensitivity", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("h", 3),
         NameToken("w", 5)
@@ -34,59 +34,59 @@ test_that("lex handles whitespace insensitivity", {
         lapply(tokens, function(t) list(type = t$type, value = t$value))
     }
 
-    expect_equal(extract_tokens(tokens1), extract_expected(expectedTokens))
-    expect_equal(extract_tokens(tokens2), extract_expected(expectedTokens))
-    expect_equal(extract_tokens(tokens3), extract_expected(expectedTokens))
+    expect_equal(extract_tokens(tokens1), extract_expected(expected_tokens))
+    expect_equal(extract_tokens(tokens2), extract_expected(expected_tokens))
+    expect_equal(extract_tokens(tokens3), extract_expected(expected_tokens))
     expect_equal(to_expression(tokens1), "b h w")
 })
 
 test_that("lex recognizes ellipsis correctly", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         EllipsisToken(1),
         NameToken("h", 5),
         NameToken("w", 7)
     )
     tokens <- lex("... h w")
-    expect_equal(tokens, expectedTokens)
+    expect_equal(tokens, expected_tokens)
     expect_equal(to_expression(tokens), "... h w")
 })
 
 test_that("lex handles numeric literals in parentheses", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         LParenToken(1),
         IntToken("3", 2),
         RParenToken(3)
     )
     tokens <- lex("(3)")
-    expect_equal(tokens, expectedTokens)
+    expect_equal(tokens, expected_tokens)
     expect_equal(to_expression(tokens), "(3)")
 })
 
 test_that("lex handles complex numeric expressions", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         LParenToken(1),
         NameToken("h", 2),
         IntToken("2", 4),
         RParenToken(5)
     )
     tokens <- lex("(h 2)")
-    expect_equal(tokens, expectedTokens)
+    expect_equal(tokens, expected_tokens)
     expect_equal(to_expression(tokens), "(h 2)")
 })
 
 test_that("lex provides accurate 1-based column positions", {
-    expectedTokens <- EinopsTokenSequence(
+    expected_tokens <- EinopsTokenSequence(
         NameToken("ab", 1),
         NameToken("cd", 4)
     )
     tokens <- lex("ab cd")
-    expect_equal(tokens, expectedTokens)
+    expect_equal(tokens, expected_tokens)
     expect_equal(to_expression(tokens), "ab cd")
 })
 
 test_that("lexer handles complex patterns", {
     pattern1 <- "b c (h1 2) (w1 2) -> b c h1 w1"
-    expectedTokens1 <- EinopsTokenSequence(
+    expected_tokens1 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         LParenToken(5),
@@ -104,11 +104,11 @@ test_that("lexer handles complex patterns", {
         NameToken("w1", 29)
     )
     tokens1 <- lex(pattern1)
-    expect_equal(tokens1, expectedTokens1)
+    expect_equal(tokens1, expected_tokens1)
     expect_equal(to_expression(tokens1), pattern1)
 
     pattern2 <- "b c (h1 h2) (w1 w2) -> b c h1 w1"
-    expectedTokens2 <- EinopsTokenSequence(
+    expected_tokens2 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         LParenToken(5),
@@ -126,11 +126,11 @@ test_that("lexer handles complex patterns", {
         NameToken("w1", 31)
     )
     tokens2 <- lex(pattern2)
-    expect_equal(tokens2, expectedTokens2)
+    expect_equal(tokens2, expected_tokens2)
     expect_equal(to_expression(tokens2), pattern2)
 
     pattern3 <- "b c h w -> 1 c 1 1"
-    expectedTokens3 <- EinopsTokenSequence(
+    expected_tokens3 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         NameToken("h", 5),
@@ -142,11 +142,11 @@ test_that("lexer handles complex patterns", {
         IntToken("1", 18)
     )
     tokens3 <- lex(pattern3)
-    expect_equal(tokens3, expectedTokens3)
+    expect_equal(tokens3, expected_tokens3)
     expect_equal(to_expression(tokens3), pattern3)
 
     pattern4 <- "b c h w -> b c () ()"
-    expectedTokens4 <- EinopsTokenSequence(
+    expected_tokens4 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("c", 3),
         NameToken("h", 5),
@@ -160,11 +160,11 @@ test_that("lexer handles complex patterns", {
         RParenToken(20)
     )
     tokens4 <- lex(pattern4)
-    expect_equal(tokens4, expectedTokens4)
+    expect_equal(tokens4, expected_tokens4)
     expect_equal(to_expression(tokens4), pattern4)
 
     pattern5 <- "... h w c -> ... (h w) c"
-    expectedTokens5 <- EinopsTokenSequence(
+    expected_tokens5 <- EinopsTokenSequence(
         EllipsisToken(1),
         NameToken("h", 5),
         NameToken("w", 7),
@@ -178,11 +178,11 @@ test_that("lexer handles complex patterns", {
         NameToken("c", 24)
     )
     tokens5 <- lex(pattern5)
-    expect_equal(tokens5, expectedTokens5)
+    expect_equal(tokens5, expected_tokens5)
     expect_equal(to_expression(tokens5), pattern5)
 
     pattern6 <- "b h w c -> (b h w c)"
-    expectedTokens6 <- EinopsTokenSequence(
+    expected_tokens6 <- EinopsTokenSequence(
         NameToken("b", 1),
         NameToken("h", 3),
         NameToken("w", 5),
@@ -196,17 +196,17 @@ test_that("lexer handles complex patterns", {
         RParenToken(20)
     )
     tokens6 <- lex(pattern6)
-    expect_equal(tokens6, expectedTokens6)
+    expect_equal(tokens6, expected_tokens6)
     expect_equal(to_expression(tokens6), pattern6)
 
     pattern7 <- "a b ->"
-    expectedTokens7 <- EinopsTokenSequence(
+    expected_tokens7 <- EinopsTokenSequence(
         NameToken("a", 1),
         NameToken("b", 3),
         ArrowToken(5)
     )
     tokens7 <- lex(pattern7)
-    expect_equal(tokens7, expectedTokens7)
+    expect_equal(tokens7, expected_tokens7)
     expect_equal(to_expression(tokens7), pattern7)
 
 })

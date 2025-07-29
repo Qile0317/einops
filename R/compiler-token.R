@@ -72,10 +72,8 @@ EinopsTokenSequence <- function(...) {
     asEinopsTokenSequence(tokens)
 }
 
-asEinopsTokenSequence <- function(x) {
-    if (inherits(x, "EinopsTokenSequence")) {
-        return(x)
-    }
+asEinopsTokenSequence <- function(x) { # nolint: object_name_linter.
+    if (inherits(x, "EinopsTokenSequence")) return(x)
     if (is.list(x)) {
         return(structure(unclass(x), class = c("EinopsTokenSequence", "list")))
     }

@@ -38,7 +38,11 @@ lex <- function(pattern) {
         start_pos <- pos
 
         # Arrow and Comma operator (can be spaced or not)
-        if ((char == "-" && pos < n && pattern_chars[pos + 1] == ">") || char == ",") {
+        if ((char == "-" &&
+            pos < n && # nolint: indentation_linter.
+            pattern_chars[pos + 1] == ">") ||
+            char == "," # nolint: indentation_linter.
+        ) {
             if (char == "-" && pattern_chars[pos + 1] == ">") {
                 tokens <- append(tokens, list(ArrowToken(start_pos)))
                 pos <- pos + 2
@@ -75,10 +79,12 @@ lex <- function(pattern) {
         # Numbers
         if (char %in% as.character(0:9)) {
             end_pos <- pos
-            while (end_pos <= n && pattern_chars[end_pos] %in% as.character(0:9)) {
+            while (end_pos <= n &&
+                    pattern_chars[end_pos] %in% as.character(0:9)
+            ) {
                 end_pos <- end_pos + 1
             }
-            value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
+            value <- paste(pattern_chars[pos:(end_pos - 1)], collapse = "")
             tokens <- append(tokens, list(IntToken(value, start_pos)))
             pos <- end_pos
             next
@@ -87,10 +93,13 @@ lex <- function(pattern) {
         # Names (letters and underscores)
         if (char %in% c(letters, LETTERS, "_")) {
             end_pos <- pos
-            while (end_pos <= n && pattern_chars[end_pos] %in% c(letters, LETTERS, "_", as.character(0:9))) {
+            while (end_pos <= n &&
+                    pattern_chars[end_pos] %in%
+                        c(letters, LETTERS, "_", as.character(0:9))
+            ) {
                 end_pos <- end_pos + 1
             }
-            value <- paste(pattern_chars[pos:(end_pos-1)], collapse = "")
+            value <- paste(pattern_chars[pos:(end_pos - 1)], collapse = "")
             tokens <- append(tokens, list(NameToken(value, start_pos)))
             pos <- end_pos
             next
@@ -110,8 +119,8 @@ lex <- function(pattern) {
 # (not part of an identifier or number)
 is_standalone_char <- function(char, pos, pattern_chars, n) {
     alphanumeric <- c(letters, LETTERS, "_", as.character(0:9))
-    prev_is_alnum <- pos > 1 && pattern_chars[pos-1] %in% alphanumeric
-    next_is_alnum <- pos < n && pattern_chars[pos+1] %in% alphanumeric
+    prev_is_alnum <- pos > 1 && pattern_chars[pos - 1] %in% alphanumeric
+    next_is_alnum <- pos < n && pattern_chars[pos + 1] %in% alphanumeric
     !prev_is_alnum && !next_is_alnum
 }
 
@@ -119,7 +128,8 @@ is_standalone_char <- function(char, pos, pattern_chars, n) {
 handle_simple_token <- function(char, pos, pattern_chars, n, token_mapping) {
     if (char %in% names(token_mapping)) {
         token_info <- token_mapping[[char]]
-        if (token_info$standalone && !is_standalone_char(char, pos, pattern_chars, n)) {
+        if (token_info$standalone &&
+            !is_standalone_char(char, pos, pattern_chars, n)) { # nolint: indentation_linter, line_length_linter.
             return(NULL)
         }
         return(list(token = token_info$constructor(pos), advance = 1))
