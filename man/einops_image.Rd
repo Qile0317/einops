@@ -25,7 +25,4 @@ will return a single image tensor.
 data("einops_image")
 for (i in seq_len(6)) print(einops_image[i, , , ])
 }
-\seealso{
-\code{\link[=as.cimg]{as.cimg()}}
-}
 \keyword{datasets}
