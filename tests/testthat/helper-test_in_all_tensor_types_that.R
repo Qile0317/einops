@@ -20,29 +20,30 @@ test_in_all_tensor_types_that <- function(desc, code) {
 
     assert_that(is.string(desc))
 
-    tensor_types <- get_backend_registry()$get_supported_types()
     substituted_code <- substitute(code)
-    backend_registry <- get_backend_registry()
     parent_env <- parent.frame()
 
-    for (tensor_type in tensor_types) {
+    for (tensor_type in get_backend_registry()$get_supported_types()) {
 
         test_that(glue("{desc} for [{tensor_type}]"), {
 
-            for (pkg in backend_registry$get_dependencies(tensor_type)) {
+            for (pkg in get_backend_registry()$get_dependencies(tensor_type)) {
                 skip_if_not_installed(pkg)
             }
 
             skip_if_not(
-                backend_registry$is_loadable(tensor_type),
+                get_backend_registry()$is_loadable(tensor_type),
                 glue("Tensor type {tensor_type}'s backend is not loadable")
             )
 
-            backend <- backend_registry$get_backend_from_type(tensor_type)
+            backend <- get_backend_registry()$get_backend_from_type(tensor_type)
             
             eval_env <- new.env(parent = parent_env)
             eval_env$create_tensor <- function(values, dims, ...) {
                 backend$create_tensor(values, dims, ...)
+            }
+            eval_env$create_seq_tensor <- function(dims, ...) {
+                backend$create_tensor(1:prod(dims), dims, ...)
             }
             eval_env$as_base_array <- function(x) backend$as_array(x)
             
@@ -64,7 +65,7 @@ create_tensor <- function(values, dims, ...) {
     stop("create_tensor() must be defined in the test context")
 }
 
-#' Utility function to create a backend-agnostic tensor, with contents
+#' Interface function to create a backend-agnostic tensor, with contents
 #' from 1 to the product of dimensions
 #' @param dims A vector of dimensions for the tensor.
 #' @param ... Additional arguments passed to the backend's tensor creation
@@ -72,8 +73,7 @@ create_tensor <- function(values, dims, ...) {
 #' @return A tensor object created by the backend, filled with sequential
 #' integers from 1 to the product of `dims`.
 create_seq_tensor <- function(dims, ...) {
-    create_tensor <- get("create_tensor", envir = parent.frame())
-    create_tensor(1:prod(dims), dims, ...)
+    stop("create_seq_tensor() must be defined in the test context")
 }
 
 #' Interface function to convert a tensor to a base array
@@ -83,5 +83,5 @@ create_seq_tensor <- function(dims, ...) {
 #' @param x A tensor object to be converted.
 #' @return A base R array representation of the tensor.
 as_base_array <- function(x) {
-    stop("as_base_array must be defined in the test context")
+    stop("as_base_array() must be defined in the test context")
 }

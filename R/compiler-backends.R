@@ -7,27 +7,6 @@ get_backend <- function(tensor) {
     get_backend_registry()$get_backend(tensor)
 }
 
-#' Get the singleton backend registry instance
-#'
-#' This function retrieves the singleton instance of the backend registry.
-#' If the instance does not exist, it creates a new one.
-#' If `refresh` is set to TRUE, it will create a new instance even if
-#' one already exists.
-#'
-#' @param clear_testing Logical indicating whether to wipe all backends assigned
-#' from tests
-#' @return A singleton instance of [BackendRegistry()].
-#' @keywords internal
-get_backend_registry <- function(
-    clear_testing = !identical(Sys.getenv("TESTTHAT"), "true")
-) {
-    assert_that(is.flag(clear_testing))
-    if (clear_testing) {
-        BackendRegistry$new()$clear_testing_backends()
-    }
-    BackendRegistry$new()
-}
-
 #' Simple thunk: wraps an input in a no-argument function
 #' @param input Any R object or expression
 #' @return A thunk that returns the object when called with
@@ -77,7 +56,7 @@ unregister_backend <- function(tensor_type) {
 #' Contains global backend pool, ensuring backends are only loaded if
 #' actually required.
 #' @keywords internal
-BackendRegistry <- R6Class("BackendRegistry", inherit = R6P::Singleton, cloneable = FALSE,
+BackendRegistry <- R6Class("BackendRegistry", cloneable = FALSE,
 
 private = list(
     # A mapping of types to backend class thunks
@@ -96,7 +75,7 @@ public = list(
 
     #' @description detect the return relevant backend from the input
     #' @param tensor any supported tensor-like class
-    #' @return A singleton instance of a [BackendRegistry()] object
+    #' @return A singleton instance of a [EinopsBackend()] object
     get_backend = function(tensor) {
         tensor_classes <- class(tensor)
         for (tensor_class in tensor_classes) {
@@ -113,7 +92,6 @@ public = list(
     #' @return An instance of the backend class for the specified tensor type.
     get_backend_from_type = function(tensor_class) {
         assert_that(is.string(tensor_class))
-        # Check if it's an alias first
         if (exists(tensor_class, envir = private$alias2type)) {
             tensor_class <- private$alias2type[[tensor_class]]
         }
@@ -290,6 +268,29 @@ public = list(
         })
     }
 ))
+
+.einops_backend_registry <- BackendRegistry$new()
+
+#' Get the singleton backend registry instance
+#'
+#' This function retrieves the singleton instance of the backend registry.
+#' If the instance does not exist, it creates a new one.
+#' If `refresh` is set to TRUE, it will create a new instance even if
+#' one already exists.
+#'
+#' @param clear_testing Logical indicating whether to wipe all backends assigned
+#' from tests
+#' @return A singleton instance of [BackendRegistry()].
+#' @keywords internal
+get_backend_registry <- function(
+    clear_testing = !identical(Sys.getenv("TESTTHAT"), "true")
+) {
+    assert_that(is.flag(clear_testing))
+    if (clear_testing) {
+        .einops_backend_registry$clear_testing_backends()
+    }
+    .einops_backend_registry
+}
 
 #' @title
 #' Base Backend Class for Einops Tensor Operations
