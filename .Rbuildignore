@@ -12,3 +12,4 @@
 ^Meta$
 ^\.markdownlint.json$
 ^CITATION\.cff$
+^codecov\.yml$
