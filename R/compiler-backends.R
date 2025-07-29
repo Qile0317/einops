@@ -509,7 +509,7 @@ register_backend(
     tensor_type = "array",
     backend_class = BaseArrayBackend,
     dependencies = "abind",
-    aliases = c("integer", "numeric")
+    aliases = c("integer", "numeric", "character")
 )
 
 # TODO utility function to handle names. abind assigns empty names to each dim

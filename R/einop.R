@@ -50,7 +50,6 @@ einop <- function(
     ...,
     .row_major = getOption("einops_row_major", FALSE)
 ) {
-    assert_that(is.string(expr), is.string(reduction) || is.null(reduction))
     
     op <- match_einop(expr, reduction, ...)
 
@@ -79,7 +78,10 @@ einop <- function(
 
 match_einop <- function(expr, reduction = NULL, ...) {
 
-    assert_that(is.string(expr), is.string(reduction) || is.null(reduction))
+    assert_that(
+        is.string(expr),
+        is.string(reduction) || is.function(reduction) || is.null(reduction)
+    )
     
     ast <- parse_einops_ast(lex(expr))
     input_identifiers_hashset <- get_identifiers_hashset(ast$input_axes)
@@ -95,6 +97,7 @@ match_einop <- function(expr, reduction = NULL, ...) {
 
     for (index in get_identifiers(ast$output_axes)) {
         if (r2r::query(input_identifiers_hashset, index)) next
+        if (!is.string(op)) next
         if (op != "rearrange") {
             stop("You must perform a reduce and repeat separately: ", expr)
         }
