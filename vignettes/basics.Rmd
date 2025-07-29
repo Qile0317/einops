@@ -13,6 +13,11 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 
+if (!requireNamespace("foo", quietly = TRUE)) {
+    cat("The suggested dependency `imager` is not installed, skipping vignette build.")
+    knitr::knit_exit()
+}
+
 # figure dimensions
 pane_length <- function(p) 0.5 * p
 SINGLE_PANE <- "7.142857%"
