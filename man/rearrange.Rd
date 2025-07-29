@@ -40,6 +40,8 @@ When composing axes, C-order enumeration is used (consecutive elements
 have different last axis). Find more examples in the vignettes.
 }
 \examples{
+if (requireNamespace("abind", quietly = TRUE)) {
+
 # suppose we have a set of 32 images in "h w c" format (height-width-channel)
 images <- lapply(1:32, function(i) {
     as_image_tensor(array(rnorm(30*40*3), dim = c(30, 40, 3)))
@@ -66,5 +68,7 @@ y <- rearrange(
 y <- rearrange(
     images, 'b (h h1) (w w1) c -> b h w (c h1 w1)', h1 = 2, w1 = 2
 )
+
+}
 
 }

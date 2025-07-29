@@ -41,6 +41,8 @@ pattern
 reader-friendly notation.
 }
 \examples{
+if (requireNamespace("abind", quietly = TRUE)) {
+
 set.seed(42)
 # Suppose x is a 3D array: 100 x 32 x 64
 x <- array(rnorm(100 * 32 * 64), dim = c(100, 32, 64))
@@ -73,5 +75,7 @@ dim(reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h1 = 3, w1 = 4))
 # Global average pooling
 dim(reduce(x, 'b c h w -> b c', 'mean'))
 # (10, 20)
+
+}
 
 }

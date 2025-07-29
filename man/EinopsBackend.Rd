@@ -13,6 +13,7 @@ from this class and implement the required methods.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-EinopsBackend-new}{\code{EinopsBackend$new()}}
+\item \href{#method-EinopsBackend-print}{\code{EinopsBackend$print()}}
 \item \href{#method-EinopsBackend-repr}{\code{EinopsBackend$repr()}}
 \item \href{#method-EinopsBackend-tensor_type}{\code{EinopsBackend$tensor_type()}}
 \item \href{#method-EinopsBackend-preprocess}{\code{EinopsBackend$preprocess()}}
@@ -46,6 +47,26 @@ setup all dependencies and error otherwise.
 
 \subsection{Returns}{
 A new EinopsBackend instance.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-print"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-print}{}}}
+\subsection{Method \code{print()}}{
+The print method for EinopsBackend instances
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$print(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{arguments passed to \code{\link[=pprint]{pprint()}}}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+This object, invisibly
 }
 }
 \if{html}{\out{<hr>}}

@@ -17,6 +17,8 @@
 #' using backticks as \code{`repeat`()}.
 #'
 #' @examples
+#' if (requireNamespace("abind", quietly = TRUE)) {
+#'
 #' set.seed(42)
 #' # a grayscale image (of shape height x width)
 #' image <- array(rnorm(30 * 40), dim = c(30, 40))
@@ -39,6 +41,8 @@
 #' downsampled <- reduce(image, '(h h2) (w w2) -> h w', 'mean', h2 = 2, w2 = 2)
 #' output <- einops.repeat(downsampled, 'h w -> (h h2) (w w2)', h2 = 2, w2 = 2)
 #' as_image_tensor(einops.repeat(output, 'h w -> h w 3'))
+#'
+#' }
 #'
 einops.repeat <- function( # nolint: object_name_linter.
     x, expr, ..., .row_major = getOption("einops_row_major", FALSE)

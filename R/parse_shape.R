@@ -13,6 +13,8 @@
 #' @export
 #'
 #' @examples
+#' if (requireNamespace("abind", quietly = TRUE)) {
+#'
 #' # Use underscore to skip the dimension in parsing.
 #' x <- array(0, dim = c(2, 3, 5, 7))
 #' parse_shape(x, 'batch _ h w')
@@ -23,6 +25,9 @@
 #' shape_info <- parse_shape(x, 'b _ h w')
 #' # rearrange(y, '(b c h w) -> b c h w', shape_info) would give shape
 #' # (2, 10, 5, 7)
+#'
+#' }
+#'
 parse_shape <- function(x, expr, ...) {
     tryCatch(
         .parse_shape(x, expr, ...),

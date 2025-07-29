@@ -317,6 +317,12 @@ public = list(
     },
 
     #' @description
+    #' The print method for EinopsBackend instances
+    #' @param ... arguments passed to [pprint()]
+    #' @return This object, invisibly
+    print = function(...) pprint(self, ...),
+
+    #' @description
     #' Get a string representation of this backend.
     #' @return A character string describing the backend.
     repr = function() {
