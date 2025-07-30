@@ -14,8 +14,16 @@ Supports base R arrays (this includes matrices, a subtype of base arrays), and m
 
 ## Installation
 
+`einops` is available on CRAN:
+
 ```R
-devtools::install_github("Qile0317/einops")
+install.packages("einops")
+```
+
+For the latest semi-stable development version try:
+
+```R
+devtools::install_github("Qile0317/einops@dev")
 ```
 
 ## Usage
