@@ -406,7 +406,10 @@ public = list(
     #' Reduce a tensor along specified axes using the given operation.
     #' @param x The input tensor/array.
     #' @param operation A character string specifying the reduction operation
-    #' (e.g., "sum", "mean", "max", "min", "prod").
+    #' (e.g., "sum", "mean", "max", "min", "prod", "all", "any"), OR
+    #' a two argument function, with the first argument being the tensor
+    #' to modify, and the second argument being an integer list of axes
+    #' to perform the reduction over.
     #' @param axes A numeric vector specifying which axes to reduce over.
     #' @return The reduced tensor/array.
     reduce = function(x, operation, axes) {
@@ -533,21 +536,31 @@ public = list(
     transpose = function(x, axes) aperm(x, perm = axes),
 
     reduce = function(x, operation, axes) {
-        op_fun <- if (is.function(operation)) {
-            operation
-        } else {switch(operation,
-            sum  = sum,
-            mean = mean,
-            max  = max,
-            min  = min,
-            prod = prod,
+
+        if (is.function(operation)) return(operation(x, axes))
+
+        make_reducer <- function(base_op) {
+            function(arr, dims) {
+                keep <- setdiff(seq_along(dim(arr)), dims)
+                if (length(keep) == 0) return(base_op(arr))
+                res <- apply(arr, keep, base_op)
+                if (!is.array(res)) res <- array(res, dim = length(res))
+                res
+            }
+        }
+        
+        op_fun <- switch(operation,
+            sum = make_reducer(sum),
+            mean = make_reducer(mean),
+            max = make_reducer(max),
+            min = make_reducer(min),
+            prod = make_reducer(prod),
+            any = make_reducer(any),
+            all = make_reducer(all),
             stop("Invalid operation")
-        )}
-        keep <- setdiff(seq_along(dim(x)), axes)
-        if (length(keep) == 0) return(op_fun(x))
-        res <- apply(x, keep, op_fun)
-        if (!is.array(res)) res <- array(res, dim = length(res))
-        res
+        )
+        
+        op_fun(x, axes)
     },
 
     stack_on_zeroth_dimension = function(tensors) {

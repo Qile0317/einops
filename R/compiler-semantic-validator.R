@@ -49,7 +49,7 @@ validate_reduction_operation <- function(einops_ast, operation) {
 
     # TODO throw error on symmetric difference of unique identifier lengths
 
-    if (operation == "rearrange") {
+    if (identical(operation, "rearrange")) {
         if (has_non_unitary_anonymous_axes(einops_ast)) {
             stop(
                 "Non-unitary anonymous axes are not supported in rearrange ",
@@ -59,7 +59,7 @@ validate_reduction_operation <- function(einops_ast, operation) {
         # TODO throw error on symmetric difference of unique identifier lengths
         return(invisible(einops_ast))
     }
-    if (operation == "repeat") {
+    if (identical(operation, "repeat")) {
         # TODO throw error on symmetric difference of unique identifier lengths
         # TODO axes_without_size <- set difference of
         # {ax for ax in rght.identifiers if not isinstance(ax, AnonymousAxis)},

@@ -21,8 +21,9 @@ einops.reduce(
 \item{expr}{string: reduction pattern}
 
 \item{func}{string or function: one of available reductions ('min', 'max',
-'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
-prod, etc.)}
+'sum', 'mean', 'prod', 'any', 'all'), or an R 2 argument function which takes
+in two arguments, with the first being the tensor, and the second being an
+integer array indicating the dimensions to reduce over.}
 
 \item{...}{either corresponding axes lengths or a single list of them.}
 
