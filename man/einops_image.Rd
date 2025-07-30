@@ -23,14 +23,6 @@ will return a single image tensor.
 }
 \examples{
 data("einops_image")
-einops_image[1]
-einops_image[2]
-einops_image[3]
-einops_image[4]
-einops_image[5]
-einops_image[6]
-}
-\seealso{
-\code{\link[=image_tensor]{image_tensor()}}
+for (i in seq_len(6)) print(einops_image[i, , , ])
 }
 \keyword{datasets}

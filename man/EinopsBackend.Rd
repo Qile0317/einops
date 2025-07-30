@@ -266,7 +266,10 @@ Reduce a tensor along specified axes using the given operation.
 \item{\code{x}}{The input tensor/array.}
 
 \item{\code{operation}}{A character string specifying the reduction operation
-(e.g., "sum", "mean", "max", "min", "prod").}
+(e.g., "sum", "mean", "max", "min", "prod", "all", "any"), OR
+a two argument function, with the first argument being the tensor
+to modify, and the second argument being an integer list of axes
+to perform the reduction over.}
 
 \item{\code{axes}}{A numeric vector specifying which axes to reduce over.}
 }

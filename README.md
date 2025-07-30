@@ -12,19 +12,6 @@
 Flexible and powerful tensor operations for readable and reliable code. <br />
 Supports base R arrays (this includes matrices, a subtype of base arrays), and more types and frameworks such as torch in the future.
 
-## Tweets (From the original python implementation)
-
-> In case you need convincing arguments for setting aside time to learn about einsum and einops...
-[Tim Rocktäschel](https://twitter.com/_rockt/status/1230818967205425152)
-
-> Writing better code with PyTorch and einops 👌
-[Andrej Karpathy](https://twitter.com/karpathy/status/1290826075916779520)
-
-> Slowly but surely, einops is seeping in to every nook and cranny of my code. If you find yourself shuffling around bazillion dimensional tensors, this might change your life
-[Nasim Rahaman](https://twitter.com/nasim_rahaman/status/1216022614755463169)
-
-[More testimonials](https://einops.rocks/pages/testimonials/)
-
 ## Installation
 
 ```R
@@ -35,7 +22,7 @@ devtools::install_github("Qile0317/einops")
 
 `einops` has a minimalistic yet powerful API.
 
-Three core operations provided ([einops tutorial](https://github.com/arogozhnikov/einops/blob/main/docs/)
+Three core operations provided ([einops tutorial](https://qile0317.github.io/einops/articles/basics.html)
 shows those cover stacking, reshape, transposition, squeeze/unsqueeze, repeat, tile, concatenate, view and numerous reductions)
 
 ``` r

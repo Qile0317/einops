@@ -8,8 +8,9 @@
 #' @param x tensor: array, matrix, or list of arrays of the same shape and type
 #' @param expr string: reduction pattern
 #' @param func string or function: one of available reductions ('min', 'max',
-#' 'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
-#' prod, etc.)
+#' 'sum', 'mean', 'prod', 'any', 'all'), or an R 2 argument function which takes
+#' in two arguments, with the first being the tensor, and the second being an
+#' integer array indicating the dimensions to reduce over.
 #' @param ... either corresponding axes lengths or a single list of them.
 #' @param .row_major `r lifecycle::badge("experimental")` logical: whether to
 #' use row-major order for the output
