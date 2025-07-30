@@ -1,0 +1,3 @@
+pack <- function(tensors, pattern) {
+    
+}
