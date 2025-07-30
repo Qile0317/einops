@@ -1,21 +1,27 @@
 # einops
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/Qile0317/einops/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Qile0317/einops/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/Qile0317/einops/graph/badge.svg)](https://app.codecov.io/gh/Qile0317/einops)
+[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://qile0317.github.io/einops/)
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/einops/blob/main/LICENSE.md)
 <!-- badges: end -->
-
-> This is a work in progress R implementation of [einops](https://einops.rocks/).
 
 Flexible and powerful tensor operations for readable and reliable code. <br />
 Supports base R arrays (this includes matrices, a subtype of base arrays), and more types and frameworks such as torch in the future.
 
 ## Installation
 
+`einops` is available on CRAN:
+
 ```R
-devtools::install_github("Qile0317/einops")
+install.packages("einops")
+```
+
+For the latest semi-stable development version try:
+
+```R
+devtools::install_github("Qile0317/einops@dev")
 ```
 
 ## Usage
@@ -140,9 +146,7 @@ If using the R implementation of Einops in your research work, please cite the o
     year = {2025},
     url = {https://qile0317.github.io/einops/},
 }
-```
 
-```bibtex
 @inproceedings{rogozhnikov2022einops,
     title={Einops: Clear and Reliable Tensor Manipulations with Einstein-like Notation},
     author={Alex Rogozhnikov},
@@ -152,9 +156,10 @@ If using the R implementation of Einops in your research work, please cite the o
 }
 ```
 
-## Implementations in other languages
+## Development
 
-- [Python (Original)](https://einops.rocks/)
-- [Julia](https://murrellgroup.github.io/Einops.jl/stable/)
-- [Rust](https://docs.rs/einops/latest/einops/)
-- [C++](https://github.com/dorpxam/einops-cpp)
+A [Devcontainer](.devcontainer/devcontainer.json) and [Dockerfile](./Dockerfile) is provided, this environment can be used locally, or on your server, or within github codespaces. To start with devcontainers in vs code, clone repo, and click 'Reopen in Devcontainer'.
+
+All building, installing, and documentation can be generated with the standard tidyverse [`devtools`](https://devtools.r-lib.org/) pipeline, using functions such as `devtools::document()` and `devtools::test()` 
+
+If you'd like to contribute, Github pull requests from forked branches are more than welcome as it is mostly a solo-project at the moment. For major changes, please open an issue first to discuss what you would like to change. Please also make sure to update tests as appropriate.
