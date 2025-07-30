@@ -7,8 +7,6 @@
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/einops/blob/main/LICENSE.md)
 <!-- badges: end -->
 
-> This is a work in progress R implementation of [einops](https://einops.rocks/).
-
 Flexible and powerful tensor operations for readable and reliable code. <br />
 Supports base R arrays (this includes matrices, a subtype of base arrays), and more types and frameworks such as torch in the future.
 

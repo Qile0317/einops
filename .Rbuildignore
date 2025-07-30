@@ -14,3 +14,5 @@
 ^CITATION\.cff$
 ^codecov\.yml$
 ^cran-comments\.md$
+^\.devcontainer
+^Dockerfile$
