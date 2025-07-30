@@ -323,7 +323,10 @@ Shape should return a tuple with integers or "shape symbols"
 
 <dt><code>operation</code></dt>
 <dd><p>A character string specifying the reduction operation
-(e.g., "sum", "mean", "max", "min", "prod").</p></dd>
+(e.g., "sum", "mean", "max", "min", "prod", "all", "any"), OR
+a two argument function, with the first argument being the tensor
+to modify, and the second argument being an integer list of axes
+to perform the reduction over.</p></dd>
 
 
 <dt><code>axes</code></dt>

@@ -79,8 +79,9 @@ reader-friendly notation.</p>
 
 <dt id="arg-func">func<a class="anchor" aria-label="anchor" href="#arg-func"></a></dt>
 <dd><p>string or function: one of available reductions ('min', 'max',
-'sum', 'mean', 'prod', 'any', 'all'), or an R function (e.g. max, mean,
-prod, etc.)</p></dd>
+'sum', 'mean', 'prod', 'any', 'all'), or an R 2 argument function which takes
+in two arguments, with the first being the tensor, and the second being an
+integer array indicating the dimensions to reduce over.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
