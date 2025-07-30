@@ -1,11 +1,11 @@
-# Contributing to APackOfTheClones Development
+# Contributing to einops Development
 
 The goal of this guide is to help you get up and contributing to APackOfTheClones as quickly as possible. The guide is divided into two main pieces:
 
 1. Filing a bug report in an issue.
 2. Suggesting a change via a pull request.
 
-Please note that APackOfTheClones is released with a [Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md). By contributing to this project,
+Please note that `einops` is released with a [Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md). By contributing to this project,
 you agree to abide by its terms.
 
 ## Bug Reports
