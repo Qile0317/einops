@@ -16,3 +16,7 @@
 ^cran-comments\.md$
 ^\.devcontainer
 ^Dockerfile$
+^CRAN-SUBMISSION$
+^cran-comments\.md$
+^\.devcontainer
+^Dockerfile$

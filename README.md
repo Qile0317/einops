@@ -158,7 +158,7 @@ If using the R implementation of Einops in your research work, please cite the o
 
 ## Development
 
-A [Devcontainer](.devcontainer/devcontainer.json) and [Dockerfile](./Dockerfile) is provided, this environment can be used locally, or on your server, or within github codespaces. To start with devcontainers in vs code, clone repo, and click 'Reopen in Devcontainer'.
+A Devcontainer and Dockerfile is provided in the sourcecode, this environment can be used locally, or on your server, or within github codespaces. To start with devcontainers in vs code, clone repo, and click 'Reopen in Devcontainer'.
 
 All building, installing, and documentation can be generated with the standard tidyverse [`devtools`](https://devtools.r-lib.org/) pipeline, using functions such as `devtools::document()` and `devtools::test()` 
 
