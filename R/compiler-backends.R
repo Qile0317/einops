@@ -270,18 +270,6 @@ public = list(
 ))
 
 .einops_backend_registry <- BackendRegistry$new()
-
-#' Get the singleton backend registry instance
-#'
-#' This function retrieves the singleton instance of the backend registry.
-#' If the instance does not exist, it creates a new one.
-#' If `refresh` is set to TRUE, it will create a new instance even if
-#' one already exists.
-#'
-#' @param clear_testing Logical indicating whether to wipe all backends assigned
-#' from tests
-#' @return A singleton instance of [BackendRegistry()].
-#' @keywords internal
 get_backend_registry <- function(
     clear_testing = !identical(Sys.getenv("TESTTHAT"), "true")
 ) {
