@@ -9,11 +9,5 @@
         // to use GPUs in container uncomment next line
         // "--gpus=all",
         "--name=einops-for-r-devbox"
-    ],
-    "customizations": {
-    "vscode": {
-        "extensions": [
-        ]
-    }
-    }
+    ]
 }

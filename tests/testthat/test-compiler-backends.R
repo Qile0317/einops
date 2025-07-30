@@ -1,4 +1,5 @@
 test_that("get_backend_registry() returns a singleton instance", {
+    skip_if_not_installed("lobstr")
     registry1 <- get_backend_registry()
     registry2 <- get_backend_registry()
     expect_identical(registry1, registry2)
@@ -7,6 +8,8 @@ test_that("get_backend_registry() returns a singleton instance", {
 })
 
 test_that("get_backend() return unique singletons", {
+
+    skip_if_not_installed("lobstr")
 
     for (i in 1:2) { # TODO use some with() like function
         tensor_class <- glue("DummyTensor{i}")
