@@ -75,6 +75,22 @@ to_tokens.UnderscoreAstNode <- function(x, ...) {
     EinopsTokenSequence(UnderscoreToken(x$src$start))
 }
 
+#' @title Create an AsteriskAstNode
+#' @param src List with start position
+#' @return AsteriskAstNode object
+#' @keywords internal
+AsteriskAstNode <- function(src = list()) {
+    structure(list(
+        src = src
+    ), class = c("AsteriskAstNode", "AstNode", "s3list"))
+}
+
+#' @export
+#' @keywords internal
+to_tokens.AsteriskAstNode <- function(x, ...) {
+    EinopsTokenSequence(AsteriskToken(x$src$start))
+}
+
 #' @title Create a GroupAstNode
 #' @param children List of axis nodes contained in this group, potentially empty
 #' @param src List with start position
@@ -160,6 +176,12 @@ find_node_types_indices.GroupAstNode <- function(x, node_type, ...) {
 #' @noRd
 get_ellipsis_index <- function(onesided_ast) {
     find_node_types_indices(onesided_ast, "EllipsisAstNode")
+}
+
+clear_srcs <- function(ast) {
+    assert_that(inherits(ast, "AstNode"))
+    if (!is.null(ast$src)) ast$src <- list()
+    ast
 }
 
 #' @export

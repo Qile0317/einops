@@ -27,7 +27,8 @@ Imports:
     magrittr,
     r2r,
     R6,
-    roperators
+    roperators,
+    zeallot
 Suggests: 
     abind,
     grid,
@@ -37,8 +38,7 @@ Suggests:
     lobstr,
     rmarkdown,
     spelling,
-    testthat (>= 3.0.0),
-    zeallot
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends: 

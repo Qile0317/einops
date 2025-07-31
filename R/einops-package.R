@@ -8,5 +8,6 @@
 #' @importFrom magrittr %<>%
 #' @importFrom roperators %+=% %*=%
 #' @importFrom utils tail capture.output
+#' @importFrom zeallot %<-%
 ## usethis namespace: end
 NULL

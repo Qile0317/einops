@@ -162,6 +162,11 @@ parse_axes_iter <- function(tokens) {
                     token$start
                 )
             },
+            ASTERISK = {
+                src <- list(start = token$start)
+                node <- AsteriskAstNode(src)
+                result %<>% append(list(node))
+            },
             stop(
                 "Unexpected token type '",
                 token$type, "' at position ", token$start
