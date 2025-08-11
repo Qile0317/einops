@@ -41,6 +41,7 @@ for (pattern in equivalent_rearrange_patterns) {
 }
 
 test_in_all_tensor_types_that("rearrange() is consistent", {
+
     shape <- c(1, 2, 3, 5, 7, 11)
     x <- create_seq_tensor(shape)
     for (pattern in c(
@@ -51,22 +52,11 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
         "a b c d e f -> (f e d c b a)"
     )) {
         expect_no_error(result <- rearrange(x, pattern))
-        expect_identical(
-            length(setdiff(as_base_array(x), as_base_array(result))), 0L
-        )
+        expect_length(setdiff(as_base_array(x), as_base_array(result)), 0L)
     }
 
-    # FIXME: for torch_tensor, this fails but only due to tensor -> array
-    # conversion
-    # using x$flatten() we see that they are actually identical, so this either
-    # we
-    # need to change the conversion and NOT use torch::as_array() or we need to
-    # change the test to use x$flatten() instead of as_base_array(). Neither
-    # feel that right nor intuitive.
-    # result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
-    # expect_identical(
-    #     as.numeric(as_base_array(result)), as.numeric(as_base_array(x))
-    # )
+    result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
+    expect_identical(flatten(result), flatten(result))
 
     result <- rearrange(x, "a aa aa1 a1a1 aaaa a11 -> a aa aa1 a1a1 aaaa a11")
     expect_identical(x, result)

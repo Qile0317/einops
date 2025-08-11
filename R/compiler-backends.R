@@ -347,6 +347,14 @@ public = list(
     #' @return A standard array representation of the tensor.
     as_array = function(x) throw_not_implemented(),
 
+    #' @description
+    #' Return a flattened version of the tensor. Note that the
+    #' order of calling as_array and flatten does matter because
+    #' different frameworks may store data differently.
+    #' @param x The input tensor/array
+    #' @return A 1 dimensional tensor
+    flatten = function(x) throw_not_implemented(),
+
     #' @param start integer, inclusive
     #' @param stop integer, inclusive
     #' @return a sequence from start to stop
@@ -487,6 +495,8 @@ public = list(
 
     as_array = function(x) x,
 
+    flatten = function(x) as.vector(x),
+
     arange = function(start, stop) seq(from = start, to = stop),
 
     reshape = function(x, shape) array(x, dim = shape),
@@ -562,6 +572,8 @@ public = list(
     create_tensor = function(values, dims, ...) torch::torch_tensor(array(values, dim = dims), ...),
 
     as_array = function(x) torch::as_array(x),
+
+    flatten = function(x) x$flatten(),
 
     reshape = function(x, shape) x$reshape(shape),
 

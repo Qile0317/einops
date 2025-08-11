@@ -19,6 +19,7 @@ from this class and implement the required methods.
 \item \href{#method-EinopsBackend-preprocess}{\code{EinopsBackend$preprocess()}}
 \item \href{#method-EinopsBackend-create_tensor}{\code{EinopsBackend$create_tensor()}}
 \item \href{#method-EinopsBackend-as_array}{\code{EinopsBackend$as_array()}}
+\item \href{#method-EinopsBackend-flatten}{\code{EinopsBackend$flatten()}}
 \item \href{#method-EinopsBackend-arange}{\code{EinopsBackend$arange()}}
 \item \href{#method-EinopsBackend-shape}{\code{EinopsBackend$shape()}}
 \item \href{#method-EinopsBackend-reshape}{\code{EinopsBackend$reshape()}}
@@ -162,6 +163,28 @@ Convert a tensor to a standard \code{\link[base:array]{base::array()}}
 }
 \subsection{Returns}{
 A standard array representation of the tensor.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EinopsBackend-flatten"></a>}}
+\if{latex}{\out{\hypertarget{method-EinopsBackend-flatten}{}}}
+\subsection{Method \code{flatten()}}{
+Return a flattened version of the tensor. Note that the
+order of calling as_array and flatten does matter because
+different frameworks may store data differently.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EinopsBackend$flatten(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{The input tensor/array}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A 1 dimensional tensor
 }
 }
 \if{html}{\out{<hr>}}
