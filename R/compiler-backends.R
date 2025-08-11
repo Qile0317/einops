@@ -600,7 +600,7 @@ public = list(
             mean = x$mean(axes),
             max = x$amax(axes),
             min = x$amin(axes),
-            stop("Invalid operation")
+            throw_not_implemented(glue("reducing with `{operation}` is not implemented"))
         )
     },
 
