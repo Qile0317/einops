@@ -69,6 +69,7 @@ from this class and implement the required methods.</p>
 <li><p><a href="#method-EinopsBackend-preprocess"><code>EinopsBackend$preprocess()</code></a></p></li>
 <li><p><a href="#method-EinopsBackend-create_tensor"><code>EinopsBackend$create_tensor()</code></a></p></li>
 <li><p><a href="#method-EinopsBackend-as_array"><code>EinopsBackend$as_array()</code></a></p></li>
+<li><p><a href="#method-EinopsBackend-flatten"><code>EinopsBackend$flatten()</code></a></p></li>
 <li><p><a href="#method-EinopsBackend-arange"><code>EinopsBackend$arange()</code></a></p></li>
 <li><p><a href="#method-EinopsBackend-shape"><code>EinopsBackend$shape()</code></a></p></li>
 <li><p><a href="#method-EinopsBackend-reshape"><code>EinopsBackend$reshape()</code></a></p></li>
@@ -213,16 +214,38 @@ classes</p>
 <p>A standard array representation of the tensor.</p>
 </div>
 
-</div><p></p><hr><a id="method-EinopsBackend-arange"></a><div class="section">
-<h3 id="method-arange-">Method <code>arange()</code><a class="anchor" aria-label="anchor" href="#method-arange-"></a></h3>
-
-<div class="section">
+</div><p></p><hr><a id="method-EinopsBackend-flatten"></a><div class="section">
+<h3 id="method-flatten-">Method <code>flatten()</code><a class="anchor" aria-label="anchor" href="#method-flatten-"></a></h3>
+<p>Return a flattened version of the tensor. Note that the
+order of calling as_array and flatten does matter because
+different frameworks may store data differently.</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">arange</span><span class="op">(</span><span class="va">start</span>, <span class="va">stop</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">flatten</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>x</code></dt>
+<dd><p>The input tensor/array</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<p>A 1 dimensional tensor</p>
+</div>
+
+</div><p></p><hr><a id="method-EinopsBackend-arange"></a><div class="section">
+<h3 id="method-arange-">Method <code>arange()</code><a class="anchor" aria-label="anchor" href="#method-arange-"></a></h3>
+
+<div class="section">
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">arange</span><span class="op">(</span><span class="va">start</span>, <span class="va">stop</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>start</code></dt>
 <dd><p>integer, inclusive</p></dd>
 
@@ -234,7 +257,7 @@ classes</p>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
 <p>a sequence from start to stop</p>
 </div>
 
@@ -243,12 +266,12 @@ classes</p>
 <p>Get the shape of a tensor.
 Shape should return a tuple with integers or "shape symbols"
 (which will evaluate to actual size).</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -256,19 +279,19 @@ Shape should return a tuple with integers or "shape symbols"
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
+<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
 <p>A numeric vector representing the tensor shape.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-reshape"></a><div class="section">
 <h3 id="method-reshape-">Method <code><a href="https://rdrr.io/r/stats/reshape.html" class="external-link">reshape()</a></code><a class="anchor" aria-label="anchor" href="#method-reshape-"></a></h3>
 <p>Reshape a tensor to the specified dimensions.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">reshape</span><span class="op">(</span><span class="va">x</span>, <span class="va">shape</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -280,19 +303,19 @@ Shape should return a tuple with integers or "shape symbols"
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
+<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
 <p>The reshaped tensor/array.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-transpose"></a><div class="section">
 <h3 id="method-transpose-">Method <code>transpose()</code><a class="anchor" aria-label="anchor" href="#method-transpose-"></a></h3>
 <p>Transpose a tensor along the specified axes.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">transpose</span><span class="op">(</span><span class="va">x</span>, <span class="va">axes</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -304,19 +327,19 @@ Shape should return a tuple with integers or "shape symbols"
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
+<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
 <p>The transposed tensor/array.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-reduce"></a><div class="section">
 <h3 id="method-reduce-">Method <code><a href="reduce.html">reduce()</a></code><a class="anchor" aria-label="anchor" href="#method-reduce-"></a></h3>
 <p>Reduce a tensor along specified axes using the given operation.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">reduce</span><span class="op">(</span><span class="va">x</span>, <span class="va">operation</span>, <span class="va">axes</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -336,19 +359,19 @@ to perform the reduction over.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
+<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
 <p>The reduced tensor/array.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-stack_on_zeroth_dimension"></a><div class="section">
 <h3 id="method-stack-on-zeroth-dimension-">Method <code>stack_on_zeroth_dimension()</code><a class="anchor" aria-label="anchor" href="#method-stack-on-zeroth-dimension-"></a></h3>
 <p>Stack multiple tensors along a new zeroth dimension.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">stack_on_zeroth_dimension</span><span class="op">(</span><span class="va">tensors</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>tensors</code></dt>
 <dd><p>A list of tensors/arrays to stack.</p></dd>
 
@@ -356,19 +379,19 @@ to perform the reduction over.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
+<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
 <p>A tensor/array with the input tensors stacked along dimension 1.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-add_axis"></a><div class="section">
 <h3 id="method-add-axis-">Method <code>add_axis()</code><a class="anchor" aria-label="anchor" href="#method-add-axis-"></a></h3>
 <p>Add a new axis to a tensor at the specified position.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">add_axis</span><span class="op">(</span><span class="va">x</span>, <span class="va">new_position</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -380,7 +403,7 @@ to perform the reduction over.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
+<h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
 <p>The tensor/array with a new axis added.</p>
 </div>
 
@@ -390,12 +413,12 @@ to perform the reduction over.</p></dd>
 <p>This function adds new axes to the input tensor at the specified
 positions and tiles the tensor along those axes according to the
 provided lengths.</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">add_axes</span><span class="op">(</span><span class="va">x</span>, <span class="va">n_axes</span>, <span class="va">pos2len</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -411,7 +434,7 @@ provided lengths.</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
+<h4 id="returns-15">Returns<a class="anchor" aria-label="anchor" href="#returns-15"></a></h4>
 <p>The tensor/array with new axes added and tiled as specified.</p>
 </div>
 
@@ -419,12 +442,12 @@ provided lengths.</p><div class="section">
 <h3 id="method-tile-">Method <code>tile()</code><a class="anchor" aria-label="anchor" href="#method-tile-"></a></h3>
 <p>Tile (repeat) a tensor along each axis according to the repeat counts.
 The repeats vector should have the same length as the tensor's shape.</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">tile</span><span class="op">(</span><span class="va">x</span>, <span class="va">repeats</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -437,7 +460,7 @@ along each axis. Must have same length as x.shape.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-15">Returns<a class="anchor" aria-label="anchor" href="#returns-15"></a></h4>
+<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
 <p>The tiled tensor/array.</p>
 </div>
 
@@ -445,12 +468,12 @@ along each axis. Must have same length as x.shape.</p></dd>
 <h3 id="method-concat-">Method <code>concat()</code><a class="anchor" aria-label="anchor" href="#method-concat-"></a></h3>
 <p>Concatenate tensors along the specified axis.
 Assumes identical devices, dtypes and shapes except for the selected axis.</p><div class="section">
-<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">concat</span><span class="op">(</span><span class="va">tensors</span>, <span class="va">axis</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>tensors</code></dt>
 <dd><p>A list of tensors/arrays to concatenate.</p></dd>
 
@@ -462,19 +485,19 @@ Assumes identical devices, dtypes and shapes except for the selected axis.</p><d
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
+<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
 <p>The concatenated tensor/array.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-is_float_type"></a><div class="section">
 <h3 id="method-is-float-type-">Method <code>is_float_type()</code><a class="anchor" aria-label="anchor" href="#method-is-float-type-"></a></h3>
 <p>Check if the tensor has a floating point data type.</p><div class="section">
-<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">is_float_type</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>x</code></dt>
 <dd><p>The input tensor/array.</p></dd>
 
@@ -482,31 +505,31 @@ Assumes identical devices, dtypes and shapes except for the selected axis.</p><d
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
+<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
 <p>A logical value indicating if the tensor is of float type.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-layers"></a><div class="section">
 <h3 id="method-layers-">Method <code>layers()</code><a class="anchor" aria-label="anchor" href="#method-layers-"></a></h3>
 <p>Get neural network layers specific to this backend.</p><div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">layers</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
 <p>Backend-specific layer implementations.</p>
 </div>
 
 </div><p></p><hr><a id="method-EinopsBackend-einsum"></a><div class="section">
 <h3 id="method-einsum-">Method <code>einsum()</code><a class="anchor" aria-label="anchor" href="#method-einsum-"></a></h3>
 <p>Perform Einstein summation on tensors.</p><div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EinopsBackend</span><span class="op">$</span><span class="fu">einsum</span><span class="op">(</span><span class="va">pattern</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
+<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>pattern</code></dt>
 <dd><p>A character string specifying the einsum pattern.</p></dd>
 
@@ -518,7 +541,7 @@ Assumes identical devices, dtypes and shapes except for the selected axis.</p><d
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
 <p>The result of the einsum operation.</p>
 </div>
 
