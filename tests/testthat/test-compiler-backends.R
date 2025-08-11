@@ -49,7 +49,7 @@ test_that("get_backend() return unique singletons", {
     unregister_backend("DummyTensor2")
 })
 
-test_in_all_tensor_types_that("stack_on_zeroth_dimension() works", {
+test_in_all_tensor_types_that("backend$stack_on_zeroth_dimension() works", {
 
     x <- create_seq_tensor(10 * 1:4)
     x_list <- lapply(1:10, function(i) {
@@ -59,7 +59,7 @@ test_in_all_tensor_types_that("stack_on_zeroth_dimension() works", {
     expect_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
 })
 
-test_in_all_tensor_types_that("add_axis() and tile() works", {
+test_in_all_tensor_types_that("backend$add_axis() and backend$tile() works", {
 
     x <- create_seq_tensor(c(2, 3, 5))
     backend <- get_backend(x)
@@ -82,4 +82,16 @@ test_in_all_tensor_types_that("add_axis() and tile() works", {
         ), dim = c(2L, 3L, 2L, 5L))
     )
 
+})
+
+test_in_all_tensor_types_that("backend$reshape() works", {
+
+    x <- create_seq_tensor(2:3)
+    backend <- get_backend(x)
+    expect_equal(x, backend$reshape(backend$reshape(x, 3:2), 2:3))
+
+    x <- create_seq_tensor(2:4)
+    expect_equal(
+        x, backend$reshape(backend$reshape(x, c(2, 4, 3)), 2:4)
+    )
 })

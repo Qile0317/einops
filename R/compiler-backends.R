@@ -322,9 +322,7 @@ public = list(
     #' This method should be overridden in subclasses to return the specific
     #' tensor type (e.g., "torch_tensor", "array").
     #' @return A string representing the tensor type.
-    tensor_type = function() {
-        stop("Not implemented")
-    },
+    tensor_type = function() throw_not_implemented(),
 
     #' @description
     #' Do any relevant preprocessing of a tensor before any operations are
@@ -333,9 +331,7 @@ public = list(
     #' @param x The input raw tensor-like object
     #' @return A preprocessed version of the input, may or may not have changed
     #' classes
-    preprocess = function(x) {
-        x
-    },
+    preprocess = function(x) x,
 
     #' @description
     #' Create a tensor of the specified type with given values and dimensions.
@@ -343,24 +339,26 @@ public = list(
     #' @param dims A numeric vector specifying the dimensions of the tensor.
     #' @param ... Additional arguments for specific backend implementations.
     #' @return A tensor of the specified type.
-    create_tensor = function(values, dims, ...) {
-        stop("Not implemented")
-    },
+    create_tensor = function(values, dims, ...) throw_not_implemented(),
 
     #' @description
     #' Convert a tensor to a standard [base::array()]
     #' @param x The input tensor/array.
     #' @return A standard array representation of the tensor.
-    as_array = function(x) {
-        stop("Not implemented")
-    },
+    as_array = function(x) throw_not_implemented(),
+
+    #' @description
+    #' Return a flattened version of the tensor. Note that the
+    #' order of calling as_array and flatten does matter because
+    #' different frameworks may store data differently.
+    #' @param x The input tensor/array
+    #' @return A 1 dimensional tensor
+    flatten = function(x) throw_not_implemented(),
 
     #' @param start integer, inclusive
     #' @param stop integer, inclusive
     #' @return a sequence from start to stop
-    arange = function(start, stop) {
-        stop("Not Implemented")
-    },
+    arange = function(start, stop) throw_not_implemented(),
 
     #' @description
     #' Get the shape of a tensor.
@@ -369,7 +367,7 @@ public = list(
     #' @param x The input tensor/array.
     #' @return A numeric vector representing the tensor shape.
     shape = function(x) {
-        tryCatch(dim(x), error = function(e) stop("Not implemented"))
+        tryCatch(dim(x), error = function(e) throw_not_implemented())
     },
 
     #' @description
@@ -377,18 +375,14 @@ public = list(
     #' @param x The input tensor/array.
     #' @param shape A numeric vector specifying the new shape.
     #' @return The reshaped tensor/array.
-    reshape = function(x, shape) {
-        stop("Not implemented")
-    },
+    reshape = function(x, shape) throw_not_implemented(),
 
     #' @description
     #' Transpose a tensor along the specified axes.
     #' @param x The input tensor/array.
     #' @param axes A numeric vector specifying the new axis order.
     #' @return The transposed tensor/array.
-    transpose = function(x, axes) {
-        stop("Not implemented")
-    },
+    transpose = function(x, axes) throw_not_implemented(),
 
     #' @description
     #' Reduce a tensor along specified axes using the given operation.
@@ -400,26 +394,20 @@ public = list(
     #' to perform the reduction over.
     #' @param axes A numeric vector specifying which axes to reduce over.
     #' @return The reduced tensor/array.
-    reduce = function(x, operation, axes) {
-        stop("Not implemented")
-    },
+    reduce = function(x, operation, axes) throw_not_implemented(),
 
     #' @description
     #' Stack multiple tensors along a new zeroth dimension.
     #' @param tensors A list of tensors/arrays to stack.
     #' @return A tensor/array with the input tensors stacked along dimension 1.
-    stack_on_zeroth_dimension = function(tensors) {
-        stop("Not implemented")
-    },
+    stack_on_zeroth_dimension = function(tensors) throw_not_implemented(),
 
     #' @description
     #' Add a new axis to a tensor at the specified position.
     #' @param x The input tensor/array.
     #' @param new_position The position (1-based) where to insert the new axis.
     #' @return The tensor/array with a new axis added.
-    add_axis = function(x, new_position) {
-        stop("Not implemented")
-    },
+    add_axis = function(x, new_position) throw_not_implemented(),
 
     #' @description
     #' Add multiple axes to a tensor and tile along specified axes.
@@ -453,9 +441,7 @@ public = list(
     #' @param repeats A numeric vector specifying how many times to repeat
     #' along each axis. Must have same length as x.shape.
     #' @return The tiled tensor/array.
-    tile = function(x, repeats) {
-        stop("Not implemented")
-    },
+    tile = function(x, repeats) throw_not_implemented(),
 
     #' @description
     #' Concatenate tensors along the specified axis.
@@ -463,33 +449,25 @@ public = list(
     #' @param tensors A list of tensors/arrays to concatenate.
     #' @param axis The axis along which to concatenate (1-based).
     #' @return The concatenated tensor/array.
-    concat = function(tensors, axis) {
-        stop("Not implemented")
-    },
+    concat = function(tensors, axis) throw_not_implemented(),
 
     #' @description
     #' Check if the tensor has a floating point data type.
     #' @param x The input tensor/array.
     #' @return A logical value indicating if the tensor is of float type.
-    is_float_type = function(x) {
-        stop("Not implemented")
-    },
+    is_float_type = function(x) throw_not_implemented(),
 
     #' @description
     #' Get neural network layers specific to this backend.
     #' @return Backend-specific layer implementations.
-    layers = function() {
-        stop("backend does not provide layers")
-    },
+    layers = function() throw_not_implemented(),
     
     #' @description
     #' Perform Einstein summation on tensors.
     #' @param pattern A character string specifying the einsum pattern.
     #' @param ... Additional tensors to operate on.
     #' @return The result of the einsum operation.
-    einsum = function(pattern, ...) {
-        stop("backend does not support einsum")
-    }
+    einsum = function(pattern, ...) throw_not_implemented()
 ))
 
 NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE,
@@ -513,9 +491,11 @@ public = list(
 
     preprocess = function(x) as.array(x),
 
-    create_tensor = function(values, dims) array(values, dim = dims),
+    create_tensor = function(values, dims, ...) array(values, dim = dims),
 
     as_array = function(x) x,
+
+    flatten = function(x) as.vector(x),
 
     arange = function(start, stop) seq(from = start, to = stop),
 
@@ -552,17 +532,11 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        assert_that(is.list(tensors), all(sapply(tensors, is.array)))
         if (length(tensors) == 1L) return(tensors[[1]])
         unname(abind::abind(tensors, along = 0))
     },
 
     tile = function(x, repeats) {
-        assert_that(
-            is.integer(repeats),
-            length(self$shape(x)) == length(repeats),
-            all(repeats >= 1L)
-        )
         for (i in seq_len(length(self$shape(x)))) {
             if (repeats[i] == 1L) next
             x <- abind::abind(
@@ -579,10 +553,76 @@ public = list(
     is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
-        assert_that(is.count(new_position))
         dim(x) %<>% append(1L, after = new_position - 1L)
         x
     }
+))
+
+register_backend(
+    tensor_type = "torch_tensor",
+    backend_class = TorchBackend,
+    dependencies = "torch"
+)
+
+TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
+public = list(
+
+    tensor_type = function() "torch_tensor",
+
+    create_tensor = function(values, dims, ...) torch::torch_tensor(array(values, dim = dims), ...),
+
+    as_array = function(x) torch::as_array(x),
+
+    flatten = function(x) x$flatten(),
+
+    reshape = function(x, shape) x$reshape(shape),
+
+    transpose = function(x, axes) x$permute(axes),
+
+    reduce = function(x, operation, axes) {
+
+        if (is.function(operation)) return(operation(x, axes))
+
+        # pytorch supports reducing only one operation at a time for prod, any, all
+        if (operation %in% c("prod", "any", "all")) {
+            for (i in sort(axes, decreasing = TRUE)) {
+                x <- switch(operation,
+                    prod = x$prod(dim = i),
+                    any = x$any(dim = i),
+                    all = x$all(dim = i)
+                )
+            }
+            return(x)
+        }
+        
+        switch(operation,
+            sum = x$sum(axes),
+            mean = x$mean(axes),
+            max = x$amax(axes),
+            min = x$amin(axes),
+            throw_not_implemented(glue("reducing with `{operation}` is not implemented"))
+        )
+    },
+
+    stack_on_zeroth_dimension = function(tensors) {
+        if (length(tensors) == 1L) return(tensors[[1]])
+        torch::torch_stack(tensors, 1)
+    },
+
+    tile = function(x, repeats) {
+        x$`repeat`(repeats)
+    },
+
+    concat = function(tensors, axis) {
+        torch::torch_cat(tensors, axis)
+    },
+
+    is_float_type = function(x) torch::torch_is_floating_point(x),
+
+    add_axis = function(x, new_position) {
+        x$unsqueeze(new_position)
+    }
+
 ))
 
 # nolint end: indentation_linter, line_length_linter

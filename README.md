@@ -9,7 +9,7 @@
 <!-- badges: end -->
 
 Flexible and powerful tensor operations for readable and reliable code. <br />
-Supports base R arrays (this includes matrices, a subtype of base arrays), and more types and frameworks such as torch in the future.
+Supports R's built-in arrays and `torch::torch_tensor`'s.
 
 ## Installation
 

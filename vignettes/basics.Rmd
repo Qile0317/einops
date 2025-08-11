@@ -37,8 +37,7 @@ We write comprehensible code
 y <- rearrange(x, "b c h w -> b h w c")
 ```
 
-Currently, `einops` only supports the `base::array`, and extends them.
-In the future, more tensor types will be supported such as `torch::torch_tensor`'s.
+Currently, `einops` supports the `base::array()` and `torch::torch_tensor()`, and extends them.
 
 ## What's in this vignette?
 
