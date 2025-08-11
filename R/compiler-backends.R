@@ -614,7 +614,7 @@ public = list(
     },
 
     concat = function(tensors, axis) {
-        torch::torch_stack(tensors, axis)
+        torch::torch_cat(tensors, axis)
     },
 
     is_float_type = function(x) torch::torch_is_floating_point(x),
