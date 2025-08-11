@@ -7,5 +7,12 @@
     },
     "runArgs": [
         "--name=einops-for-r-devbox"
-    ]
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens"
+            ]
+        }
+    }
 }
