@@ -56,7 +56,7 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
     }
 
     result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
-    expect_identical(flatten(result), flatten(result))
+    expect_identical(flatten(x), flatten(result))
 
     result <- rearrange(x, "a aa aa1 a1a1 aaaa a11 -> a aa aa1 a1a1 aaaa a11")
     expect_identical(x, result)
