@@ -483,7 +483,7 @@ public = list(
 
     preprocess = function(x) as.array(x),
 
-    create_tensor = function(values, dims) array(values, dim = dims),
+    create_tensor = function(values, dims, ...) array(values, dim = dims),
 
     as_array = function(x) x,
 
@@ -522,17 +522,11 @@ public = list(
     },
 
     stack_on_zeroth_dimension = function(tensors) {
-        assert_that(is.list(tensors), all(sapply(tensors, is.array)))
         if (length(tensors) == 1L) return(tensors[[1]])
         unname(abind::abind(tensors, along = 0))
     },
 
     tile = function(x, repeats) {
-        assert_that(
-            is.integer(repeats),
-            length(self$shape(x)) == length(repeats),
-            all(repeats >= 1L)
-        )
         for (i in seq_len(length(self$shape(x)))) {
             if (repeats[i] == 1L) next
             x <- abind::abind(
@@ -549,26 +543,73 @@ public = list(
     is_float_type = function(x) is.numeric(x),
 
     add_axis = function(x, new_position) {
-        assert_that(is.count(new_position))
         dim(x) %<>% append(1L, after = new_position - 1L)
         x
     }
 ))
 
-# register_backend(
-#     tensor_type = "torch_tensor",
-#     backend_class = TorchBackend,
-#     dependencies = "torch"
-# )
+register_backend(
+    tensor_type = "torch_tensor",
+    backend_class = TorchBackend,
+    dependencies = "torch"
+)
 
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
     tensor_type = function() "torch_tensor",
 
-    create_tensor = function(values, dims) torch::torch_tensor(array(values, dim = dims)),
+    create_tensor = function(values, dims, ...) torch::torch_tensor(array(values, dim = dims), ...),
 
-    as_array = function(x) x
+    as_array = function(x) torch::as_array(x),
+
+    reshape = function(x, shape) x$reshape(shape),
+
+    transpose = function(x, axes) x$permute(axes),
+
+    reduce = function(x, operation, axes) {
+
+        if (is.function(operation)) return(operation(x, axes))
+
+        # pytorch supports reducing only one operation at a time for prod, any, all
+        if (operation %in% c("prod", "any", "all")) {
+            for (i in sort(axes, decreasing = TRUE)) {
+                x <- switch(operation,
+                    prod = x$prod(dim = i),
+                    any = x$any(dim = i),
+                    all = x$all(dim = i)
+                )
+            }
+            return(x)
+        }
+        
+        switch(operation,
+            sum = x$sum(axes),
+            mean = x$mean(axes),
+            max = x$amax(axes),
+            min = x$amin(axes),
+            stop("Invalid operation")
+        )
+    },
+
+    stack_on_zeroth_dimension = function(tensors) {
+        if (length(tensors) == 1L) return(tensors[[1]])
+        torch::torch_stack(tensors, 1)
+    },
+
+    tile = function(x, repeats) {
+        x$`repeat`(repeats)
+    },
+
+    concat = function(tensors, axis) {
+        torch::torch_stack(tensors, axis)
+    },
+
+    is_float_type = function(x) torch::torch_is_floating_point(x),
+
+    add_axis = function(x, new_position) {
+        x$unsqueeze(new_position)
+    }
 
 ))
 

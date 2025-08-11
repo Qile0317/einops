@@ -2,6 +2,7 @@
 
 ## Additions
 
+- Add backend for `torch`'s `torch_tensor` objects
 - `zeallot` is now a suggested dependency for users
 - `lintr` is now a suggested dependency for developers
 
