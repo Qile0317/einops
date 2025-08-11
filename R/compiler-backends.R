@@ -322,9 +322,7 @@ public = list(
     #' This method should be overridden in subclasses to return the specific
     #' tensor type (e.g., "torch_tensor", "array").
     #' @return A string representing the tensor type.
-    tensor_type = function() {
-        stop("Not implemented")
-    },
+    tensor_type = function() throw_not_implemented(),
 
     #' @description
     #' Do any relevant preprocessing of a tensor before any operations are
@@ -333,9 +331,7 @@ public = list(
     #' @param x The input raw tensor-like object
     #' @return A preprocessed version of the input, may or may not have changed
     #' classes
-    preprocess = function(x) {
-        x
-    },
+    preprocess = function(x) x,
 
     #' @description
     #' Create a tensor of the specified type with given values and dimensions.
@@ -343,24 +339,18 @@ public = list(
     #' @param dims A numeric vector specifying the dimensions of the tensor.
     #' @param ... Additional arguments for specific backend implementations.
     #' @return A tensor of the specified type.
-    create_tensor = function(values, dims, ...) {
-        stop("Not implemented")
-    },
+    create_tensor = function(values, dims, ...) throw_not_implemented(),
 
     #' @description
     #' Convert a tensor to a standard [base::array()]
     #' @param x The input tensor/array.
     #' @return A standard array representation of the tensor.
-    as_array = function(x) {
-        stop("Not implemented")
-    },
+    as_array = function(x) throw_not_implemented(),
 
     #' @param start integer, inclusive
     #' @param stop integer, inclusive
     #' @return a sequence from start to stop
-    arange = function(start, stop) {
-        stop("Not Implemented")
-    },
+    arange = function(start, stop) throw_not_implemented(),
 
     #' @description
     #' Get the shape of a tensor.
@@ -369,7 +359,7 @@ public = list(
     #' @param x The input tensor/array.
     #' @return A numeric vector representing the tensor shape.
     shape = function(x) {
-        tryCatch(dim(x), error = function(e) stop("Not implemented"))
+        tryCatch(dim(x), error = function(e) throw_not_implemented())
     },
 
     #' @description
@@ -377,18 +367,14 @@ public = list(
     #' @param x The input tensor/array.
     #' @param shape A numeric vector specifying the new shape.
     #' @return The reshaped tensor/array.
-    reshape = function(x, shape) {
-        stop("Not implemented")
-    },
+    reshape = function(x, shape) throw_not_implemented(),
 
     #' @description
     #' Transpose a tensor along the specified axes.
     #' @param x The input tensor/array.
     #' @param axes A numeric vector specifying the new axis order.
     #' @return The transposed tensor/array.
-    transpose = function(x, axes) {
-        stop("Not implemented")
-    },
+    transpose = function(x, axes) throw_not_implemented(),
 
     #' @description
     #' Reduce a tensor along specified axes using the given operation.
@@ -400,26 +386,20 @@ public = list(
     #' to perform the reduction over.
     #' @param axes A numeric vector specifying which axes to reduce over.
     #' @return The reduced tensor/array.
-    reduce = function(x, operation, axes) {
-        stop("Not implemented")
-    },
+    reduce = function(x, operation, axes) throw_not_implemented(),
 
     #' @description
     #' Stack multiple tensors along a new zeroth dimension.
     #' @param tensors A list of tensors/arrays to stack.
     #' @return A tensor/array with the input tensors stacked along dimension 1.
-    stack_on_zeroth_dimension = function(tensors) {
-        stop("Not implemented")
-    },
+    stack_on_zeroth_dimension = function(tensors) throw_not_implemented(),
 
     #' @description
     #' Add a new axis to a tensor at the specified position.
     #' @param x The input tensor/array.
     #' @param new_position The position (1-based) where to insert the new axis.
     #' @return The tensor/array with a new axis added.
-    add_axis = function(x, new_position) {
-        stop("Not implemented")
-    },
+    add_axis = function(x, new_position) throw_not_implemented(),
 
     #' @description
     #' Add multiple axes to a tensor and tile along specified axes.
@@ -453,9 +433,7 @@ public = list(
     #' @param repeats A numeric vector specifying how many times to repeat
     #' along each axis. Must have same length as x.shape.
     #' @return The tiled tensor/array.
-    tile = function(x, repeats) {
-        stop("Not implemented")
-    },
+    tile = function(x, repeats) throw_not_implemented(),
 
     #' @description
     #' Concatenate tensors along the specified axis.
@@ -463,33 +441,25 @@ public = list(
     #' @param tensors A list of tensors/arrays to concatenate.
     #' @param axis The axis along which to concatenate (1-based).
     #' @return The concatenated tensor/array.
-    concat = function(tensors, axis) {
-        stop("Not implemented")
-    },
+    concat = function(tensors, axis) throw_not_implemented(),
 
     #' @description
     #' Check if the tensor has a floating point data type.
     #' @param x The input tensor/array.
     #' @return A logical value indicating if the tensor is of float type.
-    is_float_type = function(x) {
-        stop("Not implemented")
-    },
+    is_float_type = function(x) throw_not_implemented(),
 
     #' @description
     #' Get neural network layers specific to this backend.
     #' @return Backend-specific layer implementations.
-    layers = function() {
-        stop("backend does not provide layers")
-    },
+    layers = function() throw_not_implemented(),
     
     #' @description
     #' Perform Einstein summation on tensors.
     #' @param pattern A character string specifying the einsum pattern.
     #' @param ... Additional tensors to operate on.
     #' @return The result of the einsum operation.
-    einsum = function(pattern, ...) {
-        stop("backend does not support einsum")
-    }
+    einsum = function(pattern, ...) throw_not_implemented()
 ))
 
 NullEinopsBackend <- R6Class("NullEinopsBackend", inherit = EinopsBackend, cloneable = FALSE,
@@ -583,6 +553,23 @@ public = list(
         dim(x) %<>% append(1L, after = new_position - 1L)
         x
     }
+))
+
+# register_backend(
+#     tensor_type = "torch_tensor",
+#     backend_class = TorchBackend,
+#     dependencies = "torch"
+# )
+
+TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
+public = list(
+
+    tensor_type = function() "torch_tensor",
+
+    create_tensor = function(values, dims) torch::torch_tensor(array(values, dim = dims)),
+
+    as_array = function(x) x
+
 ))
 
 # nolint end: indentation_linter, line_length_linter
