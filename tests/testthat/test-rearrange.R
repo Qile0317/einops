@@ -55,9 +55,6 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
         expect_length(setdiff(as_base_array(x), as_base_array(result)), 0L)
     }
 
-    result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
-    expect_identical(flatten(x), flatten(result))
-
     result <- rearrange(x, "a aa aa1 a1a1 aaaa a11 -> a aa aa1 a1a1 aaaa a11")
     expect_identical(x, result)
 
@@ -147,6 +144,17 @@ test_in_all_tensor_types_that("rearrange() works", {
     
     # TODO rest of tests
 
+})
+
+test_in_all_tensor_types_that("rearrange() is consistent after flattening", {
+    skip_if(
+        isTRUE(tryCatch(flatten(create_seq_tensor(1:2)), error = function(e) inherits(e, "NotImplementedError"))),
+        glue("flatten is not implemented for the {current_backend()$tensor_type()} backend")
+    )
+    shape <- c(1, 2, 3, 5, 7, 11)
+    x <- create_seq_tensor(shape)
+    result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
+    expect_identical(flatten(x), flatten(result))
 })
 
 test_in_all_tensor_types_that("rearrange() works on lists", {

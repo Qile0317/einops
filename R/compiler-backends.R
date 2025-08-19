@@ -625,4 +625,80 @@ public = list(
 
 ))
 
+register_backend(
+    tensor_type = "tensorflow.python.types.core.Tensor",
+    backend_class = TensorflowBackend
+)
+
+TensorflowBackend <- R6Class("TensorflowBackend", inherit = EinopsBackend, cloneable = FALSE,
+
+private = list(
+    tf = NULL
+),
+
+public = list(
+
+    initialize = function() {
+        super$initialize() # FIXME is this correct?
+
+        # TODO maybe this should be done with an global option and/or env var
+        tryCatch(
+            if (requireNamespace("tensorflow", quietly = TRUE)) {
+                private$tf <- tensorflow::tf
+            } else {
+                private$tf <- reticulate::import("tensorflow")
+            },
+            error = function(e) {
+                stop("Error loading tensorflow: ", e, stop. = FALSE)
+            }
+        )
+    },
+
+    tensor_type = function() "tensorflow.python.types.core.Tensor",
+
+    create_tensor = function(values, dims, ...) {
+        private$tf$Variable(array(values, dim = dims), ...)
+    }, # TODO unsure if Variable is correct/the best
+
+    as_array = function(x) as.array(x),
+
+    flatten = function(x) throw_not_implemented(),
+
+    shape = function(x) {
+        # TODO handle symbolics
+        as.integer(x$shape)
+    },
+
+    reduce = function(x, operation, axes) {
+        if (is.function(operation)) return(operation(x, axes))
+        private$tf[[glue("reduce_{operation}")]](x, axis = axes)
+    },
+
+    reshape = function(x, shape) private$tf$reshape(x, as.integer(shape)),
+
+    transpose = function(x, axes) private$tf$transpose(x, axes - 1L),
+
+    stack_on_zeroth_dimension = function(tensors) {
+        if (length(tensors) == 1L) return(tensors[[1]])
+        private$tf$stack(tensors)
+    },
+
+    tile = function(x, repeats) {
+        private$tf$tile(x, repeats)
+    },
+
+    concat = function(tensors, axis) {
+        private$tf$concat(tensors, axis = axis)
+    },
+
+    add_axis = function(x, new_position) {
+        private$tf$expand_dims(x, new_position)
+    },
+
+    is_float_type = function(x) {
+        x$dtype %in% c("float16", "float32", "float64", "float128", "bfloat16")
+    }
+
+))
+
 # nolint end: indentation_linter, line_length_linter

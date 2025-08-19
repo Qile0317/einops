@@ -40,6 +40,7 @@ test_in_all_tensor_types_that <- function(desc, code) {
             backend <- get_backend_registry()$get_backend_from_type(tensor_type)
             
             eval_env <- new.env(parent = parent_env)
+            eval_env$current_backend <- function() backend
             eval_env$create_tensor <- function(values, dims, ...) {
                 backend$create_tensor(values, dims, ...)
             }
@@ -53,6 +54,8 @@ test_in_all_tensor_types_that <- function(desc, code) {
         })
     }
 }
+
+current_backend <- function() throw_not_implemented()
 
 #' Interface function for creation of tensors
 #'
