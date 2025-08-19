@@ -28,21 +28,23 @@ Imports:
     r2r,
     R6,
     roperators
-Suggests: 
+Suggests:
     abind,
     grid,
     imager,
     knitr,
     lintr,
     lobstr,
+    reticulate,
     rmarkdown,
     spelling,
+    tensorflow,
     testthat (>= 3.0.0),
     torch,
     zeallot
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Depends: 
+Depends:
     R (>= 3.5)
 LazyData: true
 Language: en-US

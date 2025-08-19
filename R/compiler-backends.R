@@ -633,7 +633,7 @@ register_backend(
 TensorflowBackend <- R6Class("TensorflowBackend", inherit = EinopsBackend, cloneable = FALSE,
 
 private = list(
-    tf = NULL
+    tf = NULL # TODO check if numerical indexing is different in R's tf wrapper
 ),
 
 public = list(
