@@ -356,8 +356,8 @@ public = list(
     flatten = function(x) throw_not_implemented(),
 
     #' @param start integer, inclusive
-    #' @param stop integer, inclusive
-    #' @return a sequence from start to stop
+    #' @param stop integer, exclusive
+    #' @return a sequence from start to stop - 1
     arange = function(start, stop) throw_not_implemented(),
 
     #' @description
@@ -497,7 +497,7 @@ public = list(
 
     flatten = function(x) as.vector(x),
 
-    arange = function(start, stop) seq(from = start, to = stop),
+    arange = function(start, stop) seq(start, stop - 1),
 
     reshape = function(x, shape) array(x, dim = shape),
 
@@ -663,6 +663,8 @@ public = list(
     as_array = function(x) as.array(x),
 
     flatten = function(x) throw_not_implemented(),
+
+    arange = function(start, stop) private$tf$range(start, stop),
 
     shape = function(x) {
         # TODO handle symbolics

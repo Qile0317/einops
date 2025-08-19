@@ -200,12 +200,12 @@ A 1 dimensional tensor
 \describe{
 \item{\code{start}}{integer, inclusive}
 
-\item{\code{stop}}{integer, inclusive}
+\item{\code{stop}}{integer, exclusive}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-a sequence from start to stop
+a sequence from start to stop - 1
 }
 }
 \if{html}{\out{<hr>}}
