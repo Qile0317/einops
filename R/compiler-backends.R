@@ -660,49 +660,49 @@ public = list(
     tensor_type = function() "tensorflow.python.types.core.Tensor",
 
     create_tensor = function(values, dims, ...) {
-        self$tf$Variable(array(values, dim = dims), ...)
+        private$tf$Variable(array(values, dim = dims), ...)
     }, # TODO unsure if Variable is correct/the best
 
     as_array = function(x) as.array(x),
 
     flatten = function(x) throw_not_implemented(),
 
-    arange = function(start, stop) self$tf$range(start, stop),
+    arange = function(start, stop) private$tf$range(start, stop),
 
     shape = function(x) {
-        if (self$tf$executing_eagerly()) {
+        if (private$tf$executing_eagerly()) {
             if (any(sapply(x$shape, is.null))) throw_not_implemented()
             return(as.integer(x$shape))
         }
         static_shape <- x$shape$as_list()
-        tf_shape <- self$tf$shape(x)
+        tf_shape <- private$tf$shape(x)
         throw_not_implemented() # TODO setup a convention for symbolic elements so a pure primitive vector is returned. likely NA or NaN is the best candidate here
     },
 
     reduce = function(x, operation, axes) {
         if (is.function(operation)) return(operation(x, axes))
-        self$tf[[glue("reduce_{operation}")]](x, axis = axes - 1L)
+        private$tf[[glue("reduce_{operation}")]](x, axis = axes - 1L)
     },
 
-    reshape = function(x, shape) self$tf$reshape(x, as.integer(shape)),
+    reshape = function(x, shape) private$tf$reshape(x, as.integer(shape)),
 
-    transpose = function(x, axes) self$tf$transpose(x, axes - 1L),
+    transpose = function(x, axes) private$tf$transpose(x, axes - 1L),
 
     stack_on_zeroth_dimension = function(tensors) {
         if (length(tensors) == 1L) return(tensors[[1]])
-        self$tf$stack(tensors)
+        private$tf$stack(tensors)
     },
 
     tile = function(x, repeats) {
-        self$tf$tile(x, repeats)
+        private$tf$tile(x, repeats)
     },
 
     concat = function(tensors, axis) {
-        self$tf$concat(tensors, axis = axis - 1L)
+        private$tf$concat(tensors, axis = axis - 1L)
     },
 
     add_axis = function(x, new_position) {
-        self$tf$expand_dims(x, new_position - 1L)
+        private$tf$expand_dims(x, new_position - 1L)
     },
 
     is_float_type = function(x) {
