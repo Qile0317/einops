@@ -671,12 +671,16 @@ public = list(
 
     shape = function(x) {
         if (private$tf$executing_eagerly()) {
-            if (any(sapply(x$shape, is.null))) throw_not_implemented()
+            if (any(sapply(x$shape, is.null))) {
+                throw_not_implemented("Symbolic operations are not yet supported")
+            }
             return(as.integer(x$shape))
         }
         static_shape <- x$shape$as_list()
         tf_shape <- private$tf$shape(x)
-        throw_not_implemented() # TODO setup a convention for symbolic elements so a pure primitive vector is returned. likely NA or NaN is the best candidate here
+        throw_not_implemented("Symbolic operations are not yet supported")
+        # TODO setup a convention for symbolic elements so a pure primitive vector
+        # is returned. likely NA or NaN is the best candidate here
     },
 
     reduce = function(x, operation, axes) {
