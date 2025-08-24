@@ -665,7 +665,7 @@ public = list(
 
     as_array = function(x) as.array(x),
 
-    flatten = function(x) throw_not_implemented(),
+    flatten = function(x) private$tf$reshape(x, -1),
 
     arange = function(start, stop) private$tf$range(start, stop),
 

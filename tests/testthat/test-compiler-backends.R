@@ -56,7 +56,7 @@ test_in_all_tensor_types_that("backend$stack_on_zeroth_dimension() works", {
         x[i, , , ]
     })
 
-    expect_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
+    expect_all_equal(x, get_backend(x)$stack_on_zeroth_dimension(x_list))
 })
 
 test_in_all_tensor_types_that("backend$add_axis() and backend$tile() works", {

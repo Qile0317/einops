@@ -40,7 +40,7 @@ test_in_all_tensor_types_that("repeat() works on lists", {
 
     x <- create_seq_tensor(2:6)
     
-    expect_identical(
+    expect_all_equal(
         einops.repeat(
             lapply(seq_len(dim(x)[1]), function(i) x[i, , , , ]),
             "... -> b (...)",
