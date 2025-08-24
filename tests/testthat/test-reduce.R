@@ -17,7 +17,7 @@ for (pattern in equivalent_reduction_patterns) {
             }
             expect_no_error(out1 <- reduce(x, pattern[[1]], reduction))
             expect_no_error(out2 <- reduce(x, pattern[[2]], reduction))
-            expect_identical(out1, out2)
+            expect_all_equal(out1, out2)
         })
     }
 }

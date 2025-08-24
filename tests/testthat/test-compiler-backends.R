@@ -64,7 +64,7 @@ test_in_all_tensor_types_that("backend$add_axis() and backend$tile() works", {
     x <- create_seq_tensor(c(2, 3, 5))
     backend <- get_backend(x)
 
-    expect_no_error(x <- backend$add_axis(x, 3))
+    expect_no_error(x <- backend$add_axis(x, 3L))
 
     expect_identical(
         as_base_array(backend$tile(x, c(1L, 1L, 1L, 1L))),
@@ -88,10 +88,10 @@ test_in_all_tensor_types_that("backend$reshape() works", {
 
     x <- create_seq_tensor(2:3)
     backend <- get_backend(x)
-    expect_equal(x, backend$reshape(backend$reshape(x, 3:2), 2:3))
+    expect_all_equal(x, backend$reshape(backend$reshape(x, 3:2), 2:3))
 
     x <- create_seq_tensor(2:4)
-    expect_equal(
+    expect_all_equal(
         x, backend$reshape(backend$reshape(x, c(2, 4, 3)), 2:4)
     )
 })

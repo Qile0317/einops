@@ -60,7 +60,7 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
 
     result1 <- rearrange(x, "a b c d e f -> f e d c b a")
     result2 <- rearrange(x, "f e d c b a -> a b c d e f")
-    expect_identical(result1, result2) # FIXME: for tf these SHOULD be identical
+    expect_identical(result1, result2) # FIXME: for tf these SHOULD be identical due to Views. the only diff is the pointer.
 
     result <- rearrange(
         rearrange(x, "a b c d e f -> (f d) c (e b) a"),
@@ -154,7 +154,7 @@ test_in_all_tensor_types_that("rearrange() is consistent after flattening", {
     shape <- c(1, 2, 3, 5, 7, 11)
     x <- create_seq_tensor(shape)
     result <- rearrange(x, "a b c d e f -> a (b) (c d e) f")
-    expect_identical(flatten(x), flatten(result))
+    expect_all_equal(flatten(x), flatten(result))
 })
 
 test_in_all_tensor_types_that("rearrange() works on lists", {
