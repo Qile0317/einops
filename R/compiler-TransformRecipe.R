@@ -256,7 +256,6 @@ prepare_transformation_recipe <- function(
         }
     ))
 
-    # FIXME
     added_axes <- r2r::hashmap()
     left_identifiers <- get_identifiers_hashset(ast$input_axes)
     for (i in seq_along(ordered_axis_rght)) {

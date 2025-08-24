@@ -630,7 +630,6 @@ register_backend(
     backend_class = TensorflowBackend
 )
 
-# FIXME: need to make doubly sure of indexing discrepancies
 TensorflowBackend <- R6Class("TensorflowBackend", inherit = EinopsBackend, cloneable = FALSE,
 
 private = list(
@@ -640,7 +639,7 @@ private = list(
 public = list(
 
     initialize = function() {
-        super$initialize() # FIXME is this correct?
+        super$initialize()
 
         # TODO maybe this should be done with an global option and/or env var
         tryCatch(

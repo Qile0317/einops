@@ -206,7 +206,6 @@ create_execution_plan <- function(recipe, shape, axes_dims) {
         }
     }
 
-    # FIXME some cases are just a hashmap(1:integer())
     added_axes <- r2r::hashmap()
     for (pos in r2r::keys(recipe$added_axes)) {
         pos_in_elementary <- recipe$added_axes[[pos]]
