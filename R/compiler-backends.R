@@ -661,7 +661,7 @@ public = list(
 
     create_tensor = function(values, dims, ...) {
         private$tf$Variable(array(values, dim = dims), ...)
-    }, # TODO unsure if Variable is correct/the best
+    },
 
     as_array = function(x) as.array(x),
 

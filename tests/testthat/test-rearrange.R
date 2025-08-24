@@ -36,7 +36,7 @@ for (pattern in equivalent_rearrange_patterns) {
         expect_no_error(y1 <- rearrange(x, pattern[[1]]))
         expect_no_error(y2 <- rearrange(x, pattern[[2]]))
         expect_identical(dim(y1), dim(y2))
-        expect_equal(y1, y2) # FIXME: for tf, pyobj pointers are different for all cases
+        expect_all_equal(y1, y2)
     })
 }
 
@@ -60,7 +60,7 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
 
     result1 <- rearrange(x, "a b c d e f -> f e d c b a")
     result2 <- rearrange(x, "f e d c b a -> a b c d e f")
-    expect_identical(result1, result2) # FIXME: for tf, pyobj pointers are different
+    expect_identical(result1, result2) # FIXME: for tf these SHOULD be identical
 
     result <- rearrange(
         rearrange(x, "a b c d e f -> (f d) c (e b) a"),
@@ -68,12 +68,12 @@ test_in_all_tensor_types_that("rearrange() is consistent", {
         b = 2,
         d = 5
     )
-    expect_identical(x, result) # # FIXME: for tf, pyobj pointers are different, AND classes are different
+    expect_all_equal(x, result)
 
     sizes <- setNames(as.list(shape), letters[1:6])
     temp <- rearrange(x, "a b c d e f -> (f d) c (e b) a", sizes)
     result <- rearrange(temp, "(f d) c (e b) a -> a b c d e f", sizes)
-    expect_identical(x, result)
+    expect_all_equal(x, result)
 
     x2 <- create_seq_tensor(2:4)
     result <- rearrange(x2, "a b c -> b c a")
@@ -161,7 +161,7 @@ test_in_all_tensor_types_that("rearrange() works on lists", {
 
     x <- create_seq_tensor(2:6)
     
-    expect_identical( # FIXME: for tf, pyobj pointers are different
+    expect_all_equal(
         rearrange(
             lapply(seq_len(dim(x)[1]), function(i) x[i, , , , ]),
             "... -> (...)"
