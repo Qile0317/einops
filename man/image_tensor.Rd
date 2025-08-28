@@ -11,12 +11,6 @@ image_tensor(x)
 }
 \arguments{
 \item{x}{An object to convert to or from \code{image_tensor} format.}
-
-\item{...}{Additional arguments passed to underlying methods. For \code{[} and
-these are indexing arguments.}
-
-\item{as_image}{Logical. Whether to print the image as a plot. Default is
-controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}
 }
 \value{
 \itemize{

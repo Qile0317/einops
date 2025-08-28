@@ -19,10 +19,6 @@
 #' print the dimension of the image.
 #'
 #' @param x An object to convert to or from `image_tensor` format.
-#' @param ... Additional arguments passed to underlying methods. For `[` and
-#'   these are indexing arguments.
-#' @param as_image Logical. Whether to print the image as a plot. Default is
-#'   controlled by the option `print_image_tensor_as_plot` (default: TRUE).
 #'
 #' @details
 #' The `image_tensor` class provides the following methods (and more):
