@@ -567,6 +567,13 @@ register_backend(
 TorchBackend <- R6Class("TorchBackend", inherit = EinopsBackend, cloneable = FALSE,
 public = list(
 
+    initialize = function() {
+        super$initialize()
+        if (!interactive() && !isTRUE(as.logical(Sys.getenv(x, "false")))) {
+            throw_not_implemented("Testing the torch backend on CRAN is not supported")
+        }
+    },
+
     tensor_type = function() "torch_tensor",
 
     create_tensor = function(values, dims, ...) torch::torch_tensor(array(values, dim = dims), ...),

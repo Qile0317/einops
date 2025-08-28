@@ -1,5 +1,9 @@
 # einops (development version)
 
+## Changes
+
+- For CRAN check compatibilty and issues with `torch::torch_install()`, adjust tests to auto skip on CRAN if it involves the torch backend.
+
 # einops 0.2.0
 
 ## Additions
