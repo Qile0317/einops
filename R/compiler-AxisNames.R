@@ -8,7 +8,7 @@
 #'
 #' Note that when using [c()] on an `AxisNames` object, when the other object is
 #' another [AxisNames()], the elements of that will simply be appended to the
-#' first object. To nest, you must append
+#' first object. To nest (in the case of a `GroupAstNode`), you must append
 #' a `list(AxisNames(...))` to the first object instead.
 #' @param ... a list of elements or arbitrary number of elements
 #' @return an `AxisNames` object, which is a list with a specific class
@@ -67,8 +67,8 @@ as_iterables.AxisNames <- function(x, ...) {
 #' get an unordered list, representing a set of all unique
 #' identifiers on one side of the expression. Named nodes become
 #' the character representing its name, ConstantAstNode nodes
-#' are just themselves, aside from 1 which is ignored. Group nodes
-#' are flattened, and EllipsisAstNode nodes are ignored.
+#' are just themselves, aside from 1 which is ignored. GroupAstNode
+#' nodes are flattened, and EllipsisAstNode nodes are ignored.
 #' @param ast the Abstract Syntax Tree (AST) of the einops expression
 #' positions to the `ConstantAstNode` objects in the output. This will
 #' REMOVE all other elements in the src list.
