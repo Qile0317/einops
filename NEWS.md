@@ -1,7 +1,5 @@
 # einops 0.2.0
 
-# einops 0.1.0.9000 (development version)
-
 ## Additions
 
 - Add backend for `torch`'s `torch_tensor` objects for the three core functions `rearrange()`, `reduce()` and `"repeat"()`
