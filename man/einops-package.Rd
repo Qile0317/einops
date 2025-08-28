@@ -6,7 +6,7 @@
 \alias{einops-package}
 \title{einops: Flexible, Powerful, and Readable Tensor Operations}
 \description{
-Perform tensor operations using a concise yet expressive syntax inspired by the 'Python' library of the same name. Reshape, rearrange, and combine multidimensional arrays for scientific computing, machine learning, and data analysis. Einops simplifies complex manipulations, making code more maintainable and intuitive.
+Perform tensor operations using a concise yet expressive syntax inspired by the Python library of the same name. Reshape, rearrange, and combine multidimensional arrays for scientific computing, machine learning, and data analysis. Einops simplifies complex manipulations, making code more maintainable and intuitive. The original implementation is demonstrated in Rogozhnikov (2022) \url{https://openreview.net/forum?id=oapKSVM2bcj}
 }
 \seealso{
 Useful links:

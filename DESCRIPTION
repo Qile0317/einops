@@ -10,9 +10,9 @@ Authors@R: c(
         comment = c(ORCID = "0009-0005-0148-2499")
     ))
 Maintainer: Qile Yang <qile.yang@berkeley.edu>
-Description: Perform tensor operations using a concise yet expressive syntax inspired by the 'Python' library of the same name.
+Description: Perform tensor operations using a concise yet expressive syntax inspired by the Python library of the same name.
     Reshape, rearrange, and combine multidimensional arrays for scientific computing, machine learning, and data analysis. Einops
-    simplifies complex manipulations, making code more maintainable and intuitive.
+    simplifies complex manipulations, making code more maintainable and intuitive. The original implementation is demonstrated in Rogozhnikov (2022) <https://openreview.net/forum?id=oapKSVM2bcj>
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
