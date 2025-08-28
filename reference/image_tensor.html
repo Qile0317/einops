@@ -35,7 +35,7 @@ print the dimension of the image.'><!-- Google tag (gtag.js) --><script async sr
 
     <a class="navbar-brand me-2" href="../index.html">einops</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@ print the dimension of the image.'><!-- Google tag (gtag.js) --><script async sr
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Image Tensor: A thin wrapper around 2-4D arrays</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Qile0317/einops/blob/main/R/image_tensor.R" class="external-link"><code>R/image_tensor.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Qile0317/einops/blob/dev/R/image_tensor.R" class="external-link"><code>R/image_tensor.R</code></a></small>
       <div class="d-none name"><code>image_tensor.Rd</code></div>
     </div>
 
@@ -86,25 +86,7 @@ print the dimension of the image.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as_image_tensor</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">image_tensor</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">as_image_tensor</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'cimg'</span></span>
-<span><span class="fu">as_image_tensor</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'image_tensor'</span></span>
-<span><span class="fu">as.cimg</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'image_tensor'</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="va">...</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'image_tensor'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'image_tensor'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, as_image <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"print_image_tensor_as_plot"</span>, <span class="cn">TRUE</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">image_tensor</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -113,16 +95,6 @@ print the dimension of the image.</p>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>An object to convert to or from <code>image_tensor</code> format.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to underlying methods. For <code>[</code> and
-these are indexing arguments.</p></dd>
-
-
-<dt id="arg-as-image">as_image<a class="anchor" aria-label="anchor" href="#arg-as-image"></a></dt>
-<dd><p>Logical. Whether to print the image as a plot. Default is
-controlled by the option <code>print_image_tensor_as_plot</code> (default: TRUE).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -165,7 +137,7 @@ single images, or "b h w c" format for batches of images:</p><ul><li><p><strong>
     <h2 id="options">Options<a class="anchor" aria-label="anchor" href="#options"></a></h2>
 
 
-<p>The following options control the behavior of <code>image_tensor</code> methods:</p><ul><li><p><code>plot_image_tensor_axes</code>: Whether to show axes in plots (default: FALSE)</p></li>
+<p>The following options control the default behavior of <code>image_tensor</code> methods:</p><ul><li><p><code>plot_image_tensor_axes</code>: Whether to show axes in plots (default: FALSE)</p></li>
 <li><p><code>print_image_tensor_as_plot</code>: Whether to print images as plots (default:
 TRUE)</p></li>
 </ul></div>

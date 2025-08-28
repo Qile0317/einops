@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">einops</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,14 +41,31 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/Qile0317/einops/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/Qile0317/einops/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="einops-020">einops 0.2.0<a class="anchor" aria-label="anchor" href="#einops-020"></a></h2>
+<div class="section level3">
+<h3 id="additions-0-2-0">Additions<a class="anchor" aria-label="anchor" href="#additions-0-2-0"></a></h3>
+<ul><li>Add backend for <code>torch</code>’s <code>torch_tensor</code> objects for the three core functions <code><a href="../reference/rearrange.html">rearrange()</a></code>, <code><a href="../reference/reduce.html">reduce()</a></code> and <code><a href="../reference/einops.repeat.html">"repeat"()</a></code>
+</li>
+<li>
+<code>zeallot</code> is now a suggested dependency for users</li>
+<li>
+<code>lintr</code> is now a suggested dependency for developers</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-0-2-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-2-0"></a></h3>
+<ul><li>Minor updates in documentation and docker infrastructure in the sourcecode</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="einops-010">einops 0.1.0<a class="anchor" aria-label="anchor" href="#einops-010"></a></h2>
 <ul><li>Initial release. The only python einops function implementations are <code>rearrange</code>, <code>reduce</code>, <code>repeat</code>, and <code>parse_shape</code>, and the only backend supported is for <code><a href="https://rdrr.io/r/base/array.html" class="external-link">base::array</a></code> objects. The first einops tutorial has also been mostly re-implemented as a vignette</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
