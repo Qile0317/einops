@@ -17,4 +17,3 @@ GroupAstNode object
 \description{
 Create a GroupAstNode
 }
-\keyword{internal}

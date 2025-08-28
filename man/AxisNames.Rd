@@ -20,7 +20,7 @@ of nesting allowed, as its essentially another representation of a
 
 Note that when using \code{\link[=c]{c()}} on an \code{AxisNames} object, when the other object is
 another \code{\link[=AxisNames]{AxisNames()}}, the elements of that will simply be appended to the
-first object. To nest (in the case of a \code{GroupAstNode}), you must append
+first object. To nest, you must append
 a \code{list(AxisNames(...))} to the first object instead.
 }
 \keyword{internal}

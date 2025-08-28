@@ -79,7 +79,7 @@ to_tokens.UnderscoreAstNode <- function(x, ...) {
 #' @param children List of axis nodes contained in this group, potentially empty
 #' @param src List with start position
 #' @return GroupAstNode object
-#' @keywords internal
+#' @export
 GroupAstNode <- function(children, src = list()) {
     structure(list(
         children = children,

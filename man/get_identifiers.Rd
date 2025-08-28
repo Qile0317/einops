@@ -20,7 +20,7 @@ an \code{\link[=AxisNames]{AxisNames()}} of unique identifiers
 get an unordered list, representing a set of all unique
 identifiers on one side of the expression. Named nodes become
 the character representing its name, ConstantAstNode nodes
-are just themselves, aside from 1 which is ignored. GroupAstNode
-nodes are flattened, and EllipsisAstNode nodes are ignored.
+are just themselves, aside from 1 which is ignored. Group nodes
+are flattened, and EllipsisAstNode nodes are ignored.
 }
 \keyword{internal}

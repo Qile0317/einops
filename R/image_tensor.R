@@ -51,7 +51,7 @@
 #' - **b**: batch dimension (number of images, only for 4D arrays)
 #'
 #' @section Options:
-#' The following options control the behavior of `image_tensor` methods:
+#' The following options control the default behavior of `image_tensor` methods:
 #'
 #' - `plot_image_tensor_axes`: Whether to show axes in plots (default: FALSE)
 #' - `print_image_tensor_as_plot`: Whether to print images as plots (default:
@@ -83,7 +83,7 @@ as_image_tensor <- function(x) {
 #' @export
 image_tensor <- as_image_tensor
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 as_image_tensor.default <- function(x) {
     x <- as.array(x)
@@ -94,7 +94,7 @@ as_image_tensor.default <- function(x) {
     x
 }
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 as_image_tensor.cimg <- function(x) {
     as_image_tensor(rearrange(x, "w h b c -> b h w c"))
@@ -104,7 +104,7 @@ as.cimg <- function(x) { # nolint: object_name_linter.
     UseMethod("as.cimg", x)
 }
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 as.cimg.image_tensor <- function(x) {
     requireNamespace("imager")
@@ -119,7 +119,7 @@ as.cimg.image_tensor <- function(x) {
     }
 }
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 "[.image_tensor" <- function(x, ...) {
     original_class <- class(x)
@@ -133,7 +133,7 @@ as.cimg.image_tensor <- function(x) {
     result
 }
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 plot.image_tensor <- function(x, ...) {
     x_dims <- length(dim(x))
@@ -147,7 +147,7 @@ plot.image_tensor <- function(x, ...) {
     }
 }
 
-#' @rdname image_tensor
+#' @noRd
 #' @export
 print.image_tensor <- function(
     x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...
@@ -163,6 +163,7 @@ print.image_tensor <- function(
     print(as.cimg(x))
 }
 
+#' @noRd
 #' @export
 reduce.image_tensor <- function(x, ...) {
     class(x) <- "array"
@@ -173,6 +174,7 @@ reduce.image_tensor <- function(x, ...) {
     result
 }
 
+#' @noRd
 #' @export
 .reduce.list.image_tensor <- function(
     x, expr, func, ..., .row_major = getOption("einops_row_major", FALSE)
