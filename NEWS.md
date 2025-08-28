@@ -1,3 +1,5 @@
+# einops 0.2.0
+
 # einops 0.1.0.9000 (development version)
 
 ## Additions
