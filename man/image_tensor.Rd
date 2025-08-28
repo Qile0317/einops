@@ -3,38 +3,14 @@
 \name{image_tensor}
 \alias{image_tensor}
 \alias{as_image_tensor}
-\alias{as_image_tensor.default}
-\alias{as_image_tensor.cimg}
-\alias{as.cimg.image_tensor}
-\alias{[.image_tensor}
-\alias{plot.image_tensor}
-\alias{print.image_tensor}
 \title{Image Tensor: A thin wrapper around 2-4D arrays}
 \usage{
 as_image_tensor(x)
 
 image_tensor(x)
-
-\method{as_image_tensor}{default}(x)
-
-\method{as_image_tensor}{cimg}(x)
-
-\method{as.cimg}{image_tensor}(x)
-
-\method{[}{image_tensor}(x, ...)
-
-\method{plot}{image_tensor}(x, ...)
-
-\method{print}{image_tensor}(x, as_image = getOption("print_image_tensor_as_plot", TRUE), ...)
 }
 \arguments{
 \item{x}{An object to convert to or from \code{image_tensor} format.}
-
-\item{...}{Additional arguments passed to underlying methods. For \code{[} and
-these are indexing arguments.}
-
-\item{as_image}{Logical. Whether to print the image as a plot. Default is
-controlled by the option \code{print_image_tensor_as_plot} (default: TRUE).}
 }
 \value{
 \itemize{
@@ -94,7 +70,7 @@ single images, or "b h w c" format for batches of images:
 
 \section{Options}{
 
-The following options control the behavior of \code{image_tensor} methods:
+The following options control the default behavior of \code{image_tensor} methods:
 \itemize{
 \item \code{plot_image_tensor_axes}: Whether to show axes in plots (default: FALSE)
 \item \code{print_image_tensor_as_plot}: Whether to print images as plots (default:

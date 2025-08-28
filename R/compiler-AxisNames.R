@@ -106,11 +106,7 @@ get_identifiers_hashset <- function(ast, ...) {
 #' @param ... other args
 #' @return an [AxisNames()] object of the axes in order
 #' @keywords internal
-#' @examples
-#' # get_axis_names(parse_onesided_ast(lex('a (b c 1) 2 d')))
-#' # should output AxisNames(
-#' #   "a", AxisNames("b", "c", ConstantAstNode(1)), ConstantAstNode(2), "d"
-#' # )
+#'
 as_axis_names <- function(ast, ...) UseMethod("as_axis_names")
 
 #' @export
