@@ -1,3 +1,10 @@
+# einops 0.2.1
+
+## Changes
+
+- For CRAN check compatibility and issues with `torch::torch_install()`, torch-related tests auto skip on CRAN.
+- Move `lifecycle` from `imports` to `Suggests` since it is a build time developer dependency instead of a user-required dependency.
+
 # einops 0.2.0
 
 ## Additions
